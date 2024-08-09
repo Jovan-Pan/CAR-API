@@ -31,7 +31,7 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
 
     public async Task<IEnumerable<MenuItem>> GetMenuSetting(string userId)
     {
-        string url = _httpClient.BaseAddress + string.Format("api/MasterData/GetMenuSettingGetMenuSettingByUserIdAndSystemCode?userId={0}&systemCode=CRCU", userId);
+        string url = _httpClient.BaseAddress + string.Format("api/MasterData/GetMenuSettingGetMenuSettingByUserIdAndSystemCode?userId={0}&systemCode=CAR", userId);
         HttpResponseMessage response = await _httpClient.GetAsync(url);
 
         return await ProcessApiResponseContent<IEnumerable<MenuItem>>(response);

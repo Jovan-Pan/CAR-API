@@ -70,7 +70,7 @@ namespace Services.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your account does not have access to CRCU System, please contact DT Department.
+        ///   Looks up a localized string similar to Your account does not have access to CAR System, please contact DT Department.
         /// </summary>
         internal static string A002 {
             get {
