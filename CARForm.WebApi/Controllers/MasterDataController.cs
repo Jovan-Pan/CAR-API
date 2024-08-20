@@ -22,4 +22,19 @@ public class MasterDataController(IServiceManager business) : Controller
         var plantList = await business.MasterData.GetPlantListForCRCUSystemByUserId(userId);
         return Ok(plantList);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> GetDataGlobalSetting(int plant, string settingID, string system = "CAR")
+    {
+        try
+        {
+            var result = await business.MasterData.GetDataGlobalSetting(plant, system, settingID);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+
+    }
 }

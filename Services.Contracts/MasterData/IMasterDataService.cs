@@ -7,4 +7,5 @@ public interface IMasterDataService
 {
     Task<ApiResponse<IEnumerable<MenuItem>>> GetMenuSetting(string userId);
     Task<ApiResponse<IEnumerable<string>>> GetPlantListForCRCUSystemByUserId(string userId);
+    Task<ApiResponse<IEnumerable<tGlobalSettingDto>>> GetDataGlobalSetting(int plant, string system, string settingID);
 }

@@ -4,6 +4,8 @@ using Contracts;
 using Services.Contracts.MasterData;
 using Contracts.Infrastructure;
 using Contracts.Repository.MasterData;
+using System.Net.Http;
+using System.Numerics;
 
 namespace Services.MasterData;
 
@@ -23,5 +25,12 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
     {
         var plants = await mdm.GetPlantListForCRCUSystemByUserId(userId);
         return ApiResponse<IEnumerable<string>>.SuccessResponse(plants);
+    }
+
+
+    public async Task<ApiResponse<IEnumerable<tGlobalSettingDto>>> GetDataGlobalSetting(int plant, string system, string settingID)
+    {
+        var result = await mdm.GetDataGlobalSetting(plant, system, settingID);
+        return ApiResponse<IEnumerable<tGlobalSettingDto>>.SuccessResponse(result);
     }
 }
