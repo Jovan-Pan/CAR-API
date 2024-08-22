@@ -6,6 +6,8 @@ using Contracts.Infrastructure;
 using Contracts.Repository.MasterData;
 using System.Net.Http;
 using System.Numerics;
+using System.Drawing;
+using Entities.ParamRequest;
 
 namespace Services.MasterData;
 
@@ -32,5 +34,29 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
     {
         var result = await mdm.GetDataGlobalSetting(plant, system, settingID);
         return ApiResponse<IEnumerable<tGlobalSettingDto>>.SuccessResponse(result);
+    }
+
+    public async Task<ApiResponse<IEnumerable<TproductVsSmnProdPICDto>>> GetTPRODUCT(int plant, string Userid)
+    {
+        var result = await mdm.GetTPRODUCT(plant, Userid);
+        return ApiResponse<IEnumerable<TproductVsSmnProdPICDto>>.SuccessResponse(result);
+    }
+
+    public async Task<ApiResponse<IEnumerable<MatGroupDto>>> GetMatGrp(int plant, string product, IEnumerable<string> productAuthList)
+    {
+        var result = await mdm.GetMatGrp(plant, product, productAuthList);
+        return ApiResponse<IEnumerable<MatGroupDto>>.SuccessResponse(result);
+    }
+
+    public async Task<ApiResponse<IEnumerable<TMATERIALTYPEDto>>> GetMatType(int plant)
+    {
+        var result = await mdm.GetMatType(plant);
+        return ApiResponse<IEnumerable<TMATERIALTYPEDto>>.SuccessResponse(result);
+    }
+
+    public async Task<ApiResponse<IEnumerable<TMATERIALDto>>> GetMaterial(GetMaterialParam request)
+    {
+        var result = await mdm.GetMaterial(request);
+        return ApiResponse<IEnumerable<TMATERIALDto>>.SuccessResponse(result);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.MasterData;
+using Entities.ParamRequest;
 
 namespace Services.Contracts.MasterData;
 
@@ -8,4 +9,8 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<MenuItem>>> GetMenuSetting(string userId);
     Task<ApiResponse<IEnumerable<string>>> GetPlantListForCRCUSystemByUserId(string userId);
     Task<ApiResponse<IEnumerable<tGlobalSettingDto>>> GetDataGlobalSetting(int plant, string system, string settingID);
+    Task<ApiResponse<IEnumerable<TproductVsSmnProdPICDto>>> GetTPRODUCT(int plant, string Userid);
+    Task<ApiResponse<IEnumerable<MatGroupDto>>> GetMatGrp(int plant, string product, IEnumerable<string> productAuthList);
+    Task<ApiResponse<IEnumerable<TMATERIALTYPEDto>>> GetMatType(int plant);
+    Task<ApiResponse<IEnumerable<TMATERIALDto>>> GetMaterial(GetMaterialParam request);
 }

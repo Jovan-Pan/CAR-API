@@ -22,5 +22,33 @@ namespace Repository.Query
         CROSS APPLY dbo.split(A.IDValue, ',') AS split_data
         WHERE B.SysCode = @System AND A.ID = @SettingID AND B.Plant = @Plant
         ";
+
+        public static readonly string GetTPRODUCT = @"
+        select distinct A.Product from TPRODUCT A
+        join TSMNProductPIC B on A.Plant = B.Plant and A.Product = B.Product
+        where A.DelFlag = 0 and B.DelFlag = 0 and B.System = 'CAR' and A.Plant=@plant and B.Userid = @Userid
+         ";
+
+        public static readonly string GetMatGrp = @"
+        select distinct Matgrp  from TMATERIAL
+        where DelFlag = 0 and PlantStatus not in ('Z4','Z9') 
+        and Plant = @plant and (Product = @product or @product is null)
+        and Product in @productAuthList
+        ";
+
+        public static readonly string GetMatType = @"
+        SELECT distinct MaterialType,MESDesc FROM TMATERIALTYPE where DelFlag= 0 and Plant = @plant
+        ";
+
+        public static readonly string GetMaterial = @"
+        select top 10 Material,MaterialDesc,Product,matgrp,MaterialType from 
+        TMATERIAL 
+        where DelFlag = 0 and PlantStatus not in ('Z4','Z9')
+        and (Product = @product or @product is null) 
+        and Product in @productAuthList
+        and (matgrp = @matgroup or @matgroup is null)
+        and (MaterialType = @mattype or @mattype is null)
+        and (Material like '%'+ @searchTerm +'%' or Material like '%'+ MaterialDesc +'%') 
+        ";
     }
 }

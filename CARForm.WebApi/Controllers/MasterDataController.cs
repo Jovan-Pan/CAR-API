@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Entities.ParamRequest;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 
@@ -23,18 +24,43 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(plantList);
     }
 
-    [HttpPost]
+    [HttpGet(nameof(GetDataGlobalSetting))]
     public async Task<IActionResult> GetDataGlobalSetting(int plant, string settingID, string system = "CAR")
     {
-        try
-        {
-            var result = await business.MasterData.GetDataGlobalSetting(plant, system, settingID);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, message = ex.Message });
-        }
+        var result = await business.MasterData.GetDataGlobalSetting(plant, system, settingID);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(GetTPRODUCT))]
+    public async Task<IActionResult> GetTPRODUCT(int plant, string Userid)
+    {
+        var result = await business.MasterData.GetTPRODUCT(plant, Userid);
+        return Ok(result);
+
+    }
+
+    [HttpPost(nameof(GetMatGrp))]
+    public async Task<IActionResult> GetMatGrp([FromForm] GetMatGrpParam request)
+    {
+        var result = await business.MasterData.GetMatGrp(request.plant, request.product, request.productAuthList);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(GetMatType))]
+    public async Task<IActionResult> GetMatType(int plant)
+    {
+        var result = await business.MasterData.GetMatType(plant);
+        return Ok(result);
+
+    }
+
+    [HttpPost(nameof(getMaterial))]
+    public async Task<IActionResult> getMaterial([FromForm] GetMaterialParam request)
+    {
+        var result = await business.MasterData.GetMaterial(request);
+        return Ok(result);
 
     }
 }
