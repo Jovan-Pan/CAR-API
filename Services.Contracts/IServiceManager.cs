@@ -8,5 +8,6 @@ public interface IServiceManager
 {
     IAccountService Account { get; }
     IMasterDataService MasterData { get; }
+    IErrorLogService ErrorLog { get; }
     IIssueSubmissionService IssueSubmission { get; }
 }

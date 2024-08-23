@@ -13,4 +13,7 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<MatGroupDto>>> GetMatGrp(int plant, string product, IEnumerable<string> productAuthList);
     Task<ApiResponse<IEnumerable<TMATERIALTYPEDto>>> GetMatType(int plant);
     Task<ApiResponse<IEnumerable<TMATERIALDto>>> GetMaterial(GetMaterialParam request);
+    Task<ApiResponse<IEnumerable<NcCategoryDto>>> GetNCCategory();
+    Task<ApiResponse<IEnumerable<SystemDeptVsUserDto>>> GetSystemDeptVsUser(int plant, string Userid);
+    Task<ApiResponse<IEnumerable<VendorDto>>> GetVendor(int plant);
 }

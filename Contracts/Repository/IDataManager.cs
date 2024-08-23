@@ -6,5 +6,6 @@ namespace Contracts.Repository;
 public interface IDataManager
 {
     IMDMRepository MDM {  get; }
+    IErrorLogRepository ErrorLog { get; }
     IIssueSubmissionRepository ISM { get; }
 }

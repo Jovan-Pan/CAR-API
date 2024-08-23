@@ -12,4 +12,7 @@ public interface IMDMRepository
     Task<IEnumerable<MatGroupDto>> GetMatGrp(int plant, string product, IEnumerable<string> productAuthList);
     Task<IEnumerable<TMATERIALTYPEDto>> GetMatType(int plant);
     Task<IEnumerable<TMATERIALDto>> GetMaterial(GetMaterialParam request);
+    Task<IEnumerable<NcCategoryDto>> GetNCCategory();
+    Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUser(int plant, string Userid);
+    Task<IEnumerable<VendorDto>> GetVendor(int plant);
 }

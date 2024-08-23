@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Entities.ParamRequest;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 
@@ -21,6 +22,15 @@ namespace WebApi.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+
+        [HttpPost(nameof(ProcessSubmit))]
+        public async Task<IActionResult> ProcessSubmit([FromForm] IssueSubmissionParameters? data)
+        {
+            //var result = await bl.FloorProfitResult.UploadTemplateContent(data);
+            //return Ok(result);
+
+            return Ok();
         }
     }
 }

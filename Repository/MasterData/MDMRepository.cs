@@ -53,18 +53,30 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
 
     public async Task<IEnumerable<TMATERIALDto>> GetMaterial(GetMaterialParam request)
     {
-        try
-        {
-            string Processquery = MDMQuery.GetMaterial;
+        string Processquery = MDMQuery.GetMaterial;
 
-            await using var conn = dbContext.MDMConnection();
-            return await conn.QueryAsync<TMATERIALDto>(Processquery, request);
-        }
-        catch (Exception ex)
-        {
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<TMATERIALDto>(Processquery, request);
+    }
 
-            throw;
-        }
-        
+    public async Task<IEnumerable<NcCategoryDto>> GetNCCategory()
+    {
+        string Processquery = MDMQuery.GetNCCategory;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<NcCategoryDto>(Processquery);
+    }
+
+    public async Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUser(int plant, string Userid)
+    {
+        string Processquery = MDMQuery.GetSystemDeptVsUser;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<SystemDeptVsUserDto>(Processquery, new { plant = plant, Userid = Userid });
+    }
+
+    public async Task<IEnumerable<VendorDto>> GetVendor(int plant)
+    {
+        string Processquery = MDMQuery.GetVendor;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<VendorDto>(Processquery, new { plant = plant });
     }
 }

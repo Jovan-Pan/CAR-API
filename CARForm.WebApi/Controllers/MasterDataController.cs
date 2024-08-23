@@ -63,4 +63,28 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(GetNCCategory))]
+    public async Task<IActionResult> GetNCCategory()
+    {
+        var result = await business.MasterData.GetNCCategory();
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(GetSystemDeptVsUser))]
+    public async Task<IActionResult> GetSystemDeptVsUser(int plant, string Userid)
+    {
+        var result = await business.MasterData.GetSystemDeptVsUser(plant, Userid);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(GetVendor))]
+    public async Task<IActionResult> GetVendor(int plant)
+    {
+        var result = await business.MasterData.GetVendor(plant);
+        return Ok(result);
+
+    }
 }
