@@ -11,7 +11,7 @@ namespace Contracts.Repository.CAR
 {
     public interface IErrorLogRepository
     {
-        Task<(IEnumerable<ErrorLogModel> data, int totalCount)> ShowDataErrorLog(ErrorLogParam param, ConditionParams ConditionParams);
+        Task<(IEnumerable<ErrorLogModel> data, int totalCount)> ShowDataErrorLog(GlobalParam param, ConditionParams ConditionParams);
         Task<int> InsertDataToTERRORLOG(ErrorLogModel ErrorLogData, SqlTransaction? transaction = null);
     }
 }

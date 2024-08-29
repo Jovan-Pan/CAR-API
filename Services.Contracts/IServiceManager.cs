@@ -8,6 +8,9 @@ public interface IServiceManager
 {
     IAccountService Account { get; }
     IMasterDataService MasterData { get; }
+    IImmidateActionService ImmAct { get; }
+    IRootCauseService RootCause { get; }
     IErrorLogService ErrorLog { get; }
     IIssueSubmissionService IssueSubmission { get; }
+    IIssueFeedbackReportService IFR { get; }
 }

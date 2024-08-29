@@ -7,23 +7,13 @@ using System.Threading.Tasks;
 
 namespace Entities.ParamRequest
 {
-    public class IssueSubmissionParameters
+    public class IssueSubmissionParameters: IssueSbmsAtchParam
     {
-        //public IEnumerable<IFormFile>? NCCategoryImgFiles { get; set; }
-        //public IEnumerable<IFormFile>? NCCategoryFiles { get; set; }
-
-        //public IEnumerable<IFormFile>? immediteActReceiverImgFiles { get; set; }
-        //public IEnumerable<IFormFile>? immediteActReceiverFiles { get; set; }
-
-        //public IEnumerable<IFormFile>? rootCauseReceiverImgFiles { get; set; }
-        //public IEnumerable<IFormFile>? rootCauseReceiverFiles { get; set; }
-
-        //public IEnumerable<IFormFile>? correctiveActReceiverImgFiles { get; set; }
-        //public IEnumerable<IFormFile>? correctiveActReceiverFiles { get; set; }
-
-        //public IEnumerable<IFormFile>? reviewerImgFiles { get; set; }
-        //public IEnumerable<IFormFile>? reviewerFiles { get; set; }
-
+        public string? IssueStatus { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public int UserPlant { get; set; }
+        public string? FormNumber { get; set; }
         public DateTime? DetectionDate { get; set; }
         public string? Product { get; set; }
         public string? Model { get; set; }
@@ -42,7 +32,16 @@ namespace Entities.ParamRequest
         public string? NCReason { get; set; }
         public string? NCDescription { get; set; }
         public string? Comment { get; set; }
-        public string UserId { get; set; }
-        public int UserPlant { get; set; }
+        public string? PDAImmediteAct { get; set; }
+
+        public string? ImmActRecDetail { get; set; }
+        public decimal? CostPC { get; set; }
+        public string? Curency { get; set; }
+        public string? ActionResult { get; set; }
+        public string? rootcause { get; set; }
+        public string? RootCauseDetail { get; set; }
+        public string? procecessGrpCode { get; set; }
+        public string? correctiveAct { get; set; }
+        public DateTime? EffectiveDate { get; set; }
     }
 }

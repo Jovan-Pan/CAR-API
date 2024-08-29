@@ -46,12 +46,23 @@ namespace Repository.Query
         public static readonly string GetMaterial = @"
         select distinct Material,MaterialDesc,Product,matgrp,MaterialType from 
         TMATERIAL 
-        where DelFlag = 0 and PlantStatus not in ('Z4','Z9')
+        where DelFlag = 0 and Plant = @plant  and PlantStatus not in ('Z4','Z9')
         and (Product = @product or @product is null) 
-        and Product in @productAuthList
+        AND Product IN @productAuthList
         and (matgrp = @matgroup or @matgroup is null)
         and (MaterialType = @mattype or @mattype is null)
-        and (Material like '%'+ @searchTerm +'%' or Material like '%'+ MaterialDesc +'%') 
+        and (Material like '%'+ @searchTerm +'%' or MaterialDesc like '%'+ @searchTerm +'%' or @searchTerm is null) 
+        order by Material asc
+        ";
+
+        public static readonly string GetMaterialWoProdAut = @"
+        select distinct Material,MaterialDesc,Product,matgrp,MaterialType from 
+        TMATERIAL 
+        where DelFlag = 0 and Plant = @plant  and PlantStatus not in ('Z4','Z9')
+        and (matgrp = @matgroup or @matgroup is null)
+        and (MaterialType = @mattype or @mattype is null)
+        and (Material like '%'+ @searchTerm +'%' or MaterialDesc like '%'+ @searchTerm +'%' or @searchTerm is null) 
+        and (@MaterialList is null or Material in @MaterialList)
         order by Material asc
         ";
 
@@ -66,7 +77,7 @@ namespace Repository.Query
         from TSYSTEMVSDEPT A 
         join TDEPT B on A.Plant = b.Plant and A.Dept = B.Dept 
         join Dept_Usr C on A.Plant = C.Plant and A.Dept = C.Dept and C.System = A.SysCode and C.isDeleted = 0
-        where A.SysCode = 'CAR' and A.DelFlag = 0 and B.DelFlag = 0 and A.Plant = @plant  and C.UseID=@Userid 
+        where A.SysCode = 'CAR' and A.DelFlag = 0 and B.DelFlag = 0 and A.Plant = @plant  and (C.UseID=@Userid or @Userid = 'CAR') 
         order by A.dept asc
         ";
 
@@ -76,6 +87,39 @@ namespace Repository.Query
         join tVendorPOrg P on V.POrg = P.POrg and P.Vendor = V.Vendor and P.DelFlag = 0
         where V.DelFlag = 0 and P.Plant = @plant
         order by V.Description asc
+        ";
+
+        public static readonly string getBasePathConfig = @"
+        select plant,system,domain,userID,password,basePath
+        from CommonADID
+        where IsDeleted = 0 and Plant = @plant and system='CAR'
+        ";
+
+        public static readonly string getUserFormAuthorize = @"
+        select distinct GA.FormName, isnull(F.formdesc,GA.FormName) AS formdesc,UA.ViewOnly IsUserAuViewOnly ,GA.ViewOnly
+        from TUSER_AUTHORIZE UA join TGROUPACCESS GA on UA.GroupID = GA.GroupID and UA.System = GA.System and UA.FormName = GA.FormName and isnull(GA.DelFlag,0) = 0 
+        join TGROUP G on G.GroupID = GA.GroupID and G.SYSTEM = GA.System and ISNULL(G.DelFlag,0)=0 
+        Join TFORM F on F.System = GA.System and ISNULL(F.DelFlag,0)=0 and F.FormName=GA.FormName
+        where GA.System= 'CAR' AND isnull(UA.DELFLAG,0) = 0 and G.Plant = @plant
+        and UserId=@UserId  and GA.FormName = @FormName
+        order by GA.ViewOnly asc
+        ";
+
+        public static readonly string getUserStatusAuthorize = @"
+        select distinct replace(GA.FormName,'IS_','') as StatusAuthorize
+        from TUSER_AUTHORIZE UA join TGROUPACCESS GA on UA.GroupID = GA.GroupID and UA.System = GA.System and UA.FormName = GA.FormName and isnull(GA.DelFlag,0) = 0 
+        join TGROUP G on G.GroupID = GA.GroupID and G.SYSTEM = GA.System and ISNULL(G.DelFlag,0)=0 
+        Join TFORM F on F.System = GA.System and ISNULL(F.DelFlag,0)=0 and F.FormName=GA.FormName
+        where GA.System= 'CAR' AND isnull(UA.DELFLAG,0) = 0 and LEFT(GA.FormName,3) = 'IS_' and G.Plant = @plant  and UserId=@UserId
+        ";
+
+        public static readonly string GetCurrency = @"
+        select distinct CurrencyCode,CurrencyDescription from Currency where isDeleted = 0
+        ";
+
+        public static readonly string getProcessGrp = @"
+        select Process_Grp_code as procecessGrpCode, Process_Grp_Description as procecessGrpDesc from TPROCESGROUP_LIST
+        where DelFlag = 0
         ";
     }
 }

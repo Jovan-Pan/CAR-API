@@ -16,4 +16,8 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<NcCategoryDto>>> GetNCCategory();
     Task<ApiResponse<IEnumerable<SystemDeptVsUserDto>>> GetSystemDeptVsUser(int plant, string Userid);
     Task<ApiResponse<IEnumerable<VendorDto>>> GetVendor(int plant);
+    Task<ApiResponse<IEnumerable<UserFormAuthorizeDto>>> getUserFormAuthorize(int plant, string Userid, string FormName);
+    Task<ApiResponse<IEnumerable<string>>> getUserStatusAuthorize(int plant, string Userid);
+    Task<ApiResponse<IEnumerable<CurrencyDto>>> GetCurrency(int plant);
+    Task<ApiResponse<IEnumerable<ProcessGroupDto>>> getProcessGrp(int plant);
 }

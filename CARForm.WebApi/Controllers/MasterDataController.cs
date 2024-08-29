@@ -87,4 +87,36 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(getUserFormAuthorize))]
+    public async Task<IActionResult> getUserFormAuthorize(int plant, string Userid, string FormName)
+    {
+        var result = await business.MasterData.GetVendor(plant);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(getUserStatusAuthorize))]
+    public async Task<IActionResult> getUserStatusAuthorize(int plant, string Userid)
+    {
+        var result = await business.MasterData.getUserStatusAuthorize(plant, Userid);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(GetCurrency))]
+    public async Task<IActionResult> GetCurrency(int plant)
+    {
+        var result = await business.MasterData.GetCurrency(plant);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(getProcessGrp))]
+    public async Task<IActionResult> getProcessGrp(int plant)
+    {
+        var result = await business.MasterData.getProcessGrp(plant);
+        return Ok(result);
+
+    }
 }

@@ -11,6 +11,6 @@ namespace Services.Contracts.CAR
     public interface IErrorLogService
     {
         Task<int> SaveErrorLog(Exception exdb, string userLogin);
-        Task<PagedResponse> ShowDataErrorLog(ErrorLogParam param);
+        Task<PagedResponse> ShowDataErrorLog(GlobalParam param);
     }
 }

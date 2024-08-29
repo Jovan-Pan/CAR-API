@@ -53,7 +53,16 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
 
     public async Task<IEnumerable<TMATERIALDto>> GetMaterial(GetMaterialParam request)
     {
+        request.MaterialList = null;
         string Processquery = MDMQuery.GetMaterial;
+
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<TMATERIALDto>(Processquery, request);
+    }
+
+    public async Task<IEnumerable<TMATERIALDto>> GetMaterialWoProdAut(GetMaterialParam request)
+    {
+        string Processquery = MDMQuery.GetMaterialWoProdAut;
 
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<TMATERIALDto>(Processquery, request);
@@ -78,5 +87,40 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         string Processquery = MDMQuery.GetVendor;
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<VendorDto>(Processquery, new { plant = plant });
+    }
+
+    public async Task<IEnumerable<BasePathConfigDto>> getBasePathConfig(int plant)
+    {
+        string Processquery = MDMQuery.getBasePathConfig;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<BasePathConfigDto>(Processquery, new { plant = plant });
+    }
+
+    public async Task<IEnumerable<UserFormAuthorizeDto>> getUserFormAuthorize(int plant, string Userid, string FormName)
+    {
+        string Processquery = MDMQuery.getUserFormAuthorize;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<UserFormAuthorizeDto>(Processquery, new { plant = plant, UserId= Userid, FormName= FormName, });
+    }
+
+    public async Task<IEnumerable<string>> getUserStatusAuthorize(int plant, string Userid)
+    {
+        string query = MDMQuery.getUserStatusAuthorize;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<string>(query, new { plant = plant, UserId = Userid});
+    }
+
+    public async Task<IEnumerable<CurrencyDto>> GetCurrency(int plant)
+    {
+        string Processquery = MDMQuery.GetCurrency;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<CurrencyDto>(Processquery, new { plant = plant });
+    }
+
+    public async Task<IEnumerable<ProcessGroupDto>> getProcessGrp(int plant)
+    {
+        string Processquery = MDMQuery.getProcessGrp;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<ProcessGroupDto>(Processquery, new { plant = plant });
     }
 }

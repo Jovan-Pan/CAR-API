@@ -14,5 +14,6 @@ namespace Entities.ParamRequest
         public string? matgroup { get; set; }
         public string? mattype { get; set; }
         public string? searchTerm { get; set; }
+        public IEnumerable<string>? MaterialList { get; set; }
     }
 }

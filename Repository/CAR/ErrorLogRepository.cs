@@ -14,7 +14,7 @@ namespace Repository.CAR
     public class ErrorLogRepository(DbContext dbContext) : IErrorLogRepository
     {
         private readonly DbContext _dbContext = dbContext;
-        public async Task<(IEnumerable<ErrorLogModel> data, int totalCount)> ShowDataErrorLog(ErrorLogParam param, ConditionParams ConditionParams)
+        public async Task<(IEnumerable<ErrorLogModel> data, int totalCount)> ShowDataErrorLog(GlobalParam param, ConditionParams ConditionParams)
         {
             string query = "select ID,Description as ErrDescription,UserID as AddedBy,DateOccured AddedOn from ERRORLOG ";
             if ((ConditionParams.ExtraWhereCondition == null ? "" : ConditionParams.ExtraWhereCondition) != "")
@@ -51,10 +51,10 @@ namespace Repository.CAR
 
         public async Task<int> InsertDataToTERRORLOG(ErrorLogModel ErrorLogData, SqlTransaction? transaction = null)
         {
-            const string query = "INSERT INTO ERRORLOG (Description, UserID, DateOccured) VALUES (@Description, @UserID, CURRENT_TIMESTAMP)";
+            const string query = "INSERT INTO ERRORLOG (Description,ErrSource, UserID, DateOccured) VALUES (@Description, @ErrSource,@UserID, CURRENT_TIMESTAMP)";
             await using var conn = _dbContext.CARConnection();
 
-            return await conn.ExecuteAsync(query, new { Description = ErrorLogData.ErrDescription, UserID = ErrorLogData.AddedBy });
+            return await conn.ExecuteAsync(query, new { Description = ErrorLogData.ErrDescription, ErrSource=ErrorLogData.ErrSource, UserID = ErrorLogData.AddedBy });
         }
     }
 }

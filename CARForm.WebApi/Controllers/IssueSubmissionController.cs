@@ -1,6 +1,7 @@
 ﻿using Entities.ParamRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.SqlServer.Server;
 using Services.Contracts;
 
 namespace WebApi.Controllers
@@ -10,27 +11,54 @@ namespace WebApi.Controllers
     [ApiController]
     public class IssueSubmissionController(IServiceManager business) : Controller
     {
-        [HttpGet(nameof(GetIssueStatus))]
-        public async Task<IActionResult> GetIssueStatus(string FormNo)
-        {
-            try
-            {
-                var result = await business.IssueSubmission.GetIssueStatus(FormNo);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
 
         [HttpPost(nameof(ProcessSubmit))]
-        public async Task<IActionResult> ProcessSubmit([FromForm] IssueSubmissionParameters? data)
+        public async Task<IActionResult> ProcessSubmit([FromForm] IssueSubmissionParameters data)
         {
-            //var result = await bl.FloorProfitResult.UploadTemplateContent(data);
-            //return Ok(result);
+            var result = await business.IssueSubmission.ProcessSubmit(data);
+            return Ok(result);
+        }
 
-            return Ok();
+        [HttpPost(nameof(issuerUpdate))]
+        public async Task<IActionResult> issuerUpdate([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerUpdate(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(issuerMngUpdate))]
+        public async Task<IActionResult> issuerMngUpdate([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerMngUpdate(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(pdaDecision))]
+        public async Task<IActionResult> pdaDecision([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.pdaDecision(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(pdaDecisionUpdate))]
+        public async Task<IActionResult> pdaDecisionUpdate([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.pdaDecisionUpdate(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(pdaApproval))]
+        public async Task<IActionResult> pdaApproval([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.pdaApproval(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReceiverAction))]
+        public async Task<IActionResult> ReceiverAction([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverAction(data);
+            return Ok(result);
         }
     }
 }
