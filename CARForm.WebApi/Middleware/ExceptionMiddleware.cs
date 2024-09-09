@@ -51,14 +51,16 @@ public class ExceptionMiddleware(RequestDelegate next, ILoggerManager logger)
         logger.LogError(errorMessage);
 
         var apiResponse = ApiResponse<string>.FailResponse(exception.Message);
-
+        
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
         var apiResponseJson = JsonSerializer.Serialize(apiResponse, options);
-
+        if (exception.Message.Equals("Invalid User Id or Password",StringComparison.OrdinalIgnoreCase)) {
+            context.Response.StatusCode = 200;
+        }
         await context.Response.WriteAsync(apiResponseJson);
     }
 }

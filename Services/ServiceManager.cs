@@ -22,6 +22,7 @@ public sealed class ServiceManager : IServiceManager
     private readonly Lazy<IErrorLogService> _errorLog;
     private readonly Lazy<IIssueSubmissionService> _IssueSubmissionService;
     private readonly Lazy<IIssueFeedbackReportService> _IssueFeedbackReportService;
+    private readonly Lazy<ISendMailSettingService> _SendMailSettingService;
 
     public ServiceManager(IDataManager data,
         IMasterDataApi masterDataApi,
@@ -36,8 +37,9 @@ public sealed class ServiceManager : IServiceManager
         _rootCauseBusiness = new Lazy<IRootCauseService>(() => new RootCauseService(data, cacheManager, localization));
 
         _errorLog = new Lazy<IErrorLogService>(() => new ErrorLogService(data));
-        _IssueSubmissionService = new Lazy<IIssueSubmissionService>(() => new IssueSubmissionService(data, data.MDM, cacheManager, localization));
+        _IssueSubmissionService = new Lazy<IIssueSubmissionService>(() => new IssueSubmissionService(data, data.MDM, masterDataApi, cacheManager, localization));
         _IssueFeedbackReportService = new Lazy<IIssueFeedbackReportService>(() => new IssueFeedbackReportService(data, this,data.MDM, cacheManager, localization));
+        _SendMailSettingService = new Lazy<ISendMailSettingService>(() => new SendMailSettingService(data, data.MDM, masterDataApi, cacheManager, localization));
     }
     public IAccountService Account => _accountBusiness.Value;
     public IMasterDataService MasterData => _masterDataBusiness.Value;
@@ -46,4 +48,5 @@ public sealed class ServiceManager : IServiceManager
     public IErrorLogService ErrorLog => _errorLog.Value;
     public IIssueSubmissionService IssueSubmission => _IssueSubmissionService.Value;
     public IIssueFeedbackReportService IFR => _IssueFeedbackReportService.Value;
+    public ISendMailSettingService sendmailsetting => _SendMailSettingService.Value;
 }

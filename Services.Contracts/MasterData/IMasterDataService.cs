@@ -20,4 +20,5 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<string>>> getUserStatusAuthorize(int plant, string Userid);
     Task<ApiResponse<IEnumerable<CurrencyDto>>> GetCurrency(int plant);
     Task<ApiResponse<IEnumerable<ProcessGroupDto>>> getProcessGrp(int plant);
+    Task<ApiResponse<IEnumerable<string>>> getReason(int plant, string reasontype);
 }

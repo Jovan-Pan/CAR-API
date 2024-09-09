@@ -62,7 +62,7 @@ namespace Repository.Query
         and (matgrp = @matgroup or @matgroup is null)
         and (MaterialType = @mattype or @mattype is null)
         and (Material like '%'+ @searchTerm +'%' or MaterialDesc like '%'+ @searchTerm +'%' or @searchTerm is null) 
-        and (@MaterialList is null or Material in @MaterialList)
+        and Material in @MaterialList
         order by Material asc
         ";
 
@@ -120,6 +120,29 @@ namespace Repository.Query
         public static readonly string getProcessGrp = @"
         select Process_Grp_code as procecessGrpCode, Process_Grp_Description as procecessGrpDesc from TPROCESGROUP_LIST
         where DelFlag = 0
+        ";
+
+        public static readonly string getReason = @"
+        select distinct ReasonforRejection from TREASONFORMETREJECTION where SysCode = 'CAR' and DelFlag = 0 
+        and Plant = @plant and reasontype = @reasontype
+        order by ReasonforRejection asc
+        ";
+
+        public static readonly string GetTGlobalEmailSetting = @"
+        select top 1 SysCode,Plant,EmailSubject,Emailbody,EmailFooter,Emaillink,ReplyMailid,HLevel,FromMailaddress,WStatus
+        from TGlobalEmailSetting 
+        where Delflag=0 and Plant = @plant and SysCode = 'CAR' and WStatus=@wStatus
+        ";
+
+        public static readonly string GetSystemvsUservsEmailSubscribeForm = @"
+        select distinct A.Plant,A.SystemCode,A.Dept,B.UserID,A.[Group],NULL as CategoryName,U.UseEmail
+        from SystemvsUservsEmailSubscribeForm A
+        join SystemvsUservsEmailSubscribeFormDetail B on A.ID = B.ID
+        join Usr U on B.UserID = U.UseID
+        join TSMNProductPIC P on P.Plant = A.Plant and P.Userid = b.UserID and P.DelFlag = 0
+        join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
+        where a.IsDeleted = 0 and B.IsDeleted = 0
+        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
         ";
     }
 }

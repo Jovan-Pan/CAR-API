@@ -101,4 +101,10 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         var result = await mdm.getProcessGrp(plant);
         return ApiResponse<IEnumerable<ProcessGroupDto>>.SuccessResponse(result);
     }
+
+    public async Task<ApiResponse<IEnumerable<string>>> getReason(int plant, string reasontype)
+    {
+        var result = await mdm.getReason(plant, reasontype);
+        return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+    }
 }

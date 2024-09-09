@@ -21,6 +21,8 @@ using Services.Contracts;
 using System.Transactions;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Mvc;
+using Entities.MasterData;
+using OfficeOpenXml.Style;
 
 namespace Services.CAR
 {
@@ -43,6 +45,111 @@ namespace Services.CAR
             Cpr.OrderByCondition = orderByCondition;
 
             var totrecord = await data.IFR.GetTotalRecord(param, Cpr);
+
+            #region generate condition query for advance filter
+            string Condquery = @"";
+            if (param.formType != null)
+            {
+                if(param.formType.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND FormType IN @formType ";
+                }
+            }
+            if (param.formNumber != null)
+            {
+                if (param.formNumber.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND FormNo IN @formNumber ";
+                }
+            }
+            if (param.status != null)
+            {
+                if (param.status.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND status IN @status ";
+                }
+            }
+            if (param.dept != null)
+            {
+                if (param.dept.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND Dept IN @dept ";
+                }
+            }
+            if (param.processGrp != null)
+            {
+                if (param.processGrp.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND procecessGrpCode IN @processGrp ";
+                }
+            }
+            if (param.product != null)
+            {
+                if (param.product.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND Product IN @product ";
+                }
+            }
+            if (param.model != null)
+            {
+                if (param.model.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND Model IN @model ";
+                }
+            }
+            if (param.mattype != null)
+            {
+                if (param.mattype.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND MaterialType IN @mattype ";
+                }
+            }
+            if (param.material != null)
+            {
+                if (param.material.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND MaterialCode IN @material ";
+                }
+            }
+            if (param.vendor != null)
+            {
+                if (param.vendor.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
+                }
+            }
+            if (param.datetype != null)
+            {
+                if (param.fromdate != null && param.todate != null) {
+                    if (param.datetype == "DetectionDate")
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND format(DetectionDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                    }
+                    else if (param.datetype == "EffectiveDate")
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
+                    }
+                }
+            }
+
+            if (Condquery.Length > 0) {
+                Cpr.ExtraWhereCondition += Environment.NewLine;
+                Cpr.ExtraWhereCondition += Condquery;
+            }
+            #endregion
+
             var maindata = await data.IFR.GetMaindata(param, Cpr);
             var formNoList = maindata.Select(data => data.FormNo);
             var dataAtch = await data.IFR.GetDataAttchment(param.Plant, formNoList,null);
@@ -71,6 +178,7 @@ namespace Services.CAR
                              select new IssueFeedbackDto
                              {
                                  Plant = main.Plant,
+                                 FormType = main.FormType,
                                  FormNo = main.FormNo,
                                  DetectionDate = main.DetectionDate,
                                  Product = main.Product,
@@ -100,10 +208,11 @@ namespace Services.CAR
                                  IssueUpdatedBy = main.IssueUpdatedBy,
                                  IssueUpdatedByName = main.IssueUpdatedByName,
                                  IssueUpdatedDate = main.IssueUpdatedDate,
-                                 IssueAcknowledgeBy = main.IssueAcknowledgeBy,
-                                 IssueAcknowledgeByname = main.IssueAcknowledgeByname,
-                                 IssueAcknowledgeByDate = main.IssueAcknowledgeByDate,
-                                 IssueAcknowledgeByComment = main.IssueAcknowledgeByComment,
+                                 AcknowledgeBy = main.AcknowledgeBy,
+                                 AcknowledgeByname = main.AcknowledgeByname,
+                                 AcknowledgeByDate = main.AcknowledgeByDate,
+                                 AcknowledgeByComment = main.AcknowledgeByComment,
+                                 ReceiveActionRejectReason = main.ReceiveActionRejectReason,
                                  PDAActionBy = main.PDAActionBy,
                                  PDAActionByName = main.PDAActionByName,
                                  PDAActionDate = main.PDAActionDate,
@@ -120,34 +229,36 @@ namespace Services.CAR
                                  Curency = main.Curency,
                                  CurrencyDescription = cur != null ? cur.CurrencyDescription : main.CurrencyDescription,
                                  ActionResult = main.ActionResult,
-                                 IssueReceiveActionRootCause = main.IssueReceiveActionRootCause,
+                                 ReceiveActionRootCause = main.ReceiveActionRootCause,
                                  RootCauseDetail = main.RootCauseDetail,
                                  procecessGrpCode = main.procecessGrpCode,
                                  procecessGrpDesc = prg != null ? prg.procecessGrpDesc : main.procecessGrpDesc,
-                                 IssueReceiveActionCorrectiveAct = main.IssueReceiveActionCorrectiveAct,
+                                 ReceiveCorrectiveAct = main.ReceiveCorrectiveAct,
                                  effectivedate = main.effectivedate,
-                                 IssueReceiveActionComment = main.IssueReceiveActionComment,
-                                 IssueReceiveActionBy = main.IssueReceiveActionBy,
-                                 IssueReceiveActionByName = main.IssueReceiveActionByName,
-                                 IssueReceiveActionDate = main.IssueReceiveActionDate,
-                                 IssueReceiveActionUpdatedBy = main.IssueReceiveActionUpdatedBy,
-                                 IssueReceiveActionUpdatedByName = main.IssueReceiveActionUpdatedByName,
-                                 IssueReceiveActionUpdatedDate = main.IssueReceiveActionUpdatedDate,
-                                 IssueReceiveAprovalBy = main.IssueReceiveAprovalBy,
-                                 IssueReceiveAprovalByName = main.IssueReceiveAprovalByName,
-                                 IssueReceiveAprovalDate = main.IssueReceiveAprovalDate,
-                                 IssueReviewBy = main.IssueReviewBy,
-                                 IssueReviewByName = main.IssueReviewByName,
-                                 IssueReviewDate = main.IssueReviewDate,
-                                 IssueReviewComment = main.IssueReviewComment,
-                                 IssueReviewMethod = main.IssueReviewMethod,
-                                 IssueReviewUpdatedBy = main.IssueReviewUpdatedBy,
-                                 IssueReviewUpdatedByName = main.IssueReviewUpdatedByName,
-                                 IssueReviewUpdatedDate = main.IssueReviewUpdatedDate,
-                                 IssueReviewAprovalBy = main.IssueReviewAprovalBy,
-                                 IssueReviewAprovalByName = main.IssueReviewAprovalByName,
-                                 IssueReviewAprovalDate = main.IssueReviewAprovalDate,
-                                 IssueReviewAprovalComment = main.IssueReviewAprovalComment,
+                                 ReceiveActionComment = main.ReceiveActionComment,
+                                 ReceiveActionBy = main.ReceiveActionBy,
+                                 ReceiveActionByName = main.ReceiveActionByName,
+                                 ReceiveActionDate = main.ReceiveActionDate,
+                                 ReceiveActionUpdatedBy = main.ReceiveActionUpdatedBy,
+                                 ReceiveActionUpdatedByName = main.ReceiveActionUpdatedByName,
+                                 ReceiveActionUpdatedDate = main.ReceiveActionUpdatedDate,
+                                 ReceiveAprovalBy = main.ReceiveAprovalBy,
+                                 ReceiveAprovalByName = main.ReceiveAprovalByName,
+                                 ReceiveAprovalDate = main.ReceiveAprovalDate,
+
+                                 PDAReviewBy = main.PDAReviewBy,
+                                 PDAReviewByName = main.PDAReviewByName,
+                                 PDAReviewDate = main.PDAReviewDate,
+                                 ReviewDate = main.ReviewDate,
+                                 PDAReviewComment = main.PDAReviewComment,
+                                 isPDAReviewResultAprov = main.isPDAReviewResultAprov,
+
+                                 ReviewBy = main.ReviewBy,
+                                 ReviewByName = main.ReviewByName,
+                                 ReviewSubmitDate = main.ReviewSubmitDate,
+                                 ReviewComment = main.ReviewComment,
+                                 ReviewMethod = main.ReviewMethod,
+                                 isReviewResultAprov = main.isReviewResultAprov,
                              };
             maindata = joinedData;
             IssueSbmsAtchParam formFiles = new IssueSbmsAtchParam();
@@ -211,11 +322,98 @@ namespace Services.CAR
             }
 
             IssueFeedbackResultDto result = new IssueFeedbackResultDto ();
+            
+            if (maindata != null) {
+                if (maindata.Count() > 0)
+                {
+                    var maindataList = maindata.ToList();
+
+                    for (int i = 0; i < maindataList.Count(); i++)
+                    {
+                        string formnumber = maindataList[i].FormNo;
+                        var atch = dataAtch.Where(dto => dto.FormNo == formnumber);
+                        maindataList[i].dataAtch = atch;
+                    }
+
+                    maindata = maindataList;
+                }
+            }
             result.maindata = maindata;
-            result.dataAtch = dataAtch;
+            //result.dataAtch = dataAtch;
             result.formFiles = formFiles;
             result.totrecord = totrecord;
             return ApiResponse<IssueFeedbackResultDto>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
+        {
+            var result  = await data.IFR.GetTotalRecordForEachStts(param);
+            return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<string>>> GetFormNumberListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var result = await data.IFR.GetFormNumberListFilter(plant, deptAuthList, productAuthList);
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<string>>> GetDeptListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var result = await data.IFR.GetDeptListFilter(plant, deptAuthList, productAuthList);
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<ProcessGroupDto>>> GetprocecessGrpCodeFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var AvlPrcGrpData = await data.IFR.GetprocecessGrpCodeFilter(plant, deptAuthList, productAuthList);
+            var procGrpmaster = await mdm.getProcessGrp(plant);
+            var result = from key in AvlPrcGrpData
+                         join dto in procGrpmaster on key equals dto.procecessGrpCode into joined
+                         from dto in joined.DefaultIfEmpty()
+                         select new ProcessGroupDto
+                         {
+                             procecessGrpCode = key,
+                             procecessGrpDesc = dto?.procecessGrpDesc
+                         };
+            return ApiResponse<IEnumerable<ProcessGroupDto>>.SuccessResponse(result);
+        }
+
+
+        public async Task<ApiResponse<IEnumerable<string>>> GetproductListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var result = await data.IFR.GetproductListFilter(plant, deptAuthList, productAuthList);
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<string>>> GetModelListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var result = await data.IFR.GetModelListFilter(plant, deptAuthList, productAuthList);
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<string>>> GetMatTypeListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var result = await data.IFR.GetMatTypeListFilter(plant, deptAuthList, productAuthList);
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<TMATERIALDto>>> GetMaterialListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList, string searchTerm)
+        {
+            var mat = await data.IFR.GetMaterialListFilter(plant, deptAuthList, productAuthList);
+            GetMaterialParam matparam = new GetMaterialParam();
+            matparam.plant = plant;
+            matparam.productAuthList = productAuthList;
+            matparam.searchTerm = searchTerm;
+            matparam.MaterialList = mat;
+            var matmaster = await mdm.GetMaterialWoProdAut(matparam);
+
+            return ApiResponse<IEnumerable<TMATERIALDto>>.SuccessResponse(matmaster);
+        }
+
+        public async Task<ApiResponse<IEnumerable<VendorDto>>> GetVendorListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            var result = await data.IFR.GetVendorListFilter(plant, deptAuthList, productAuthList);
+            return ApiResponse<IEnumerable<VendorDto>>.SuccessResponse(result);
         }
     }
 }

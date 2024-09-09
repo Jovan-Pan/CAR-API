@@ -39,7 +39,26 @@ namespace Repository.CAR
             query += IssueFeedbackReportQuery.skiprow;
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<IssueFeedbackDto>(query, new { plant = param.Plant, skip = ConditionParams.skip, take = ConditionParams.take });
+            return await conn.QueryAsync<IssueFeedbackDto>(query, 
+                new { 
+                    plant = param.Plant,
+                    deptAuthList = param.deptAuthList,
+                    productAuthList = param.productAuthList,
+                    formType = param.formType,
+                    formNumber = param.formNumber,
+                    status = param.status,
+                    dept = param.dept,
+                    processGrp = param.processGrp,
+                    product = param.product,
+                    model = param.model,
+                    mattype = param.mattype,
+                    material = param.material,
+                    vendor = param.vendor,
+                    fromdate = param.fromdate?.ToString("yyyy-MM-dd"),
+                    todate = param.todate?.ToString("yyyy-MM-dd"),
+                    skip = ConditionParams.skip, 
+                    take = ConditionParams.take 
+                });
         }
 
         public async Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction)
@@ -56,6 +75,77 @@ namespace Repository.CAR
                 return await conn.QueryAsync<IssueFeedbackAtchmentDto>(query, new { plant = plant, FormNo = FormNoList }, transaction);
             }
             
+        }
+
+        public async Task<TotalRecordForEachSttsDto> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
+        {
+            string query = string.Format(IssueFeedbackReportQuery.GetTotalRecordForEachStts);
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryFirstOrDefaultAsync<TotalRecordForEachSttsDto>(query, param);
+        }
+
+        public async Task<IEnumerable<string>> GetFormNumberListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetFormNumberListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<string>> GetDeptListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetDeptListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<string>> GetprocecessGrpCodeFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetprocecessGrpCodeFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<string>> GetproductListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetproductListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<string>> GetModelListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetModelListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<string>> GetMatTypeListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetMatTypeListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<string>> GetMaterialListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetMaterialListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(query, new { plant, deptAuthList, productAuthList });
+        }
+
+        public async Task<IEnumerable<VendorDto>> GetVendorListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
+        {
+            string query = IssueFeedbackReportQuery.GetVendorListFilter;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<VendorDto>(query, new { plant, deptAuthList, productAuthList });
         }
     }
 }

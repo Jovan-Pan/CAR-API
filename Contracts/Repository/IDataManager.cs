@@ -11,4 +11,5 @@ public interface IDataManager
     IErrorLogRepository ErrorLog { get; }
     IIssueSubmissionRepository ISM { get; }
     IIssueFeedbackReportRepository IFR { get; }
+    ISendMailSettingRepository SMS { get; }
 }

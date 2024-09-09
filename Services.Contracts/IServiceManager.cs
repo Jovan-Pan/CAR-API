@@ -13,4 +13,5 @@ public interface IServiceManager
     IErrorLogService ErrorLog { get; }
     IIssueSubmissionService IssueSubmission { get; }
     IIssueFeedbackReportService IFR { get; }
+    ISendMailSettingService sendmailsetting { get; }
 }

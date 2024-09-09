@@ -21,4 +21,7 @@ public interface IMDMRepository
     Task<IEnumerable<string>> getUserStatusAuthorize(int plant, string Userid);
     Task<IEnumerable<CurrencyDto>> GetCurrency(int plant);
     Task<IEnumerable<ProcessGroupDto>> getProcessGrp(int plant);
+    Task<IEnumerable<string>> getReason(int plant, string reasontype);
+    Task<IEnumerable<TGlobalEmailSettingModel>> GetTGlobalEmailSetting(int plant, string wStatus);
+    Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeForm(int plant, string group, string dept);
 }

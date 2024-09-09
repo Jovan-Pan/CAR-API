@@ -119,4 +119,11 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(getReason))]
+    public async Task<IActionResult> getReason(int plant, string reasontype)
+    {
+        var result = await business.MasterData.getReason(plant, reasontype);
+        return Ok(result);
+    }
 }

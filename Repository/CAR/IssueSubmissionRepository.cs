@@ -22,11 +22,18 @@ namespace Repository.CAR
             return connection;
         }
 
-        public async Task<string> GenerateNewFormNo(SqlTransaction transaction)
+        public async Task<string> GenerateNewFormNo(int plant, string FormType,SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.GenerateNewFormNo;
             var conn = transaction.Connection;
-            return await conn.QueryFirstOrDefaultAsync<string>(query, null, transaction);
+            return await conn.QueryFirstOrDefaultAsync<string>(query, new { plant = plant , FormType = FormType }, transaction);
+        }
+
+        public async Task<string> GenerateNewFormNoWithVer(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.GenerateNewFormNoWithVer;
+            var conn = transaction.Connection;
+            return await conn.QueryFirstOrDefaultAsync<string>(query, mydata, transaction);
         }
 
         public async Task<int> InsertDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction)
@@ -34,6 +41,13 @@ namespace Repository.CAR
             string query = IssueSubmissionQuery.InsertDataIssueFeedback;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> CreateNewIssueFeedBcakWithVers(string OldFormNumber, string NewFormNumber,string UserId,string UserName, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.CreateNewIssueFeedBcakWithVers;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, new { OldFormNumber = OldFormNumber, NewFormNumber = NewFormNumber, UserId = UserId, UserName = UserName }, transaction);
         }
 
         public async Task<int> InsertDataAtchIssuer(IssueFeedbackAtchmentDto mydata, SqlTransaction transaction)
@@ -91,5 +105,71 @@ namespace Repository.CAR
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
+
+        public async Task<int> ReceiverActionUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReceiverActionUpdate;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReceiverIssueReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReceiverIssueReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReceiverApproval(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReceiverApproval;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReceiverApprovalToReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReceiverApprovalToReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> PDAReviewerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.PDAReviewerVoid;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> PDAReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.PDAReviewerReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+
+        public async Task<int> PDAReviewerAprove(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.PDAReviewerAprove;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReviewerSubmit(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReviewerSubmit;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReviewerReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        
     }
 }

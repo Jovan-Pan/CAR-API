@@ -14,10 +14,12 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     private readonly Lazy<IErrorLogRepository> _ErrorLog = new(() => new ErrorLogRepository(dbContext));
     private readonly Lazy<IIssueSubmissionRepository> _ISM = new(() => new IssueSubmissionRepository(dbContext));
     private readonly Lazy<IIssueFeedbackReportRepository> _IFR = new(() => new IssueFeedbackReportRepository(dbContext));
+    private readonly Lazy<ISendMailSettingRepository> _SMS = new(() => new SendMailSettingRepository(dbContext));
     public IMDMRepository MDM => _mdmRepo.Value;
     public IImmidateActionRepository ImmAct => _immediteActrepo.Value;
     public IRootCauseRepository RootCause => _rootcauserepo.Value;
     public IErrorLogRepository ErrorLog => _ErrorLog.Value;
     public IIssueSubmissionRepository ISM => _ISM.Value;
     public IIssueFeedbackReportRepository IFR => _IFR.Value;
+    public ISendMailSettingRepository SMS => _SMS.Value;
 }

@@ -9,8 +9,9 @@ namespace Entities.CAR
     public class IssueFeedbackDto
     {
         public int Plant { get; set; }
+        public string FormType { get; set; }
         public string FormNo { get; set; }
-        public DateTime DetectionDate { get; set; }
+        public DateTime? DetectionDate { get; set; }
         public string Product { get; set; }
         public string Model { get; set; }
         public string MaterialType { get; set; }
@@ -34,60 +35,69 @@ namespace Entities.CAR
         public string Status { get; set; }
         public string IssueBy { get; set; }
         public string IssueByName { get; set; }
-        public DateTime IssueDate { get; set; }
+        public DateTime? IssueDate { get; set; }
         public string IssueByComment { get; set; }
         public string IssueUpdatedBy { get; set; }
         public string IssueUpdatedByName { get; set; }
-        public DateTime IssueUpdatedDate { get; set; }
-        public string IssueAcknowledgeBy { get; set; }
-        public string IssueAcknowledgeByname { get; set; }
-        public DateTime IssueAcknowledgeByDate { get; set; }
-        public string IssueAcknowledgeByComment { get; set; }
+        public DateTime? IssueUpdatedDate { get; set; }
+        public string AcknowledgeBy { get; set; }
+        public string AcknowledgeByname { get; set; }
+        public DateTime? AcknowledgeByDate { get; set; }
+        public string AcknowledgeByComment { get; set; }
+
         public string PDAActionBy { get; set; }
         public string PDAActionByName { get; set; }
-        public DateTime PDAActionDate { get; set; }
+        public DateTime? PDAActionDate { get; set; }
         public string PDAActionImmAct { get; set; }
         public string PDAActionComment { get; set; }
         public string PDAActionUpdatedBy { get; set; }
         public string PDAActionUpdatedByName { get; set; }
-        public DateTime PDAActionUpdatedDate { get; set; }
+        public DateTime? PDAActionUpdatedDate { get; set; }
         public string PDAAprovalBy { get; set; }
         public string PDAAprovalByName { get; set; }
-        public DateTime PDAAprovalDate { get; set; }
+        public DateTime? PDAAprovalDate { get; set; }
+
 
         public string ImmActRecDetail { get; set; }
         public decimal? CostPC { get; set; }
         public string Curency { get; set; }
         public string CurrencyDescription {  get; set; }
-        public string ActionResult { get; set; }
-        public string IssueReceiveActionRootCause { get; set; }
+        public decimal? ActionResult { get; set; }
+        public string ReceiveActionRootCause { get; set; }
         public string RootCauseDetail { get; set; }
         public string procecessGrpCode { get; set; }
         public string procecessGrpDesc { get; set; }
-        public string IssueReceiveActionCorrectiveAct { get; set; }
+        public string ReceiveCorrectiveAct { get; set; }
         public DateTime? effectivedate { get; set; }
-        public string IssueReceiveActionComment { get; set; }
-        public string IssueReceiveActionBy { get; set; }
-        public string IssueReceiveActionByName { get; set; }
-        public DateTime IssueReceiveActionDate { get; set; }
-        public string IssueReceiveActionUpdatedBy { get; set; }
-        public string IssueReceiveActionUpdatedByName { get; set; }
-        public DateTime IssueReceiveActionUpdatedDate { get; set; }
-        public string IssueReceiveAprovalBy { get; set; }
-        public string IssueReceiveAprovalByName { get; set; }
-        public DateTime IssueReceiveAprovalDate { get; set; }
-        public string IssueReviewBy { get; set; }
-        public string IssueReviewByName { get; set; }
-        public DateTime IssueReviewDate { get; set; }
-        public string IssueReviewComment { get; set; }
-        public string IssueReviewMethod { get; set; }
-        public string IssueReviewUpdatedBy { get; set; }
-        public string IssueReviewUpdatedByName { get; set; }
-        public DateTime IssueReviewUpdatedDate { get; set; }
-        public string IssueReviewAprovalBy { get; set; }
-        public string IssueReviewAprovalByName { get; set; }
-        public DateTime IssueReviewAprovalDate { get; set; }
-        public string IssueReviewAprovalComment { get; set; }
+        public string ReceiveActionComment { get; set; }
+        public string ReceiveActionRejectReason { get; set; }
+        public string ReceiveActionBy { get; set; }
+        public string ReceiveActionByName { get; set; }
+        public DateTime? ReceiveActionDate { get; set; }
+        public string ReceiveActionUpdatedBy { get; set; }
+        public string ReceiveActionUpdatedByName { get; set; }
+        public DateTime? ReceiveActionUpdatedDate { get; set; }
+        public string ReceiveAprovalBy { get; set; }
+        public string ReceiveAprovalByName { get; set; }
+        public DateTime? ReceiveAprovalDate { get; set; }
 
+
+        public DateTime? ReviewDate { get; set; }
+        public string PDAReviewComment { get; set; }
+        public string PDAReviewBy { get; set; }
+        public string PDAReviewByName { get; set; }
+        public DateTime? PDAReviewDate { get; set; }
+        public bool isPDAReviewResultAprov { get; set; }
+
+
+        public string ReviewComment { get; set; }
+        public string ReviewMethod { get; set; }
+        public string ReviewBy { get; set; }
+        public string ReviewByName { get; set; }
+        public DateTime? ReviewSubmitDate { get; set; }
+        public bool isReviewResultAprov { get; set; }
+
+
+        public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
     }
 }

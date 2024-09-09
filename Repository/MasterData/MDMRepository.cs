@@ -5,6 +5,7 @@ using Entities.ParamRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Repository.Query;
+using System.Net.NetworkInformation;
 
 namespace Repository.MasterData;
 
@@ -63,7 +64,6 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
     public async Task<IEnumerable<TMATERIALDto>> GetMaterialWoProdAut(GetMaterialParam request)
     {
         string Processquery = MDMQuery.GetMaterialWoProdAut;
-
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<TMATERIALDto>(Processquery, request);
     }
@@ -122,5 +122,26 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         string Processquery = MDMQuery.getProcessGrp;
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<ProcessGroupDto>(Processquery, new { plant = plant });
+    }
+
+    public async Task<IEnumerable<string>> getReason(int plant, string reasontype)
+    {
+        string query = MDMQuery.getReason;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<string>(query, new { plant = plant, reasontype = reasontype });
+    }
+
+    public async Task<IEnumerable<TGlobalEmailSettingModel>> GetTGlobalEmailSetting(int plant, string wStatus)
+    {
+        string Processquery = MDMQuery.GetTGlobalEmailSetting;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<TGlobalEmailSettingModel>(Processquery, new { plant, wStatus });
+    }
+
+    public async Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeForm(int plant, string group, string dept)
+    {
+        string Processquery = MDMQuery.GetSystemvsUservsEmailSubscribeForm;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<SystemvsUservsEmailSubscribeForm>(Processquery, new { plant, group, dept });
     }
 }

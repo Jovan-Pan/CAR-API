@@ -10,7 +10,6 @@ namespace Entities.CAR
     {
         public string FormNo { get; set; }
         public string ActionType { get; set; }
-        public string ActionCode { get; set; }
         public string OriFileName { get; set; }
         public string FileName { get; set; }
         public string FileExt { get; set; }

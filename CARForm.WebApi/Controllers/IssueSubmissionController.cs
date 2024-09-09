@@ -60,5 +60,70 @@ namespace WebApi.Controllers
             var result = await business.IssueSubmission.ReceiverAction(data);
             return Ok(result);
         }
+
+        [HttpPost(nameof(ReceiverActionUpdate))]
+        public async Task<IActionResult> ReceiverActionUpdate([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverActionUpdate(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReceiverIssueReject))]
+        public async Task<IActionResult> ReceiverIssueReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverIssueReject(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReceiverApproval))]
+        public async Task<IActionResult> ReceiverApproval([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverApproval(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReceiverApprovalToReject))]
+        public async Task<IActionResult> ReceiverApprovalToReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverApprovalToReject(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(PDAReviewerVoid))]
+        public async Task<IActionResult> PDAReviewerVoid([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.PDAReviewerVoid(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(PDAReviewerReject))]
+        public async Task<IActionResult> PDAReviewerReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.PDAReviewerReject(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(PDAReviewerAprove))]
+        public async Task<IActionResult> PDAReviewerAprove([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.PDAReviewerAprove(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReviewerSubmit))]
+        public async Task<IActionResult> ReviewerSubmit([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReviewerSubmit(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReviewerReject))]
+        public async Task<IActionResult> ReviewerReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReviewerReject(data);
+            return Ok(result);
+        }
+
+        
     }
 }
