@@ -23,5 +23,47 @@ namespace WebApi.Controllers
             var result = await business.sendmailsetting.sendemail(data);
             return Ok(result);
         }
+        
+        [HttpPost(nameof(GetSendMailSetting))]
+        public async Task<IActionResult> GetSendMailSetting([FromForm] string? search, [FromForm] string? ATsearchADV, [FromForm] string? ATDsearchADV)
+        {
+            var result = await business.sendmailsetting.GetSendMailSetting(search, ATsearchADV, ATDsearchADV);
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(InsertNewSendMailSetting))]
+        public async Task<IActionResult> InsertNewSendMailSetting([FromForm] string plant, [FromForm] string actiontype, [FromForm] string actiontypedesc, [FromForm] bool issendemail)
+        {
+            var result = await business.sendmailsetting.InsertNewSendMailSetting(plant, actiontype, actiontypedesc, issendemail);
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(UpdateSendMailSetting))]
+        public async Task<IActionResult> UpdateSendMailSetting([FromForm] string actiontype, [FromForm] string actiontypedesc, [FromForm] bool issendemail)
+        {
+            var result = await business.sendmailsetting.UpdateSendMailSetting(actiontype, actiontypedesc, issendemail);
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(DataDelete))]
+        public async Task<IActionResult> DataDelete([FromForm] string actiontype)
+        {
+            var result = await business.sendmailsetting.DataDelete(actiontype);
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(DataPermDelete))]
+        public async Task<IActionResult> DataPermDelete([FromForm] string actiontype)
+        {
+            var result = await business.sendmailsetting.DataPermDelete(actiontype);
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(DataRecover))]
+        public async Task<IActionResult> DataRecover([FromForm] string actiontype)
+        {
+            var result = await business.sendmailsetting.DataRecover(actiontype);
+            return Ok(result);
+        }
     }
 }

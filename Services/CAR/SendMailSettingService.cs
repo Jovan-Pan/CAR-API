@@ -101,5 +101,38 @@ namespace Services.CAR
             }
             return ApiResponse<string>.SuccessResponse(null, (mailmsg.Length == 0 ? "" : " Send Mail Fail : " + mailmsg));
         }
+
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV)
+        {
+            var result = await data.SMS.GetSendMailSetting(search, ATsearchADV, ATDsearchADV);
+            return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail)
+        {
+            var result = await data.SMS.InsertNewSendMailSetting(plant,actiontype, actiontypedesc, issendemail);
+            return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail)
+        {
+            var result = await data.SMS.UpdateSendMailSetting(actiontype, actiontypedesc, issendemail);
+            return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataDelete(string actiontype)
+        {
+            var result = await data.SMS.DataDelete(actiontype);
+            return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataPermDelete(string actiontype)
+        {
+            var result = await data.SMS.DataPermDelete(actiontype);
+            return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataRecover(string actiontype)
+        {
+            var result = await data.SMS.DataRecover(actiontype);
+            return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
     }
 }
