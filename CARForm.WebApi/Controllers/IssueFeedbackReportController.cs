@@ -89,6 +89,69 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(FilePreview))]
+        public async Task<IActionResult> FilePreview([FromBody] GetAttachmentParam request)
+        {
+            try
+            {
+                var (fileStream, mimeType, fileName) = await business.IFR.GetFilePreviewAsync(request);
+                return File(fileStream, mimeType, fileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound("File not found.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost(nameof(GetFilesAttchment))]
+        public async Task<IActionResult> GetFilesAttchment([FromBody] IEnumerable<GetAttachmentParam> request)
+        {
+            try
+            {
+                var files = await business.IFR.GetFilesAttchment(request);
+
+                if (files == null || files.Count == 0)
+                {
+                    return NotFound("Files not found.");
+                }
+
+                return Ok(files.Select(f => new
+                {
+                    Base64Content = f.Base64Content,
+                    MimeType = f.MimeType,
+                    FileName = f.FileName
+                }));
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         private string ConvertToBase64(IFormFile file)
         {
             using (var memoryStream = new MemoryStream())

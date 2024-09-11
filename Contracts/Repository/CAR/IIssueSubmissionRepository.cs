@@ -35,7 +35,7 @@ namespace Contracts.Repository.CAR
         Task<int> PDAReviewerAprove(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> ReviewerSubmit(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> ReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction);
-       
+        Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
 
 
     }

@@ -261,65 +261,7 @@ namespace Services.CAR
                                  isReviewResultAprov = main.isReviewResultAprov,
                              };
             maindata = joinedData;
-            IssueSbmsAtchParam formFiles = new IssueSbmsAtchParam();
-            var basepathconfig = await mdm.getBasePathConfig(param.Plant);
-            if (!basepathconfig.Any())
-            {
-                return ApiResponse<IssueFeedbackResultDto>.FailResponse("Master Data Base Path For Attachment Not Found");
-            }
-            string domain = basepathconfig.First().domain;
-            string windowsuser = basepathconfig.First().userID;
-            string pwd = basepathconfig.First().password;
-            string basePath = basepathconfig.First().basePath;
-            var credentials = await SM.IssueSubmission.GetDirectoryAuth(domain, windowsuser, pwd, basePath);
-            if (credentials.Success) {
-                using (UNCFileManager unc = new())
-                {
-                    if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
-                    {
-                        List<IFormFile>? nCCategoryImgFiles = new List<IFormFile>();
-                        List<IFormFile>? nCCategoryFiles = new List<IFormFile>();
-
-                        var NCCategorydataAtch = dataAtch.Where(x => x.ActionType == "NCCategory");
-
-                        if (NCCategorydataAtch.Any()) {
-                            foreach (var attachment in NCCategorydataAtch)
-                            {
-                                string relativeFilePath = attachment.FilePath.Replace(credentials.BasePath, "");
-                                var fullFilePath = Path.Combine(credentials.BasePath, relativeFilePath.TrimStart('\\'));
-
-                                if (File.Exists(fullFilePath))
-                                {
-                                    using (var fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                                    {
-                                        var formFile = new FormFile(fileStream, 0, fileStream.Length, attachment.OriFileName, attachment.FileName)
-                                        {
-                                            Headers = new HeaderDictionary(),
-                                            ContentType = GlobalFunction.GetContentType("." + attachment.FileExt)
-                                        };
-
-                                        if (formFile.ContentType.StartsWith("image/"))
-                                        {
-                                            nCCategoryImgFiles.Add(formFile);
-                                        }
-                                        else
-                                        {
-                                            nCCategoryFiles.Add(formFile);
-                                        }
-                                    }
-
-                                }
-                            }
-                            formFiles.NCCategoryImgFiles = nCCategoryImgFiles.AsEnumerable();
-                            formFiles.NCCategoryFiles = nCCategoryFiles.AsEnumerable();
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return ApiResponse<IssueFeedbackResultDto>.FailResponse(credentials.Message);
-            }
+            
 
             IssueFeedbackResultDto result = new IssueFeedbackResultDto ();
             
@@ -339,8 +281,6 @@ namespace Services.CAR
                 }
             }
             result.maindata = maindata;
-            //result.dataAtch = dataAtch;
-            result.formFiles = formFiles;
             result.totrecord = totrecord;
             return ApiResponse<IssueFeedbackResultDto>.SuccessResponse(result);
         }
@@ -414,6 +354,123 @@ namespace Services.CAR
         {
             var result = await data.IFR.GetVendorListFilter(plant, deptAuthList, productAuthList);
             return ApiResponse<IEnumerable<VendorDto>>.SuccessResponse(result);
+        }
+
+        public async Task<(Stream FileStream, string MimeType, string FileName)> GetFilePreviewAsync(GetAttachmentParam request)
+        {
+            var basepathconfig = await mdm.getBasePathConfig(request.Plant);
+            if (!basepathconfig.Any())
+            {
+                throw new InvalidOperationException("Master Data Base Path For Attachment Not Found");
+            }
+            string domain = basepathconfig.First().domain;
+            string windowsuser = basepathconfig.First().userID;
+            string pwd = basepathconfig.First().password;
+            string basePath = basepathconfig.First().basePath;
+            var credentials = await SM.IssueSubmission.GetDirectoryAuth(domain, windowsuser, pwd, basePath);
+            if (credentials.Success)
+            {
+                using (UNCFileManager unc = new())
+                {
+                    if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
+                    {
+                        var filePath = Path.Combine(request.filepath);
+
+                        if (!System.IO.File.Exists(filePath))
+                        {
+                            throw new FileNotFoundException("File not found.");
+                        }
+
+                        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+                        var mimeType = GetMimeType(filePath);
+                        var fileName = $"{request.filename}.{request.fileExt}";
+
+                        return (fileStream, mimeType, fileName);
+                    }
+                    else
+                    {
+                        throw new UnauthorizedAccessException("Failed to authenticate with UNC path.");
+                    }
+                }
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("Failed to authenticate with UNC path.");
+            }
+        }
+
+        public async Task<List<(string Base64Content, string MimeType, string FileName)>> GetFilesAttchment(IEnumerable<GetAttachmentParam> request)
+        {
+            var resultFiles = new List<(string Base64Content, string MimeType, string FileName)>();
+
+            foreach (var fileRequest in request)
+            {
+                var basepathconfig = await mdm.getBasePathConfig(fileRequest.Plant);
+                if (!basepathconfig.Any())
+                {
+                    throw new InvalidOperationException("Master Data Base Path For Attachment Not Found");
+                }
+
+                string domain = basepathconfig.First().domain;
+                string windowsuser = basepathconfig.First().userID;
+                string pwd = basepathconfig.First().password;
+                string basePath = basepathconfig.First().basePath;
+
+                var credentials = await SM.IssueSubmission.GetDirectoryAuth(domain, windowsuser, pwd, basePath);
+
+                if (credentials.Success)
+                {
+                    using (UNCFileManager unc = new())
+                    {
+                        if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
+                        {
+                            var filePath = Path.Combine(fileRequest.filepath);
+                            if (!System.IO.File.Exists(filePath))
+                            {
+                                throw new FileNotFoundException($"File not found: {fileRequest.filepath}");
+                            }
+
+                            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+                            using (var ms = new MemoryStream())
+                            {
+                                await fileStream.CopyToAsync(ms);
+                                var base64Content = Convert.ToBase64String(ms.ToArray());
+                                var mimeType = GetMimeType(filePath);
+                                var fileName = $"{fileRequest.filename}.{fileRequest.fileExt}";
+
+                                resultFiles.Add((base64Content, mimeType, fileName));
+                            }
+                        }
+                        else
+                        {
+                            throw new UnauthorizedAccessException("Failed to authenticate with UNC path.");
+                        }
+                    }
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("Failed to authenticate with UNC path.");
+                }
+            }
+
+            return resultFiles;
+        }
+
+        private string GetMimeType(string filePath)
+        {
+            var ext = Path.GetExtension(filePath).ToLowerInvariant();
+            return ext switch
+            {
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xls" => "application/vnd.ms-excel",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".png" => "image/png",
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpg",
+                _ => "application/octet-stream",
+            };
         }
     }
 }

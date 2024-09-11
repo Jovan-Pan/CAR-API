@@ -264,6 +264,11 @@ namespace Repository.Query
         where FormNo = @FormNumber
         ";
 
-        
+        public static readonly string cekAvailableCompletePastIssue = @"
+        select FormNo from IssueFeedback 
+        where Plant = @plant and MaterialCode = @material and Dept=@dept 
+        and (VendorCode=@vendor or @vendor is null)
+        and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
+        ";
     }
 }

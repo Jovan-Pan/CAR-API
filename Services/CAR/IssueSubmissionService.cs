@@ -74,7 +74,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = newformno;
-                                            dtaAtch.ActionType = "NCCategory";
+                                            dtaAtch.ActionType = "NC Category";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -114,7 +114,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = newformno;
-                                            dtaAtch.ActionType = "NCCategory";
+                                            dtaAtch.ActionType = "NC Category";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -180,7 +180,7 @@ namespace Services.CAR
                     if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
                     {
                         #region delete old Atch
-                        var NCCategorydataAtch = dataAtch.Where(x => x.ActionType == "NCCategory");
+                        var NCCategorydataAtch = dataAtch.Where(x => x.ActionType == "NC Category");
                         if (NCCategorydataAtch.Any())
                         {
                             foreach (var attachment in NCCategorydataAtch)
@@ -192,7 +192,7 @@ namespace Services.CAR
                                 {
                                     IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                     dtaAtch.FormNo = mydata.FormNumber;
-                                    dtaAtch.ActionType = "NCCategory";
+                                    dtaAtch.ActionType = "NC Category";
                                     dtaAtch.OriFileName = attachment.OriFileName;
                                     dtaAtch.FileName = attachment.FileName;
                                     dtaAtch.FileExt = attachment.FileExt;
@@ -224,7 +224,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "NCCategory";
+                                            dtaAtch.ActionType = "NC Category";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -265,7 +265,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "NCCategory";
+                                            dtaAtch.ActionType = "NC Category";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -426,7 +426,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "RecImmAct";
+                                            dtaAtch.ActionType = "RECEIVER IMMIDIATE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -466,7 +466,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "RecImmAct";
+                                            dtaAtch.ActionType = "RECEIVER IMMIDIATE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -506,7 +506,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "ROOTCAUSE";
+                                            dtaAtch.ActionType = "ROOT CAUSE";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -546,7 +546,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "ROOTCAUSE";
+                                            dtaAtch.ActionType = "ROOT CAUSE";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -586,7 +586,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "CORRECTIVEACTION";
+                                            dtaAtch.ActionType = "CORRECTIVE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -626,7 +626,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "CORRECTIVEACTION";
+                                            dtaAtch.ActionType = "CORRECTIVE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -693,7 +693,7 @@ namespace Services.CAR
                     if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
                     {
                         #region delete old Atch
-                        var immediteActAtch = dataAtch.Where(x => x.ActionType == "RecImmAct");
+                        var immediteActAtch = dataAtch.Where(x => x.ActionType == "RECEIVER IMMIDIATE ACTION");
                         if (immediteActAtch.Any())
                         {
                             foreach (var attachment in immediteActAtch)
@@ -705,7 +705,7 @@ namespace Services.CAR
                                 {
                                     IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                     dtaAtch.FormNo = mydata.FormNumber;
-                                    dtaAtch.ActionType = "RecImmAct";
+                                    dtaAtch.ActionType = "RECEIVER IMMIDIATE ACTION";
                                     dtaAtch.OriFileName = attachment.OriFileName;
                                     dtaAtch.FileName = attachment.FileName;
                                     dtaAtch.FileExt = attachment.FileExt;
@@ -718,7 +718,7 @@ namespace Services.CAR
                             }
                         }
 
-                        var rootCauseAtch = dataAtch.Where(x => x.ActionType == "ROOTCAUSE");
+                        var rootCauseAtch = dataAtch.Where(x => x.ActionType == "ROOT CAUSE");
                         if (rootCauseAtch.Any())
                         {
                             foreach (var attachment in rootCauseAtch)
@@ -730,7 +730,7 @@ namespace Services.CAR
                                 {
                                     IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                     dtaAtch.FormNo = mydata.FormNumber;
-                                    dtaAtch.ActionType = "ROOTCAUSE";
+                                    dtaAtch.ActionType = "ROOT CAUSE";
                                     dtaAtch.OriFileName = attachment.OriFileName;
                                     dtaAtch.FileName = attachment.FileName;
                                     dtaAtch.FileExt = attachment.FileExt;
@@ -743,7 +743,7 @@ namespace Services.CAR
                             }
                         }
 
-                        var correctiveActAtch = dataAtch.Where(x => x.ActionType == "CORRECTIVEACTION");
+                        var correctiveActAtch = dataAtch.Where(x => x.ActionType == "CORRECTIVE ACTION");
                         if (correctiveActAtch.Any())
                         {
                             foreach (var attachment in correctiveActAtch)
@@ -755,7 +755,7 @@ namespace Services.CAR
                                 {
                                     IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                     dtaAtch.FormNo = mydata.FormNumber;
-                                    dtaAtch.ActionType = "CORRECTIVEACTION";
+                                    dtaAtch.ActionType = "CORRECTIVE ACTION";
                                     dtaAtch.OriFileName = attachment.OriFileName;
                                     dtaAtch.FileName = attachment.FileName;
                                     dtaAtch.FileExt = attachment.FileExt;
@@ -788,7 +788,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "RecImmAct";
+                                            dtaAtch.ActionType = "RECEIVER IMMIDIATE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -829,7 +829,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "RecImmAct";
+                                            dtaAtch.ActionType = "RECEIVER IMMIDIATE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -870,7 +870,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "ROOTCAUSE";
+                                            dtaAtch.ActionType = "ROOT CAUSE";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -911,7 +911,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "ROOTCAUSE";
+                                            dtaAtch.ActionType = "ROOT CAUSE";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -952,7 +952,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "CORRECTIVEACTION";
+                                            dtaAtch.ActionType = "CORRECTIVE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -993,7 +993,7 @@ namespace Services.CAR
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
                                             dtaAtch.FormNo = mydata.FormNumber;
-                                            dtaAtch.ActionType = "CORRECTIVEACTION";
+                                            dtaAtch.ActionType = "CORRECTIVE ACTION";
                                             dtaAtch.OriFileName = Flnameonly;
                                             dtaAtch.FileName = newFileName;
                                             dtaAtch.FileExt = extensionFile.Substring(extensionFile.LastIndexOf('.') + 1);
@@ -1234,5 +1234,10 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully, New Form No Created : " + newformno);
         }
 
+        public async Task<ApiResponse<string>> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param)
+        {
+            var result = await data.ISM.cekAvailableCompletePastIssue(param);
+            return ApiResponse<string>.SuccessResponse(result);
+        }
     }
 }

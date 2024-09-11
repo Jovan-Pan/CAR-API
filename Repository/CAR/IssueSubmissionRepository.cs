@@ -170,6 +170,11 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        
+        public async Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param)
+        {
+            string query = IssueSubmissionQuery.cekAvailableCompletePastIssue;
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryFirstOrDefaultAsync<string>(query, param);
+        }
     }
 }

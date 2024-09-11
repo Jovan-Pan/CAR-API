@@ -124,6 +124,11 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        
+        [HttpPost(nameof(cekAvailableCompletePastIssue))]
+        public async Task<IActionResult> cekAvailableCompletePastIssue([FromForm] cekAvailableCompletePastIssueParam param)
+        {
+            var result = await business.IssueSubmission.cekAvailableCompletePastIssue(param);
+            return Ok(result);
+        }
     }
 }
