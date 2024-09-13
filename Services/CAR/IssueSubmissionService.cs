@@ -421,7 +421,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "ImmActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -461,7 +461,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "ImmActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -501,7 +501,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "RootCauseAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -541,7 +541,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "RootCauseAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -581,7 +581,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "CorrectivActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -621,7 +621,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "CorrectivActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -783,7 +783,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "ImmActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -824,7 +824,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "ImmActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -865,7 +865,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "RootCauseAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -906,7 +906,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "RootCauseAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -947,7 +947,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "CorrectivActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -988,7 +988,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "CorrectivActAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -1140,7 +1140,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "ReviwerAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -1180,7 +1180,7 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string newFileName = mydata.FormNumber + "_" + "ReviwerAtch" + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
