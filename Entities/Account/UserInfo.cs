@@ -7,6 +7,8 @@ public class UserInfo
     public string UseNam { get; set; } = "";
     public string UseEmail { get; set; } = "";
     public string UseDep { get; set; } = "";
+    public string vendorcode { get; set; } = "";
+    public string vendorname { get; set; } = "";
 
     public UserInfo()
     {

@@ -77,9 +77,9 @@ namespace Repository.CAR
             
         }
 
-        public async Task<TotalRecordForEachSttsDto> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
+        public async Task<TotalRecordForEachSttsDto> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param, string condition)
         {
-            string query = string.Format(IssueFeedbackReportQuery.GetTotalRecordForEachStts);
+            string query = string.Format(IssueFeedbackReportQuery.GetTotalRecordForEachStts, condition);
             await using var conn = dbContext.CARConnection();
             return await conn.QueryFirstOrDefaultAsync<TotalRecordForEachSttsDto>(query, param);
         }

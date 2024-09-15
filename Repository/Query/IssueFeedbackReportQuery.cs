@@ -18,40 +18,41 @@ namespace Repository.Query
             COUNT(CASE WHEN status = 'PDA-DECISION' THEN 1 END) AS PdaDecision,
 	        COUNT(CASE WHEN status = 'ISSUED' THEN 1 END) AS issued,
 	        COUNT(CASE WHEN status = 'ACTION-ISSUED' THEN 1 END) AS ActIssued,
+            COUNT(CASE WHEN status = 'ISSUED-REJECTED (WA)' THEN 1 END) AS ActIssuedRejecWA,
 	        COUNT(CASE WHEN status = 'ANALYZE' THEN 1 END) AS Analize,
 	        COUNT(CASE WHEN status = 'REVIEW' THEN 1 END) AS review,
 	        COUNT(CASE WHEN status = 'COMPLETE' THEN 1 END) AS Complete
         FROM IssueFeedback
-        WHERE Plant = @plant AND Dept IN @DeptList AND Product IN @ProductList; ";
+        WHERE Plant = @plant {0} ";
 
         public static readonly string GetFormNumberListFilter = @" select distinct FormNo from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by FormNo asc ";
 
         public static readonly string GetDeptListFilter = @" select distinct Dept from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList order by Dept asc ";
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList) order by Dept asc ";
 
         public static readonly string GetproductListFilter = @" select distinct Product from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList order by product asc ";
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList) order by product asc ";
 
         public static readonly string GetprocecessGrpCodeFilter = @" select distinct procecessGrpCode from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList and isnull(procecessGrpCode,'') <> ''
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList) and isnull(procecessGrpCode,'') <> ''
         order by procecessGrpCode asc ";
 
         public static readonly string GetModelListFilter = @" select distinct Model from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by model asc ";
 
         public static readonly string GetMatTypeListFilter = @" select distinct MaterialType from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by MaterialType asc ";
 
         public static readonly string GetMaterialListFilter = @" select distinct MaterialCode from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by MaterialCode asc ";
 
         public static readonly string GetVendorListFilter = @" select distinct VendorCode,VendorDesc as vendDesc from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and Product in @productAuthList
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by VendorCode asc ";
 
         public static readonly string skiprow = @" OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY; ";
@@ -79,8 +80,7 @@ namespace Repository.Query
         ,isReviewResultAprov
         from IssueFeedback
         where Plant = @plant
-        and Dept IN @deptAuthList
-        and Product IN @productAuthList
+        and Dept IN @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         ";
 
         public static readonly string GetDataAttchment = @"

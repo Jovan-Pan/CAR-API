@@ -1,5 +1,6 @@
 ﻿using Contracts.Repository.MasterData;
 using Dapper;
+using Entities.Account.Dto;
 using Entities.MasterData;
 using Entities.ParamRequest;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,15 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
 
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<string>(query,new { userId });
+    }
+
+    public async Task<UserVendorInfoDto> GetUserVendorInfo(int plant, string userid)
+    {
+        string Processquery = MDMQuery.GetUserVendorInfo;
+
+        await using var conn = dbContext.MDMConnection();
+        var result = await conn.QueryAsync<UserVendorInfoDto>(Processquery, new { Plant = plant, userid = userid });
+        return result.FirstOrDefault();
     }
 
     public async Task<IEnumerable<tGlobalSettingDto>> GetDataGlobalSetting(int plant, string system, string settingID)

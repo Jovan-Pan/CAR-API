@@ -266,7 +266,11 @@ namespace Repository.Query
 
         public static readonly string cekAvailableCompletePastIssue = @"
         select FormNo from IssueFeedback 
-        where Plant = @plant and MaterialCode = @material and Dept=@dept 
+        where Plant = @plant 
+        --and MaterialCode = @material 
+        and NCCategory = @nccategory 
+        and NCReason = @ncreason 
+        and Dept=@dept 
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";

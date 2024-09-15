@@ -1,4 +1,5 @@
-﻿using Entities.MasterData;
+﻿using Entities.Account.Dto;
+using Entities.MasterData;
 using Entities.ParamRequest;
 using System.Threading.Tasks;
 
@@ -6,6 +7,7 @@ namespace Contracts.Repository.MasterData;
 
 public interface IMDMRepository
 {
+    Task<UserVendorInfoDto> GetUserVendorInfo(int plant, string userid);
     Task<IEnumerable<string>> GetPlantListForCRCUSystemByUserId(string userId);
     Task<IEnumerable<tGlobalSettingDto>> GetDataGlobalSetting(int plant, string system, string settingID);
     Task<IEnumerable<TproductVsSmnProdPICDto>> GetTPRODUCT(int plant, string Userid);

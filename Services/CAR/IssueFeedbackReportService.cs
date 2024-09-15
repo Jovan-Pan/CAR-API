@@ -23,6 +23,7 @@ using System.Reflection.Emit;
 using Microsoft.AspNetCore.Mvc;
 using Entities.MasterData;
 using OfficeOpenXml.Style;
+using System.IO;
 
 namespace Services.CAR
 {
@@ -287,7 +288,12 @@ namespace Services.CAR
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
         {
-            var result  = await data.IFR.GetTotalRecordForEachStts(param);
+            string condition = " AND Dept IN @DeptList AND Product IN @ProductList ";
+            if (param.vendorcode != null)
+            {
+                condition = " AND vendorcode = @vendorcode ";
+            }
+            var result  = await data.IFR.GetTotalRecordForEachStts(param, condition);
             return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);
         }
 
@@ -430,15 +436,19 @@ namespace Services.CAR
                                 throw new FileNotFoundException($"File not found: {fileRequest.filepath}");
                             }
 
-                            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
-                            using (var ms = new MemoryStream())
+                            using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, useAsync: true))
                             {
-                                await fileStream.CopyToAsync(ms);
-                                var base64Content = Convert.ToBase64String(ms.ToArray());
-                                var mimeType = GetMimeType(filePath);
-                                var fileName = $"{fileRequest.filename}.{fileRequest.fileExt}";
+                                using (var ms = new MemoryStream())
+                                {
+                                    await fileStream.CopyToAsync(ms);
+                                    var base64Content = Convert.ToBase64String(ms.ToArray());
+                                    var mimeType = GetMimeType(filePath);
+                                    var fileName = $"{fileRequest.filename}.{fileRequest.fileExt}";
 
-                                resultFiles.Add((base64Content, mimeType, fileName));
+                                    resultFiles.Add((base64Content, mimeType, fileName));
+                                    ms.Close();
+                                }
+                                fileStream.Close();
                             }
                         }
                         else

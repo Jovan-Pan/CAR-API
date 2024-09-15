@@ -13,6 +13,7 @@ namespace Entities.CAR
         public int PdaDecision { get; set; }
         public int issued { get; set; }
         public int ActIssued { get; set; }
+        public int ActIssuedRejecWA { get; set; }
         public int Analize { get; set; }
         public int review { get; set; }
         public int Complete { get; set; }

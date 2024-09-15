@@ -8,10 +8,12 @@ using System.Net.Http;
 using System.Numerics;
 using System.Drawing;
 using Entities.ParamRequest;
+using Entities.Account.Dto;
 
 namespace Services.MasterData;
 
-internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMRepository mdm, ICacheManager memCache, ILocalizationService localization) : IMasterDataService
+internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMRepository mdm
+    , ICacheManager memCache, ILocalizationService localization) : IMasterDataService
 {
     public async Task<ApiResponse<IEnumerable<MenuItem>>> GetMenuSetting(string userId)
     {
@@ -23,10 +25,17 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         
         return ApiResponse<IEnumerable<MenuItem>>.SuccessResponse(menuList);
     }
+
     public async Task<ApiResponse<IEnumerable<string>>> GetPlantListForCRCUSystemByUserId(string userId)
     {
         var plants = await mdm.GetPlantListForCRCUSystemByUserId(userId);
         return ApiResponse<IEnumerable<string>>.SuccessResponse(plants);
+    }
+
+    public async Task<ApiResponse<UserVendorInfoDto>> GetUserVendorInfo(int plant,string userId)
+    {
+        var result = await mdm.GetUserVendorInfo(plant, userId);
+        return ApiResponse<UserVendorInfoDto>.SuccessResponse(result);
     }
 
 

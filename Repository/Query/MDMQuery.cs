@@ -8,6 +8,14 @@ namespace Repository.Query
 {
     public class MDMQuery
     {
+        public static readonly string GetUserVendorInfo = @" 
+        select A.Vendor as vendorcode,B.Description as vendorname
+        from USERVSVENDOR A 
+        join tVendor_New B on A.Vendor = B.Vendor 
+        join tVendorPOrg C on C.Vendor = C.Vendor and C.POrg = B.POrg and C.Plant = A.Plant and C.DelFlag = 0
+        where A.Plant=@plant and UseID = @userid and A.DelFlag = 0 
+        ";
+
         public static readonly string GetPlantList = @"
         Select Plant 
         FROM TGROUP g
