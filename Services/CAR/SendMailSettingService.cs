@@ -15,6 +15,7 @@ using Services.Contracts.CAR;
 using Entities.Infrastructure;
 using Services.Helper;
 using Services.Resources;
+using Microsoft.AspNetCore.Http;
 
 namespace Services.CAR
 {
@@ -133,6 +134,40 @@ namespace Services.CAR
         {
             var result = await data.SMS.DataRecover(actiontype);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
+        }
+        public async Task<byte[]> Template()
+        {
+            var result = await data.SMS.Template();
+            return result;
+        }
+        public async Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId)
+        {
+            string filePath = Path.Combine(file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            var result = await data.SMS.Import(filePath, userId);
+
+            System.IO.File.Delete(filePath);
+
+            if (result.Contains("Invalid Data structure, please follow template format"))
+            {
+                return new ApiResponse<IEnumerable<string>>
+                {
+                    Success = false,
+                    Message = "Invalid Data structure, please follow template format",
+                    Content = null
+                };
+            }
+
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+        public async Task<byte[]> Export(ExportParam param)
+        {
+            var result = await data.SMS.Export(param);
+            return result;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Entities.ParamRequest;
+﻿using Entities.CAR;
+using Entities.ParamRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
@@ -64,6 +65,30 @@ namespace WebApi.Controllers
         {
             var result = await business.sendmailsetting.DataRecover(actiontype);
             return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpGet(nameof(Template))]
+        public async Task<IActionResult> Template()
+        {
+            var fileBytes = await business.sendmailsetting.Template();
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Template");
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(Import))]
+        public async Task<IActionResult> Import([FromForm] IFormFile file, string userId)
+        {
+
+            var result = await business.sendmailsetting.Import(file, userId);
+            return Ok(result);
+
+        }
+        [AllowAnonymous]
+        [HttpPost(nameof(Export))]
+        public async Task<IActionResult> Export([FromForm] ExportParam param)
+        {
+            var fileBytes = await business.sendmailsetting.Export(param);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet);
+
         }
     }
 }

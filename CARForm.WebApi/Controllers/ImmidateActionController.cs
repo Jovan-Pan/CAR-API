@@ -16,5 +16,53 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
+
+        [HttpPost(nameof(GetImmidateAction))]
+        public async Task<IActionResult> GetImmidateAction([FromForm] string? search, [FromForm] string? SearchADV)
+        {
+            var result = await business.ImmAct.GetImmidateAction(search, SearchADV);
+            return Ok(result);
+        }
+        [HttpPost(nameof(InsertNewImmidateAction))]
+        public async Task<IActionResult> InsertNewImmidateAction([FromForm] string ImmidateName, [FromForm] int plant)
+        {
+            var result = await business.ImmAct.InsertNewImmidateAction(ImmidateName, plant);
+            return Ok(result);
+
+        }
+        [HttpPost(nameof(UpdateImmidateAction))]
+        public async Task<IActionResult> UpdateImmidateAction([FromForm] string ImmidateName, [FromForm] int id)
+        {
+            var result = await business.ImmAct.UpdateImmidateAction(ImmidateName, id);
+            return Ok(result);
+
+        }
+        [HttpPost(nameof(DataDelete))]
+        public async Task<IActionResult> DataDelete( [FromForm] int id)
+        {
+            var result = await business.ImmAct.DataDelete(id);
+            return Ok(result);
+
+        }
+        [HttpPost(nameof(DataPermDelete))]
+        public async Task<IActionResult> DataPermDelete([FromForm] int id)
+        {
+            var result = await business.ImmAct.DataPermDelete(id);
+            return Ok(result);
+
+        }
+        [HttpPost(nameof(DataRecover))]
+        public async Task<IActionResult> DataRecover([FromForm] int id)
+        {
+            var result = await business.ImmAct.DataRecover(id);
+            return Ok(result);
+
+        }
+        [HttpGet(nameof(Template))]
+        public async Task<IActionResult> Template()
+        {
+            var fileBytes = await business.ImmAct.Template();
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Template");
+        }
     }
 }

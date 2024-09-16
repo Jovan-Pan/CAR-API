@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Services.Contracts.CAR
 {
@@ -19,5 +20,8 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataDelete(string actiontype);
         Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataPermDelete(string actiontype);
         Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataRecover(string actiontype);
+        Task<byte[]> Template();
+        Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);
+        Task<byte[]> Export(ExportParam param);
     }
 }

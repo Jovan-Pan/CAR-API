@@ -10,12 +10,20 @@ namespace WebApi.Controllers
     [ApiController]
     public class ErrorLogController (IServiceManager business) : Controller
     {
-        
+
         //[HttpPost(nameof(GetDataReport))]
         //public async Task<IActionResult> GetDataReport([FromBody] xxxxxParam data)
         //{
         //    var result = await business.ErrorLog.GetDataReport(data);
         //    return Ok(result);
         //}
+
+        [AllowAnonymous]
+        [HttpPost(nameof(GetDataReport))]
+        public async Task<IActionResult> GetDataReport(string? startdate, string? enddate)
+        {
+            var result = await business.ErrorLog.GetDataReport(startdate, enddate);
+            return Ok(result);
+        }
     }
 }

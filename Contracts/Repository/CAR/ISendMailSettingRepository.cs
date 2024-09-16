@@ -17,5 +17,8 @@ namespace Contracts.Repository.CAR
         Task<IEnumerable<MailSetiingDto>> DataDelete(string actiontype);
         Task<IEnumerable<MailSetiingDto>> DataPermDelete(string actiontype);
         Task<IEnumerable<MailSetiingDto>> DataRecover(string actiontype);
+        Task<byte[]> Template();
+        Task<IEnumerable<string>> Import(string filePath, string userId);
+        Task<byte[]> Export(ExportParam param);
     }
 }

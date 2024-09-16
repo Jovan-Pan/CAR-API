@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +21,7 @@ namespace Repository.Query
         ";
 
         public static readonly string GetSendMailSetting = @" select 
-        id,plant,actionType,actionTypeDesc,isSendEmail
+        id,plant,actionType,actionTypeDesc,isSendEmail,isDeleted
         ,createdBy,createdByName,createdDate
         ,updatedBy,updatedByName,updatedDate
         from SendEmailSetting";
@@ -39,5 +41,39 @@ namespace Repository.Query
         public static readonly string DataPermDelete = @"DELETE FROM SendEmailSetting WHERE ActionType =@ActionType ";
 
         public static readonly string DataRecover = @"UPDATE SendEmailSetting SET isDeleted = 0, UpdatedBy = suser_sname(), UpdatedByName=HOST_name(), UpdatedDate =getdate() WHERE ActionType =@ActionType";
+
+        public static readonly string Import = @"
+                                                UPDATE SendEmailSetting
+                                                SET
+                                                    Plant = B.plant,
+                                                    ActionTypeDesc = B.[Action Type Desc],
+                                                    isSendEmail = B.isSendEmail,
+                                                    UpdatedBy = UPPER(@UserId),
+                                                    UpdatedByName = HOST_NAME(),
+                                                    UpdatedDate = GETDATE(),
+                                                    isDeleted = 0
+                                                FROM SendEmailSetting A
+                                                INNER JOIN ##temp B 
+                                                    ON A.ActionType = B.[Action Type];
+
+                                                INSERT INTO SendEmailSetting
+                                                    (Plant, ActionType, ActionTypeDesc, isSendEmail, CreatedBy, CreatedByName, CreatedDate, isDeleted)
+                                                SELECT
+                                                    B.plant,
+                                                    B.[Action Type],
+                                                    B.[Action Type Desc],
+                                                    B.isSendEmail,
+                                                    UPPER(@UserId),
+                                                    HOST_NAME(),
+                                                    GETDATE(),
+                                                    0 
+                                                FROM ##temp B
+                                                WHERE NOT EXISTS (
+                                                    SELECT A.ActionType
+                                                    FROM SendEmailSetting A
+                                                    WHERE A.ActionType = B.[Action Type]
+                                                )";
+
+        public static readonly string Export = @"select * from SendEmailSetting where 1=1";
     }
 }

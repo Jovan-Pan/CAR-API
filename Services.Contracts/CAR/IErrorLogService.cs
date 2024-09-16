@@ -1,4 +1,6 @@
-﻿using Entities.CAR;
+﻿using Entities;
+using Entities.CAR;
+using Entities.MasterData;
 using Entities.ParamRequest;
 using System;
 using System.Collections.Generic;
@@ -12,5 +14,7 @@ namespace Services.Contracts.CAR
     {
         Task<int> SaveErrorLog(Exception exdb, string userLogin);
         Task<PagedResponse> ShowDataErrorLog(GlobalParam param);
+        Task<ApiResponse<IEnumerable<ErrorLogModel>>> GetDataReport(string startdate, string enddate);
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository;
 using Entities;
 using Entities.CAR;
+using Entities.MasterData;
 using Entities.ParamRequest;
 using Services.Contracts.CAR;
 using Services.Helper;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.CAR
 {
@@ -117,7 +119,10 @@ namespace Services.CAR
 
             return last100Characters;
         }
-
-        
+        public async Task<ApiResponse<IEnumerable<ErrorLogModel>>> GetDataReport(string startdate, string enddate)
+        {
+            var result = await repoManager.ErrorLog.GetDataReport(startdate,enddate);
+            return ApiResponse<IEnumerable<ErrorLogModel>>.SuccessResponse(result);
+        }
     }
 }

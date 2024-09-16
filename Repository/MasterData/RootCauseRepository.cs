@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OfficeOpenXml;
 using System.Transactions;
+using Services.Helper;
 
 namespace Repository.MasterData
 {
@@ -107,7 +108,7 @@ namespace Repository.MasterData
             {
                 await conn.OpenAsync(); 
             }
-            DataTable excelData = ReadExcelFile(filePath); 
+            DataTable excelData = GlobalFunction.ReadExcelFile(filePath); 
             if (excelData.Rows.Count == 0)
             {
                 return new List<string> { "No data found in the Excel file" };
@@ -152,52 +153,6 @@ namespace Repository.MasterData
                 return result;
 
             }
-        }
-
-
-        public DataTable ReadExcelFile(string filePath)
-        {
-            var dataTable = new DataTable();
-
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            using (var package = new ExcelPackage(new FileInfo(filePath)))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                {
-                    throw new Exception("Excel is Blank.");
-                }
-
-                var startRow = 4; 
-                for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
-                {
-                    var columnHeader = worksheet.Cells[startRow, col].Text.Trim(); 
-
-                    if (string.IsNullOrWhiteSpace(columnHeader))
-                    {
-                        columnHeader = $"Column{col}"; 
-                    }
-
-                    if (!dataTable.Columns.Contains(columnHeader))
-                    {
-                        dataTable.Columns.Add(columnHeader);
-                    }
-                }
-
-
-                for (int row = startRow + 1; row <= worksheet.Dimension.End.Row; row++)
-                {
-                    var rowData = dataTable.NewRow();
-                    for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
-                    {
-                        rowData[col - 1] = worksheet.Cells[row, col].Text;
-                    }
-                    dataTable.Rows.Add(rowData);
-                }
-            }
-
-            return dataTable;
         }
     }   
 }
