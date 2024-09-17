@@ -23,6 +23,15 @@ namespace Repository.Query
         WHERE g.System = 'CAR' AND ua.UserId = @userId
         GROUP BY Plant";
 
+        public static readonly string GetFormAuthorize = @"
+        select distinct UA.ViewOnly isuserAuViewOnly ,GA.viewOnly, isnull(F.formdesc,GA.FormName) AS formdesc
+        from TUSER_AUTHORIZE UA join TGROUPACCESS GA on UA.GroupID = GA.GroupID and UA.System = GA.System and UA.FormName = GA.FormName and isnull(GA.DelFlag,0) = 0 
+        join TGROUP G on G.GroupID = GA.GroupID and G.SYSTEM = GA.System and ISNULL(G.DelFlag,0)=0 
+        Join TFORM F on F.System = GA.System and ISNULL(F.DelFlag,0)=0 and F.FormName=GA.FormName 
+        where upper(GA.System)= 'CAR' AND isnull(UA.DELFLAG,0) = 0
+        and UPPER(UserId)=@userId and G.Plant = @plant and  upper(GA.FormName) IN @FormId  
+        order by GA.ViewOnly asc";
+
         public static readonly string GetDataGlobalSetting = @"
         SELECT DISTINCT B.Plant, A.ID AS SettingId, split_data.data AS SettingValue
         FROM tGlobal A

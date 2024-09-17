@@ -24,6 +24,14 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(plantList);
     }
 
+    [HttpPost(nameof(GetFormAuthorize))]
+    public async Task<IActionResult> GetFormAuthorize([FromBody] FormAuthorizeParam param)
+    {
+        var result = await business.MasterData.GetFormAuthorize(param);
+        return Ok(result);
+
+    }
+
     [HttpGet(nameof(GetDataGlobalSetting))]
     public async Task<IActionResult> GetDataGlobalSetting(int plant, string settingID, string system = "CAR")
     {

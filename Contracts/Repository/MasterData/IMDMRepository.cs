@@ -9,6 +9,7 @@ public interface IMDMRepository
 {
     Task<UserVendorInfoDto> GetUserVendorInfo(int plant, string userid);
     Task<IEnumerable<string>> GetPlantListForCRCUSystemByUserId(string userId);
+    Task<FormAuthorizeInfoDto> GetFormAuthorize(FormAuthorizeParam param);
     Task<IEnumerable<tGlobalSettingDto>> GetDataGlobalSetting(int plant, string system, string settingID);
     Task<IEnumerable<TproductVsSmnProdPICDto>> GetTPRODUCT(int plant, string Userid);
     Task<IEnumerable<MatGroupDto>> GetMatGrp(int plant, string product, IEnumerable<string> productAuthList);

@@ -9,6 +9,7 @@ public interface IMasterDataService
 {
     Task<ApiResponse<IEnumerable<MenuItem>>> GetMenuSetting(string userId);
     Task<ApiResponse<IEnumerable<string>>> GetPlantListForCRCUSystemByUserId(string userId);
+    Task<ApiResponse<FormAuthorizeInfoDto>> GetFormAuthorize(FormAuthorizeParam param);
     Task<ApiResponse<UserVendorInfoDto>> GetUserVendorInfo(int plant, string userId);
     Task<ApiResponse<IEnumerable<tGlobalSettingDto>>> GetDataGlobalSetting(int plant, string system, string settingID);
     Task<ApiResponse<IEnumerable<TproductVsSmnProdPICDto>>> GetTPRODUCT(int plant, string Userid);

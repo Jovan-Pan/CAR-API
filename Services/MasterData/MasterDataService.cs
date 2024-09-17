@@ -32,6 +32,12 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         return ApiResponse<IEnumerable<string>>.SuccessResponse(plants);
     }
 
+    public async Task<ApiResponse<FormAuthorizeInfoDto>> GetFormAuthorize(FormAuthorizeParam param)
+    {
+        var result = await mdm.GetFormAuthorize(param);
+        return ApiResponse<FormAuthorizeInfoDto>.SuccessResponse(result);
+    }
+
     public async Task<ApiResponse<UserVendorInfoDto>> GetUserVendorInfo(int plant,string userId)
     {
         var result = await mdm.GetUserVendorInfo(plant, userId);

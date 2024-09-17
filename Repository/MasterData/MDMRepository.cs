@@ -21,6 +21,14 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         return await conn.QueryAsync<string>(query,new { userId });
     }
 
+    public async Task<FormAuthorizeInfoDto> GetFormAuthorize(FormAuthorizeParam param)
+    {
+        string query = MDMQuery.GetFormAuthorize;
+
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryFirstOrDefaultAsync<FormAuthorizeInfoDto>(query, param);
+    }
+
     public async Task<UserVendorInfoDto> GetUserVendorInfo(int plant, string userid)
     {
         string Processquery = MDMQuery.GetUserVendorInfo;
