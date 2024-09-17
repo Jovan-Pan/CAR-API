@@ -14,6 +14,6 @@ namespace Contracts.Repository.CAR
     {
         Task<(IEnumerable<ErrorLogModel> data, int totalCount)> ShowDataErrorLog(GlobalParam param, ConditionParams ConditionParams);
         Task<int> InsertDataToTERRORLOG(ErrorLogModel ErrorLogData, SqlTransaction? transaction = null);
-        Task<IEnumerable<ErrorLogModel>> GetDataReport(string startdate, string enddate);
+        Task<IEnumerable<ErrorLogModel>> GetDataReport(string? startdate, string? enddate);
     }
 }

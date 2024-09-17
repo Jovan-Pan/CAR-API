@@ -12,6 +12,7 @@ using Services.Resources;
 using Services.Contracts.MasterData;
 using Contracts.Repository;
 using Entities.CAR;
+using Microsoft.AspNetCore.Http;
 
 namespace Services.MasterData
 {
@@ -56,6 +57,30 @@ namespace Services.MasterData
         {
             var result = await data.ImmAct.Template();
             return result;
+        }
+        public async Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId)
+        {
+            string filePath = Path.Combine(file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            var result = await data.ImmAct.Import(filePath, userId);
+
+            System.IO.File.Delete(filePath);
+
+            if (result.Contains("Invalid Data structure, please follow template format"))
+            {
+                return new ApiResponse<IEnumerable<string>>
+                {
+                    Success = false,
+                    Message = "Invalid Data structure, please follow template format",
+                    Content = null
+                };
+            }
+
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
         }
     }
 }

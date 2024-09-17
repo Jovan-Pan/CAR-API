@@ -119,7 +119,7 @@ namespace Services.CAR
 
             return last100Characters;
         }
-        public async Task<ApiResponse<IEnumerable<ErrorLogModel>>> GetDataReport(string startdate, string enddate)
+        public async Task<ApiResponse<IEnumerable<ErrorLogModel>>> GetDataReport(string? startdate, string? enddate)
         {
             var result = await repoManager.ErrorLog.GetDataReport(startdate,enddate);
             return ApiResponse<IEnumerable<ErrorLogModel>>.SuccessResponse(result);

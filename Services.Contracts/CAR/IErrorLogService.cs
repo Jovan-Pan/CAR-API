@@ -14,7 +14,7 @@ namespace Services.Contracts.CAR
     {
         Task<int> SaveErrorLog(Exception exdb, string userLogin);
         Task<PagedResponse> ShowDataErrorLog(GlobalParam param);
-        Task<ApiResponse<IEnumerable<ErrorLogModel>>> GetDataReport(string startdate, string enddate);
+        Task<ApiResponse<IEnumerable<ErrorLogModel>>> GetDataReport(string? startdate, string? enddate);
 
     }
 }

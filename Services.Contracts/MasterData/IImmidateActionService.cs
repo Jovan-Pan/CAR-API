@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.CAR;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,6 @@ namespace Services.Contracts.MasterData
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataPermDelete(int id);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataRecover(int id);
         Task<byte[]> Template();
+        Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);
     }
 }

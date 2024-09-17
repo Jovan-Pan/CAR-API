@@ -18,6 +18,7 @@ namespace Contracts.Repository.MasterData
         Task<IEnumerable<ImmidateActionDto>> DataPermDelete(int id);
         Task<IEnumerable<ImmidateActionDto>> DataRecover(int id);
         Task<byte[]> Template();
+        Task<IEnumerable<string>> Import(string filePath, string userId);
 
     }
 }

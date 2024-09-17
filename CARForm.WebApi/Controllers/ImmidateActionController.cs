@@ -64,5 +64,14 @@ namespace WebApi.Controllers
             var fileBytes = await business.ImmAct.Template();
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Template");
         }
+        [AllowAnonymous]
+        [HttpPost(nameof(Import))]
+        public async Task<IActionResult> Import([FromForm] IFormFile file, string userId)
+        {
+
+            var result = await business.ImmAct.Import(file, userId);
+            return Ok(result);
+
+        }
     }
 }
