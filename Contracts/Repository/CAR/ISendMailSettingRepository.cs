@@ -1,0 +1,24 @@
+﻿using Entities.CAR;
+using Entities.ParamRequest;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Contracts.Repository.CAR
+{
+    public interface ISendMailSettingRepository
+    {
+        Task<IEnumerable<MailSetiingDto>> GetaData(SendMailSettingParam param);
+        Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV);
+        Task<IEnumerable<MailSetiingDto>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail);
+        Task<IEnumerable<MailSetiingDto>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail);
+        Task<IEnumerable<MailSetiingDto>> DataDelete(string actiontype);
+        Task<IEnumerable<MailSetiingDto>> DataPermDelete(string actiontype);
+        Task<IEnumerable<MailSetiingDto>> DataRecover(string actiontype);
+        Task<byte[]> Template();
+        Task<IEnumerable<string>> Import(string filePath, string userId);
+        Task<byte[]> Export(ExportParam param);
+    }
+}

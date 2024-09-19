@@ -121,6 +121,6 @@
     <value>Invalid User Id or Password</value>
   </data>
   <data name="A002" xml:space="preserve">
-    <value>Your account does not have access to CRCU System, please contact DT Department</value>
+    <value>Your account does not have access to CAR System, please contact DT Department</value>
   </data>
 </root>

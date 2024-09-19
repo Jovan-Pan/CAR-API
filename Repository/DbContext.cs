@@ -11,4 +11,5 @@ public class DbContext
     public DbContext(IOptions<AppSettings> config) => _config = config;
 
     public SqlConnection MDMConnection() => new(_config.Value.MDMConnectionString);
+    public SqlConnection CARConnection() => new(_config.Value.CARConnectionString);
 }

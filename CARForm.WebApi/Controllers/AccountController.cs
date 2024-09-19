@@ -25,6 +25,8 @@ public class AccountController(IServiceManager business, IOptions<AppSettings> a
         if (result.Item2 is not null)
         {
             SetJwtTokenCookies(result.Item2);
+            result.Item1.Content.vendorcode = result.Item2.vendorcode;
+            result.Item1.Content.vendorname = result.Item2.vendorname;
         }
 
         return Ok(result.Item1);

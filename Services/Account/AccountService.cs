@@ -16,6 +16,21 @@ internal sealed class AccountService(
     public async Task<(ApiResponse<UserInfo>, TokenResponse)> Login(LoginDto user)
     {
         var result = await mesMasterApi.Login<TokenResponse>(user, false);
+        if(result != null)
+        {
+            if(result.UseDep == "VEND")
+            {
+                var infovendor = await business.MasterData.GetUserVendorInfo(result.UseComCod,result.UseID);
+                if(infovendor != null)
+                {
+                    if(infovendor.Content != null)
+                    {
+                        result.vendorcode = infovendor.Content.vendorcode;
+                        result.vendorname = infovendor.Content.vendorname;
+                    }
+                }
+            }
+        }
         return (await HandleOtpDisabled(result), result);
     }
 

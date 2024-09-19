@@ -31,7 +31,7 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
 
     public async Task<IEnumerable<MenuItem>> GetMenuSetting(string userId)
     {
-        string url = _httpClient.BaseAddress + string.Format("api/MasterData/GetMenuSettingGetMenuSettingByUserIdAndSystemCode?userId={0}&systemCode=CRCU", userId);
+        string url = _httpClient.BaseAddress + string.Format("api/MasterData/GetMenuSettingGetMenuSettingByUserIdAndSystemCode?userId={0}&systemCode=CAR", userId);
         HttpResponseMessage response = await _httpClient.GetAsync(url);
 
         return await ProcessApiResponseContent<IEnumerable<MenuItem>>(response);
@@ -50,8 +50,16 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
 
     public async Task SendEmail(SendEmailParam param)
     {
-        var url = _httpClient.BaseAddress + "/api/MailCenter/SendEmail";
+        Uri baseAddressUri = _httpClient.BaseAddress;
+        string baseAddress = baseAddressUri.ToString();
 
+        if (baseAddress.EndsWith("/"))
+        {
+            baseAddress = baseAddress.TrimEnd('/');
+        }
+
+        Uri baseAddressUrinew = new Uri(baseAddress);
+        var url = baseAddressUrinew + "/api/MailCenter/SendEmail";
         using var formData = new MultipartFormDataContent
         {
             { new StringContent(param.FromName), "FromName" },
@@ -71,7 +79,21 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
             formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
         }
 
-        await _httpClient.PostAsync(url, formData);
+        //await _httpClient.PostAsync(url, formData);
+
+        //// Check if the request was successful
+        HttpResponseMessage response = await _httpClient.PostAsync(url, formData);
+        if (response.IsSuccessStatusCode)
+        {
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Success! Response: {responseBody}");
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+            string errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error Details: {errorContent}");
+        }
     }
 
     #region auth

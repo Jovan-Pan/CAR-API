@@ -59,5 +59,14 @@ namespace Services.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setting Not Found.
+        /// </summary>
+        internal static string M0001 {
+            get {
+                return ResourceManager.GetString("M0001", resourceCulture);
+            }
+        }
     }
 }
