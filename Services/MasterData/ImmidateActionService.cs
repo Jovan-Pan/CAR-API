@@ -28,19 +28,19 @@ namespace Services.MasterData
             var result = await data.ImmAct.GetImmidateAction(search, SearchADV);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> InsertNewImmidateAction(string ImmidateName, int plant)
+        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> InsertNewImmidateAction(string ImmidateName, int plant, string userId)
         {
-            var result = await data.ImmAct.InsertNewImmidateAction(ImmidateName,plant);
+            var result = await data.ImmAct.InsertNewImmidateAction(ImmidateName, plant, userId);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> UpdateImmidateAction(string ImmidateName, int id)
+        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> UpdateImmidateAction(string ImmidateName, int id, string userId)
         {
-            var result = await data.ImmAct.UpdateImmidateAction(ImmidateName, id);
+            var result = await data.ImmAct.UpdateImmidateAction(ImmidateName, id,userId);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataDelete( int id)
+        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataDelete( int id, string userId)
         {
-            var result = await data.ImmAct.DataDelete( id);
+            var result = await data.ImmAct.DataDelete( id, userId);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataPermDelete(int id)
@@ -48,9 +48,9 @@ namespace Services.MasterData
             var result = await data.ImmAct.DataPermDelete(id);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataRecover(int id)
+        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataRecover(int id, string userId)
         {
-            var result = await data.ImmAct.DataRecover(id);
+            var result = await data.ImmAct.DataRecover(id,userId);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
         public async Task<byte[]> Template()

@@ -12,11 +12,11 @@ namespace Contracts.Repository.MasterData
     {
         Task<IEnumerable<string>> getImmidateActionList(int plant);
         Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(string search, string SearchADV);
-        Task<IEnumerable<ImmidateActionDto>> InsertNewImmidateAction(string ImmidateName, int plant);
-        Task<IEnumerable<ImmidateActionDto>> UpdateImmidateAction(string ImmidateName, int id);
-        Task<IEnumerable<ImmidateActionDto>> DataDelete(int id);
+        Task<IEnumerable<ImmidateActionDto>> InsertNewImmidateAction(string ImmidateName, int plant, string userId);
+        Task<IEnumerable<ImmidateActionDto>> UpdateImmidateAction(string ImmidateName, int id, string userId);
+        Task<IEnumerable<ImmidateActionDto>> DataDelete(int id, string userId);
         Task<IEnumerable<ImmidateActionDto>> DataPermDelete(int id);
-        Task<IEnumerable<ImmidateActionDto>> DataRecover(int id);
+        Task<IEnumerable<ImmidateActionDto>> DataRecover(int id, string userId);
         Task<byte[]> Template();
         Task<IEnumerable<string>> Import(string filePath, string userId);
 

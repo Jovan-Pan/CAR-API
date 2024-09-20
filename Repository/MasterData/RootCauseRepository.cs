@@ -47,26 +47,26 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<RootCauseCategoryDto>(query, new { search = search, SearchADV = SearchADV });
         }
-        public async Task<IEnumerable<RootCauseCategoryDto>> InsertNewRootCauseCategory(string RootCauseName)
+        public async Task<IEnumerable<RootCauseCategoryDto>> InsertNewRootCauseCategory(string RootCauseName, string userId, int plant)
         {
             string query = RootCauseQuery.InsertNewRootCauseName;
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { RootCauseName = RootCauseName });
+            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { RootCauseName = RootCauseName , userId = userId , plant = plant });
         }
-        public async Task<IEnumerable<RootCauseCategoryDto>> UpdateNewRootCauseCategory(string RootCauseName, int id)
+        public async Task<IEnumerable<RootCauseCategoryDto>> UpdateNewRootCauseCategory(string RootCauseName, int id, string userId)
         {
             string query = RootCauseQuery.UpdateNewRootCauseCategory;
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { RootCauseName = RootCauseName,id=id });
+            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { RootCauseName = RootCauseName,id=id , userId = userId });
         }
-        public async Task<IEnumerable<RootCauseCategoryDto>> DataDelete(int id)
+        public async Task<IEnumerable<RootCauseCategoryDto>> DataDelete(int id, string userId)
         {
             string query = RootCauseQuery.DataDelete;
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { id = id });
+            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { id = id , userId = userId });
         }
         public async Task<IEnumerable<RootCauseCategoryDto>> DataPermDelete(int id)
         {
@@ -75,12 +75,12 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<RootCauseCategoryDto>(query, new { id = id });
         }
-        public async Task<IEnumerable<RootCauseCategoryDto>> DataRecover(int id)
+        public async Task<IEnumerable<RootCauseCategoryDto>> DataRecover(int id, string userId)
         {
             string query = RootCauseQuery.DataRecover;
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { id = id });
+            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { id = id , userId = userId });
         }
         public async Task<byte[]> Template()
         {

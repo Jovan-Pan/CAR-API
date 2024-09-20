@@ -24,23 +24,23 @@ namespace WebApi.Controllers
             return Ok(result);
         }
         [HttpPost(nameof(InsertNewImmidateAction))]
-        public async Task<IActionResult> InsertNewImmidateAction([FromForm] string ImmidateName, [FromForm] int plant)
+        public async Task<IActionResult> InsertNewImmidateAction([FromForm] string ImmidateName, [FromForm] int plant, [FromForm] string userId)
         {
-            var result = await business.ImmAct.InsertNewImmidateAction(ImmidateName, plant);
+            var result = await business.ImmAct.InsertNewImmidateAction(ImmidateName, plant, userId);
             return Ok(result);
 
         }
         [HttpPost(nameof(UpdateImmidateAction))]
-        public async Task<IActionResult> UpdateImmidateAction([FromForm] string ImmidateName, [FromForm] int id)
+        public async Task<IActionResult> UpdateImmidateAction([FromForm] string ImmidateName, [FromForm] int id, [FromForm] string userId)
         {
-            var result = await business.ImmAct.UpdateImmidateAction(ImmidateName, id);
+            var result = await business.ImmAct.UpdateImmidateAction(ImmidateName, id, userId);
             return Ok(result);
 
         }
         [HttpPost(nameof(DataDelete))]
-        public async Task<IActionResult> DataDelete( [FromForm] int id)
+        public async Task<IActionResult> DataDelete( [FromForm] int id, [FromForm] string userId)
         {
-            var result = await business.ImmAct.DataDelete(id);
+            var result = await business.ImmAct.DataDelete(id,userId);
             return Ok(result);
 
         }
@@ -52,9 +52,9 @@ namespace WebApi.Controllers
 
         }
         [HttpPost(nameof(DataRecover))]
-        public async Task<IActionResult> DataRecover([FromForm] int id)
+        public async Task<IActionResult> DataRecover([FromForm] int id, [FromForm] string userId)
         {
-            var result = await business.ImmAct.DataRecover(id);
+            var result = await business.ImmAct.DataRecover(id, userId);
             return Ok(result);
 
         }

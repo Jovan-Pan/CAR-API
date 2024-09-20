@@ -50,30 +50,30 @@ namespace Repository.CAR
             return await conn.QueryAsync<MailSetiingDto>(query, new { search = search, ATsearchADV = ATsearchADV, ATDsearchADV = ATDsearchADV });
 
         }
-        public async Task<IEnumerable<MailSetiingDto>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail)
+        public async Task<IEnumerable<MailSetiingDto>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail, string userId)
         {
             string query = string.Format(SendMailSettingQuery.InsertNewSendMailSetting);
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query,new {plant = plant, actiontype = actiontype, actiontypedesc = actiontypedesc, issendemail = issendemail });
+            return await conn.QueryAsync<MailSetiingDto>(query,new {plant = plant, actiontype = actiontype, actiontypedesc = actiontypedesc, issendemail = issendemail, userId = userId });
 
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail)
+        public async Task<IEnumerable<MailSetiingDto>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail, string userId)
         {
             string query = string.Format(SendMailSettingQuery.UpdateSendMailSetting);
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, actiontypedesc = actiontypedesc, issendemail = issendemail });
+            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, actiontypedesc = actiontypedesc, issendemail = issendemail , userId =  userId});
 
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> DataDelete(string actiontype)
+        public async Task<IEnumerable<MailSetiingDto>> DataDelete(string actiontype, string userId)
         {
             string query = string.Format(SendMailSettingQuery.DataDelete);
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype});
+            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, userId = userId});
 
         }
 
@@ -86,12 +86,12 @@ namespace Repository.CAR
 
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> DataRecover(string actiontype)
+        public async Task<IEnumerable<MailSetiingDto>> DataRecover(string actiontype, string userId)
         {
             string query = string.Format(SendMailSettingQuery.DataRecover);
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype });
+            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, userId = userId });
 
         }
         public async Task<byte[]> Template()

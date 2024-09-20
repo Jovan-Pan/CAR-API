@@ -30,17 +30,17 @@ namespace Repository.Query
 
         public static readonly string SearchadvData = @"SELECT * FROM SendEmailSetting WHERE actionType LIKE '%' + @ATsearchADV + '%' OR actionTypeDesc LIKE '%' + @ATDsearchADV + '%'";
 
-        public static readonly string InsertNewSendMailSetting = @"INSERT INTO SendEmailSetting ( plant,ActionType,ActionTypeDesc,isSendEmail,CreatedBy,CreatedByName,CreatedDate) VALUES (@plant,@ActionType,@ActionTypeDesc,@isSendEmail,SUSER_SNAME(),HOST_name(),GETDATE())";
+        public static readonly string InsertNewSendMailSetting = @"INSERT INTO SendEmailSetting ( plant,ActionType,ActionTypeDesc,isSendEmail,CreatedBy,CreatedByName,CreatedDate) VALUES (@plant,@ActionType,@ActionTypeDesc,@isSendEmail,@UserId,@UserId,GETDATE())";
 
         public static readonly string UpdateSendMailSetting = @" UPDATE SendEmailSetting
-        SET ActionTypeDesc = @ActionTypeDesc , isSendEmail = @issendemail , UpdatedBy=SUSER_SNAME(), UpdatedByName=HOST_name(), UpdatedDate=GETDATE()
+        SET ActionTypeDesc = @ActionTypeDesc , isSendEmail = @issendemail , UpdatedBy=@UserId, UpdatedByName=@UserId, UpdatedDate=GETDATE()
         WHERE ActionType =@ActionType";
 
-        public static readonly string DataDelete = @"UPDATE SendEmailSetting SET isDeleted = 1, UpdatedBy = suser_sname(), UpdatedByName=HOST_name(), UpdatedDate =getdate() WHERE ActionType =@ActionType";
+        public static readonly string DataDelete = @"UPDATE SendEmailSetting SET isDeleted = 1, UpdatedBy = @UserId, UpdatedByName=@UserId, UpdatedDate =getdate() WHERE ActionType =@ActionType";
 
         public static readonly string DataPermDelete = @"DELETE FROM SendEmailSetting WHERE ActionType =@ActionType ";
 
-        public static readonly string DataRecover = @"UPDATE SendEmailSetting SET isDeleted = 0, UpdatedBy = suser_sname(), UpdatedByName=HOST_name(), UpdatedDate =getdate() WHERE ActionType =@ActionType";
+        public static readonly string DataRecover = @"UPDATE SendEmailSetting SET isDeleted = 0, UpdatedBy = @UserId, UpdatedByName=@UserId, UpdatedDate =getdate() WHERE ActionType =@ActionType";
 
         public static readonly string Import = @"
                                                 UPDATE SendEmailSetting

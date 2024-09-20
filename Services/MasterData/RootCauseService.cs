@@ -28,19 +28,19 @@ namespace Services.MasterData
             var result = await data.RootCause.GetRootCauseCategory(search, SearchADV);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> InsertNewRootCauseCategory(string RootCauseName)
+        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> InsertNewRootCauseCategory(string RootCauseName, string userId, int plant)
         {
-            var result = await data.RootCause.InsertNewRootCauseCategory(RootCauseName);
+            var result = await data.RootCause.InsertNewRootCauseCategory(RootCauseName, userId, plant);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> UpdateNewRootCauseCategory(string RootCauseName, int id)
+        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> UpdateNewRootCauseCategory(string RootCauseName, int id, string userId)
         {
-            var result = await data.RootCause.UpdateNewRootCauseCategory(RootCauseName,id);
+            var result = await data.RootCause.UpdateNewRootCauseCategory(RootCauseName,id, userId);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataDelete(int id)
+        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataDelete(int id, string userId)
         {
-            var result = await data.RootCause.DataDelete(id);
+            var result = await data.RootCause.DataDelete(id,userId);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataPermDelete(int id)
@@ -48,9 +48,9 @@ namespace Services.MasterData
             var result = await data.RootCause.DataPermDelete(id);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataRecover(int id)
+        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataRecover(int id, string userId)
         {
-            var result = await data.RootCause.DataRecover(id);
+            var result = await data.RootCause.DataRecover(id, userId);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
         public async Task<byte[]> Template()

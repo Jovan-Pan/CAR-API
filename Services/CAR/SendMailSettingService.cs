@@ -109,20 +109,20 @@ namespace Services.CAR
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
 
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail, string userId)
         {
-            var result = await data.SMS.InsertNewSendMailSetting(plant,actiontype, actiontypedesc, issendemail);
+            var result = await data.SMS.InsertNewSendMailSetting(plant,actiontype, actiontypedesc, issendemail,userId);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
 
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail, string userId)
         {
-            var result = await data.SMS.UpdateSendMailSetting(actiontype, actiontypedesc, issendemail);
+            var result = await data.SMS.UpdateSendMailSetting(actiontype, actiontypedesc, issendemail,userId);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataDelete(string actiontype)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataDelete(string actiontype, string userId)
         {
-            var result = await data.SMS.DataDelete(actiontype);
+            var result = await data.SMS.DataDelete(actiontype,userId);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataPermDelete(string actiontype)
@@ -130,9 +130,9 @@ namespace Services.CAR
             var result = await data.SMS.DataPermDelete(actiontype);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataRecover(string actiontype)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> DataRecover(string actiontype, string userId)
         {
-            var result = await data.SMS.DataRecover(actiontype);
+            var result = await data.SMS.DataRecover(actiontype,userId);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
         public async Task<byte[]> Template()
