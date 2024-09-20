@@ -69,7 +69,7 @@ namespace Repository.CAR
             }   
             else 
             {
-                query = "SELECT ID, Description AS ErrDescription, UserID AS AddedBy, DateOccured AS AddedOn FROM ERRORLOG WHERE DateOccured BETWEEN @startdate AND @enddate";
+                query = "SELECT ID, Description AS ErrDescription, UserID AS AddedBy, DateOccured AS AddedOn FROM ERRORLOG WHERE CAST(DateOccured AS DATE) BETWEEN @startdate AND @enddate";
             }
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<ErrorLogModel>(query, new { startdate = startdate, enddate = enddate });
