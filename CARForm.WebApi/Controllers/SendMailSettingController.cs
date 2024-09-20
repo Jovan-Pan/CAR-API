@@ -33,23 +33,23 @@ namespace WebApi.Controllers
         }
         [AllowAnonymous]
         [HttpPost(nameof(InsertNewSendMailSetting))]
-        public async Task<IActionResult> InsertNewSendMailSetting([FromForm] string plant, [FromForm] string actiontype, [FromForm] string actiontypedesc, [FromForm] bool issendemail)
+        public async Task<IActionResult> InsertNewSendMailSetting([FromForm] string plant, [FromForm] string actiontype, [FromForm] string actiontypedesc, [FromForm] bool issendemail, [FromForm] string userId)
         {
-            var result = await business.sendmailsetting.InsertNewSendMailSetting(plant, actiontype, actiontypedesc, issendemail);
+            var result = await business.sendmailsetting.InsertNewSendMailSetting(plant, actiontype, actiontypedesc, issendemail,userId);
             return Ok(result);
         }
         [AllowAnonymous]
         [HttpPost(nameof(UpdateSendMailSetting))]
-        public async Task<IActionResult> UpdateSendMailSetting([FromForm] string actiontype, [FromForm] string actiontypedesc, [FromForm] bool issendemail)
+        public async Task<IActionResult> UpdateSendMailSetting([FromForm] string actiontype, [FromForm] string actiontypedesc, [FromForm] bool issendemail, [FromForm] string userId)
         {
-            var result = await business.sendmailsetting.UpdateSendMailSetting(actiontype, actiontypedesc, issendemail);
+            var result = await business.sendmailsetting.UpdateSendMailSetting(actiontype, actiontypedesc, issendemail, userId);
             return Ok(result);
         }
         [AllowAnonymous]
         [HttpPost(nameof(DataDelete))]
-        public async Task<IActionResult> DataDelete([FromForm] string actiontype)
+        public async Task<IActionResult> DataDelete([FromForm] string actiontype, [FromForm] string userId)
         {
-            var result = await business.sendmailsetting.DataDelete(actiontype);
+            var result = await business.sendmailsetting.DataDelete(actiontype,userId);
             return Ok(result);
         }
         [AllowAnonymous]
@@ -61,9 +61,9 @@ namespace WebApi.Controllers
         }
         [AllowAnonymous]
         [HttpPost(nameof(DataRecover))]
-        public async Task<IActionResult> DataRecover([FromForm] string actiontype)
+        public async Task<IActionResult> DataRecover([FromForm] string actiontype, [FromForm] string userId)
         {
-            var result = await business.sendmailsetting.DataRecover(actiontype);
+            var result = await business.sendmailsetting.DataRecover(actiontype,userId);
             return Ok(result);
         }
         [AllowAnonymous]

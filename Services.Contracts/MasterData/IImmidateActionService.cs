@@ -13,11 +13,11 @@ namespace Services.Contracts.MasterData
     {
         Task<ApiResponse<IEnumerable<string>>> getImmidateActionList(int plant);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> GetImmidateAction(string? search, string? SearchADV);
-        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> InsertNewImmidateAction(string ImmidateName, int plant);
-        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> UpdateImmidateAction(string ImmidateName, int id);
-        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataDelete(int id);
+        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> InsertNewImmidateAction(string ImmidateName, int plant, string userId);
+        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> UpdateImmidateAction(string ImmidateName, int id, string userId);
+        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataDelete(int id,string userId);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataPermDelete(int id);
-        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataRecover(int id);
+        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataRecover(int id, string userId);
         Task<byte[]> Template();
         Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);
     }

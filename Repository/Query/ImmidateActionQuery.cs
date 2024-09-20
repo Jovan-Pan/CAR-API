@@ -9,39 +9,39 @@ namespace Repository.Query
     public class ImmidateActionQuery
     {
         public static readonly string getImmidateActionList = @"
-        select distinct ImmidateName from immedieteActionCategory
+        select distinct ImmidateName from immedieteAction
         where DelFlag = 0 and Plant = @plant";
 
         public static readonly string GetImmidateAction = @"
-        select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag from immedieteActionCategory";
+        select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag from immedieteAction";
 
-        public static readonly string SearchadvData = @"SELECT * FROM immedieteActionCategory WHERE ImmidateName LIKE '%' + @search + '%'";
+        public static readonly string SearchadvData = @"SELECT * FROM immedieteAction WHERE ImmidateName LIKE '%' + @SearchADV + '%'";
 
-        public static readonly string SearchDatainDB = @"SELECT * FROM immedieteActionCategory WHERE ImmidateName LIKE '%' + @search + '%'";
+        public static readonly string SearchDatainDB = @"SELECT * FROM immedieteAction WHERE ImmidateName LIKE '%' + @search + '%'";
 
-        public static readonly string InsertNewImmidateAction = @"INSERT INTO immedieteActionCategory ( plant,ImmidateName,CreatedBy,CreatedDate) VALUES (@plant,@ImmidateName,SUSER_SNAME(),GETDATE())";
+        public static readonly string InsertNewImmidateAction = @"INSERT INTO immedieteAction ( plant,ImmidateName,CreatedBy,CreatedDate) VALUES (@plant,@ImmidateName,@userId,GETDATE())";
 
-        public static readonly string UpdateImmidateAction = @" UPDATE immedieteActionCategory
-        SET ImmidateName =@ImmidateName,UpdatedBy=SUSER_SNAME(),UpdatedDate=GETDATE()
+        public static readonly string UpdateImmidateAction = @" UPDATE immedieteAction
+        SET ImmidateName =@ImmidateName,UpdatedBy=@userId,UpdatedDate=GETDATE()
         WHERE ID=@id";
 
-        public static readonly string DataDelete = @"UPDATE immedieteActionCategory SET DelFlag = 1, UpdatedBy = suser_sname(), UpdatedDate =getdate() WHERE ID = @id";
+        public static readonly string DataDelete = @"UPDATE immedieteAction SET DelFlag = 1, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
 
-        public static readonly string DataPermDelete = @"DELETE FROM immedieteActionCategory WHERE ID = @id ";
+        public static readonly string DataPermDelete = @"DELETE FROM immedieteAction WHERE ID = @id ";
 
-        public static readonly string DataRecover = @"UPDATE immedieteActionCategory SET DelFlag = 0, UpdatedBy = suser_sname(), UpdatedDate =getdate() WHERE ID = @id";
+        public static readonly string DataRecover = @"UPDATE immedieteAction SET DelFlag = 0, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
 
-        public static readonly string Import = @"UPDATE immedieteActionCategory 
+        public static readonly string Import = @"UPDATE immedieteAction 
                                                 SET 
                                                     Plant = B.Plant, 
                                                     ImmidateName = B.[Immidate Name], 
                                                     UpdatedBy = UPPER(@UserId),
                                                     UpdatedDate = GETDATE(), 
                                                     Delflag = 0 
-                                                FROM immedieteActionCategory A 
+                                                FROM immedieteAction A 
                                                 INNER JOIN ##temp B 
                                                 ON (A.ImmidateName = B.[Immidate Name])
-                                                INSERT INTO immedieteActionCategory 
+                                                INSERT INTO immedieteAction 
                                                 (Plant, ImmidateName, CreatedBy, CreatedDate, Delflag) 
                                                 SELECT 
                                                     B.Plant,
@@ -53,7 +53,7 @@ namespace Repository.Query
                                                 WHERE 
                                                     NOT EXISTS (
                                                         SELECT A.ImmidateName
-                                                        FROM immedieteActionCategory A 
+                                                        FROM immedieteAction A 
                                                         WHERE A.ImmidateName = B.[Immidate Name]
                                                     )";
     }

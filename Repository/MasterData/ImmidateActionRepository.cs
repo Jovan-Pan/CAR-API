@@ -42,24 +42,24 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<ImmidateActionDto>(query, new { search = search, SearchADV = SearchADV });
         }
-        public async Task<IEnumerable<ImmidateActionDto>> InsertNewImmidateAction(string ImmidateName, int plant)
+        public async Task<IEnumerable<ImmidateActionDto>> InsertNewImmidateAction(string ImmidateName, int plant, string userId)
         {
             string query = ImmidateActionQuery.InsertNewImmidateAction;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<ImmidateActionDto>(query, new { ImmidateName = ImmidateName , plant = plant });
+            return await conn.QueryAsync<ImmidateActionDto>(query, new { ImmidateName = ImmidateName , plant = plant , userId = userId });
         }
-        public async Task<IEnumerable<ImmidateActionDto>> UpdateImmidateAction(string ImmidateName, int id)
+        public async Task<IEnumerable<ImmidateActionDto>> UpdateImmidateAction(string ImmidateName, int id, string userId)
         {
             string query = ImmidateActionQuery.UpdateImmidateAction;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<ImmidateActionDto>(query, new { ImmidateName = ImmidateName, id = id });
+            return await conn.QueryAsync<ImmidateActionDto>(query, new { ImmidateName = ImmidateName, id = id, userId = userId });
 
         }
-        public async Task<IEnumerable<ImmidateActionDto>> DataDelete(int id)
+        public async Task<IEnumerable<ImmidateActionDto>> DataDelete(int id, string userId)
         {
             string query = ImmidateActionQuery.DataDelete;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<ImmidateActionDto>(query, new { id = id });
+            return await conn.QueryAsync<ImmidateActionDto>(query, new { id = id , userId = userId });
 
         }
         public async Task<IEnumerable<ImmidateActionDto>> DataPermDelete(int id)
@@ -69,11 +69,11 @@ namespace Repository.MasterData
             return await conn.QueryAsync<ImmidateActionDto>(query, new { id = id });
 
         }
-        public async Task<IEnumerable<ImmidateActionDto>> DataRecover(int id)
+        public async Task<IEnumerable<ImmidateActionDto>> DataRecover(int id, string userId)
         {
             string query = ImmidateActionQuery.DataRecover;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<ImmidateActionDto>(query, new { id = id });
+            return await conn.QueryAsync<ImmidateActionDto>(query, new { id = id , userId = userId});
 
         }
         public async Task<byte[]> Template()
