@@ -9,39 +9,39 @@ namespace Repository.Query
     public class ImmidateActionQuery
     {
         public static readonly string getImmidateActionList = @"
-        select distinct ImmidateName from immedieteAction
+        select distinct ImmidateName from ImmidateAction
         where DelFlag = 0 and Plant = @plant";
 
         public static readonly string GetImmidateAction = @"
-        select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag from immedieteAction";
+        select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag from ImmidateAction";
 
-        public static readonly string SearchadvData = @"SELECT * FROM immedieteAction WHERE ImmidateName LIKE '%' + @SearchADV + '%'";
+        public static readonly string SearchadvData = @"SELECT * FROM ImmidateAction WHERE ImmidateName LIKE '%' + @SearchADV + '%'";
 
-        public static readonly string SearchDatainDB = @"SELECT * FROM immedieteAction WHERE ImmidateName LIKE '%' + @search + '%'";
+        public static readonly string SearchDatainDB = @"SELECT * FROM ImmidateAction WHERE ImmidateName LIKE '%' + @search + '%'";
 
-        public static readonly string InsertNewImmidateAction = @"INSERT INTO immedieteAction ( plant,ImmidateName,CreatedBy,CreatedDate) VALUES (@plant,@ImmidateName,@userId,GETDATE())";
+        public static readonly string InsertNewImmidateAction = @"INSERT INTO ImmidateAction ( plant,ImmidateName,CreatedBy,CreatedDate) VALUES (@plant,@ImmidateName,@userId,GETDATE())";
 
-        public static readonly string UpdateImmidateAction = @" UPDATE immedieteAction
+        public static readonly string UpdateImmidateAction = @" UPDATE ImmidateAction
         SET ImmidateName =@ImmidateName,UpdatedBy=@userId,UpdatedDate=GETDATE()
         WHERE ID=@id";
 
-        public static readonly string DataDelete = @"UPDATE immedieteAction SET DelFlag = 1, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
+        public static readonly string DataDelete = @"UPDATE ImmidateAction SET DelFlag = 1, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
 
-        public static readonly string DataPermDelete = @"DELETE FROM immedieteAction WHERE ID = @id ";
+        public static readonly string DataPermDelete = @"DELETE FROM ImmidateAction WHERE ID = @id ";
 
-        public static readonly string DataRecover = @"UPDATE immedieteAction SET DelFlag = 0, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
+        public static readonly string DataRecover = @"UPDATE ImmidateAction SET DelFlag = 0, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
 
-        public static readonly string Import = @"UPDATE immedieteAction 
+        public static readonly string Import = @"UPDATE ImmidateAction 
                                                 SET 
                                                     Plant = B.Plant, 
                                                     ImmidateName = B.[Immidate Name], 
                                                     UpdatedBy = UPPER(@UserId),
                                                     UpdatedDate = GETDATE(), 
                                                     Delflag = 0 
-                                                FROM immedieteAction A 
+                                                FROM ImmidateAction A 
                                                 INNER JOIN ##temp B 
                                                 ON (A.ImmidateName = B.[Immidate Name])
-                                                INSERT INTO immedieteAction 
+                                                INSERT INTO ImmidateAction 
                                                 (Plant, ImmidateName, CreatedBy, CreatedDate, Delflag) 
                                                 SELECT 
                                                     B.Plant,
@@ -53,7 +53,7 @@ namespace Repository.Query
                                                 WHERE 
                                                     NOT EXISTS (
                                                         SELECT A.ImmidateName
-                                                        FROM immedieteAction A 
+                                                        FROM ImmidateAction A 
                                                         WHERE A.ImmidateName = B.[Immidate Name]
                                                     )";
     }
