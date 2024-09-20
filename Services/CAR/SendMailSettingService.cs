@@ -84,6 +84,9 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
                             body = body.Replace("@Data", Datadetails);
                             body = body.Replace("@UserId", mydata.UserName);
+
+                            body += globalmailMaster.FirstOrDefault().EmailFooter;
+                            body = body.Replace("@Emaillink", globalmailMaster.FirstOrDefault().Emaillink);
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = globalmailMaster.FirstOrDefault().ReplyMailid;
