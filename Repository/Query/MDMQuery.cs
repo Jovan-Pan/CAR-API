@@ -17,7 +17,7 @@ namespace Repository.Query
         ";
 
         public static readonly string GetPlantList = @"
-        Select Plant 
+        Select distinct Plant 
         FROM TGROUP g
         INNER JOIN TUSER_AUTHORIZE ua on (g.GroupID = ua.GroupID)
         WHERE g.System = 'CAR' AND ua.UserId = @userId
