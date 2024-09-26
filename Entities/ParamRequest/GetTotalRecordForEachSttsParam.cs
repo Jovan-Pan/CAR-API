@@ -12,5 +12,6 @@ namespace Entities.ParamRequest
         public string? vendorcode { get; set; }
         public IEnumerable<string>? DeptList { get; set; }
         public IEnumerable<string>? ProductList { get; set; }
+        public int defDataShow { get; set; }
     }
 }
