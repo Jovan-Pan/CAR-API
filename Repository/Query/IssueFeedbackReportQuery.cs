@@ -23,7 +23,7 @@ namespace Repository.Query
 	        COUNT(CASE WHEN status = 'REVIEW' THEN 1 END) AS review,
 	        COUNT(CASE WHEN status = 'COMPLETE' THEN 1 END) AS Complete
         FROM IssueFeedback
-        WHERE Plant = @plant {0} ";
+        WHERE Plant = @plant and DetectionDate >= DATEADD(MONTH, -@defDataShow, GETDATE())   {0} ";
 
         public static readonly string GetFormNumberListFilter = @" select distinct FormNo from IssueFeedback
         where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
@@ -66,13 +66,13 @@ namespace Repository.Query
         ,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
         ,PDAActionBy,PDAActionByName,PDAActionDate,PDAActionImmAct,PDAActionComment
         ,PDAActionUpdatedBy,PDAActionUpdatedByName,PDAActionUpdatedDate
-        ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate
+        ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate,PDAAprovalComment as pdaAprovalComment,isPDAActionReject
         ,ImmActRecDetail,CostPC,Curency,ActionResult
         ,ReceiveActionRootCause,RootCauseDetail,procecessGrpCode
-        ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason
+        ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason,isReceiverPICReject
         ,ReceiveActionBy,ReceiveActionByName,ReceiveActionDate
         ,ReceiveActionUpdatedBy,ReceiveActionUpdatedByName,ReceiveActionUpdatedDate
-        ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate
+        ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment,isReceiveMngReject
 
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment,isPDAReviewResultAprov
 

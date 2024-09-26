@@ -49,6 +49,7 @@ namespace Entities.ParamRequest
         public DateTime? ReviewDate { get; set; }
         public string? ReviewMethod { get; set; }
 
+        public string? mailWStatus { get; set; }
         public string? mailactionType { get; set; }
         public string? sendmailUserAction { get; set; }
     }

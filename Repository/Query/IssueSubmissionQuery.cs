@@ -115,6 +115,20 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ISSUED',
+        PDAAprovalComment = @Comment,
+        isPDAActionReject = 0,
+        PDAAprovalBy = @UserId,
+        PDAAprovalByName = @UserName,
+        PDAAprovalDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string pdaActionReject = @"
+        update IssueFeedback
+        set 
+        Status = 'OPEN',
+        PDAAprovalComment = @rejectReason,
+        isPDAActionReject = 1,
         PDAAprovalBy = @UserId,
         PDAAprovalByName = @UserName,
         PDAAprovalDate = GETDATE()
@@ -124,7 +138,7 @@ namespace Repository.Query
         public static readonly string ReceiverAction = @"
         update IssueFeedback
         set 
-        Status = 'ACTION-ISSUED',
+        Status = @IssueStatus,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -145,7 +159,8 @@ namespace Repository.Query
         public static readonly string ReceiverActionUpdate = @"
         update IssueFeedback
         set 
-        Status = 'ACTION-ISSUED',
+        Status = @IssueStatus,
+        isReceiverPICReject = 0,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -166,8 +181,10 @@ namespace Repository.Query
         public static readonly string ReceiverIssueReject = @"
         update IssueFeedback
         set 
-        Status = 'ISSUED-REJECTED (WA)',
+        Status = 'OPEN',
+        isReceiverPICReject = 1,
         ReceiveActionRejectReason = @rejectReason,
+        ReceiveActionComment = @rejectReason,
         ReceiveActionBy = @UserId,
         ReceiveActionByName = @UserName,
         ReceiveActionDate = GETDATE()
@@ -178,6 +195,20 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ANALYZE',
+        isReceiveMngReject = 0,
+        ReceiveAprovalComment = @Comment,
+        ReceiveAprovalBy = @UserId,
+        ReceiveAprovalByName = @UserName,
+        ReceiveAprovalDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string ReceiverMngReject = @"
+        update IssueFeedback
+        set 
+        Status = 'ISSUED',
+        isReceiveMngReject = 1,
+        ReceiveAprovalComment = @rejectReason,
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,
         ReceiveAprovalDate = GETDATE()

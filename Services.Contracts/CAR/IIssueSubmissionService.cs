@@ -18,10 +18,12 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<string>> pdaDecision(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaDecisionUpdate(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaApproval(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> pdaActionReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverAction(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverActionUpdate(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverIssueReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverApproval(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> ReceiverMngReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverApprovalToReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> PDAReviewerVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> PDAReviewerReject(IssueSubmissionParameters mydata);
