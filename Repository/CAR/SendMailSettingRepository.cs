@@ -96,7 +96,7 @@ namespace Repository.CAR
         }
         public async Task<byte[]> Template()
         {
-            string filename = Path.Combine(Directory.GetCurrentDirectory(), "Template", "Send Email Setting.xlsx");
+            string filename = AppDomain.CurrentDomain.BaseDirectory + "Template\\Send Email Setting.xlsx";
             return await System.IO.File.ReadAllBytesAsync(filename);
         }
         public async Task<IEnumerable<string>> Import(string filePath, string userId)

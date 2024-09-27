@@ -78,7 +78,7 @@ namespace Repository.MasterData
         }
         public async Task<byte[]> Template()
         {
-            string filename = Path.Combine(Directory.GetCurrentDirectory(), "Template", "immidate Action.xlsx");
+            string filename = AppDomain.CurrentDomain.BaseDirectory + "Template\\immidate Action.xlsx";
             return await System.IO.File.ReadAllBytesAsync(filename);
         }
         public async Task<IEnumerable<string>> Import(string filePath, string userId)
