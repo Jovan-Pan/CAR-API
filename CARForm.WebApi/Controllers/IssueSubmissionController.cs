@@ -26,6 +26,13 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(issuerMgrReject))]
+        public async Task<IActionResult> issuerMgrReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerMgrReject(data);
+            return Ok(result);
+        }
+
         [HttpPost(nameof(issuerMngUpdate))]
         public async Task<IActionResult> issuerMngUpdate([FromForm] IssueSubmissionParameters data)
         {

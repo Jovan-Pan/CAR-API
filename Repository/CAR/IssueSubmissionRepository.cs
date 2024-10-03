@@ -71,6 +71,13 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> issuerMgrReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.issuerMgrReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
         public async Task<int> issuerMngUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.issuerMngUpdate;

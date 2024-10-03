@@ -49,7 +49,7 @@ namespace Repository.Query
 
         public static readonly string GetMatGrp = @"
         select distinct Matgrp  from TMATERIAL
-        where DelFlag = 0 and PlantStatus not in ('Z4','Z9') 
+        where DelFlag = 0 and isnull(PlantStatus,'') not in ('Z4','Z9') 
         and Plant = @plant and (Product = @product or @product is null)
         and Product in @productAuthList
         order by Matgrp asc
@@ -63,7 +63,7 @@ namespace Repository.Query
         public static readonly string GetMaterial = @"
         select distinct Material,MaterialDesc,Product,matgrp,MaterialType from 
         TMATERIAL 
-        where DelFlag = 0 and Plant = @plant  and PlantStatus not in ('Z4','Z9')
+        where DelFlag = 0 and Plant = @plant  and isnull(PlantStatus,'') not in ('Z4','Z9')
         and (Product = @product or @product is null) 
         AND Product IN @productAuthList
         and (matgrp = @matgroup or @matgroup is null)
@@ -75,7 +75,7 @@ namespace Repository.Query
         public static readonly string GetMaterialWoProdAut = @"
         select distinct Material,MaterialDesc,Product,matgrp,MaterialType from 
         TMATERIAL 
-        where DelFlag = 0 and Plant = @plant  and PlantStatus not in ('Z4','Z9')
+        where DelFlag = 0 and Plant = @plant  and isnull(PlantStatus,'') not in ('Z4','Z9')
         and (matgrp = @matgroup or @matgroup is null)
         and (MaterialType = @mattype or @mattype is null)
         and (Material like '%'+ @searchTerm +'%' or MaterialDesc like '%'+ @searchTerm +'%' or @searchTerm is null) 

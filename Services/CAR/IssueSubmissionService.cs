@@ -329,6 +329,19 @@ namespace Services.CAR
             }
         }
 
+        public async Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata)
+        {
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+
+            await data.ISM.issuerMgrReject(mydata, transaction);
+
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
+        }
+
         public async Task<ApiResponse<string>> issuerMngUpdate(IssueSubmissionParameters mydata)
         {
             await using var conn = await data.ISM.OpenConnectionAsync();
