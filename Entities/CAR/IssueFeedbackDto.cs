@@ -57,8 +57,8 @@ namespace Entities.CAR
         public string PDAAprovalByName { get; set; }
         public DateTime? PDAAprovalDate { get; set; }
         public string pdaAprovalComment { get; set; }
-        public bool isPDAActionReject { get; set; }
-
+        
+        
         public string ImmActRecDetail { get; set; }
         public decimal? CostPC { get; set; }
         public string Curency { get; set; }
@@ -71,7 +71,6 @@ namespace Entities.CAR
         public string ReceiveCorrectiveAct { get; set; }
         public DateTime? effectivedate { get; set; }
         public string ReceiveActionComment { get; set; }
-        public bool isReceiverPICReject { get; set; }
         public string ReceiveActionRejectReason { get; set; }
         public string ReceiveActionBy { get; set; }
         public string ReceiveActionByName { get; set; }
@@ -83,14 +82,12 @@ namespace Entities.CAR
         public string ReceiveAprovalByName { get; set; }
         public DateTime? ReceiveAprovalDate { get; set; }
         public string receiveAprovalComment { get; set; }
-        public bool isReceiveMngReject { get; set; }
         
         public DateTime? ReviewDate { get; set; }
         public string PDAReviewComment { get; set; }
         public string PDAReviewBy { get; set; }
         public string PDAReviewByName { get; set; }
         public DateTime? PDAReviewDate { get; set; }
-        public bool isPDAReviewResultAprov { get; set; }
 
 
         public string ReviewComment { get; set; }
@@ -98,7 +95,6 @@ namespace Entities.CAR
         public string ReviewBy { get; set; }
         public string ReviewByName { get; set; }
         public DateTime? ReviewSubmitDate { get; set; }
-        public bool isReviewResultAprov { get; set; }
 
 
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }

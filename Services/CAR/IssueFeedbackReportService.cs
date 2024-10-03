@@ -70,7 +70,7 @@ namespace Services.CAR
                 if (param.status.Count() > 0)
                 {
                     Condquery += Environment.NewLine;
-                    Condquery += " AND status IN @status ";
+                    Condquery += @" AND status IN @status ";
                 }
             }
             if (param.dept != null)
@@ -214,7 +214,6 @@ namespace Services.CAR
                                  AcknowledgeByDate = main.AcknowledgeByDate,
                                  AcknowledgeByComment = main.AcknowledgeByComment,
                                  ReceiveActionRejectReason = main.ReceiveActionRejectReason,
-                                 isReceiverPICReject = main.isReceiverPICReject,
                                  PDAActionBy = main.PDAActionBy,
                                  PDAActionByName = main.PDAActionByName,
                                  PDAActionDate = main.PDAActionDate,
@@ -227,7 +226,6 @@ namespace Services.CAR
                                  PDAAprovalByName = main.PDAAprovalByName,
                                  PDAAprovalDate = main.PDAAprovalDate,
                                  pdaAprovalComment = main.pdaAprovalComment,
-                                 isPDAActionReject = main.isPDAActionReject,
                                  ImmActRecDetail = main.ImmActRecDetail,
                                  CostPC = main.CostPC,
                                  Curency = main.Curency,
@@ -250,21 +248,18 @@ namespace Services.CAR
                                  ReceiveAprovalByName = main.ReceiveAprovalByName,
                                  ReceiveAprovalDate = main.ReceiveAprovalDate,
                                  receiveAprovalComment = main.receiveAprovalComment,
-                                 isReceiveMngReject = main.isReceiveMngReject,
 
                                  PDAReviewBy = main.PDAReviewBy,
                                  PDAReviewByName = main.PDAReviewByName,
                                  PDAReviewDate = main.PDAReviewDate,
                                  ReviewDate = main.ReviewDate,
                                  PDAReviewComment = main.PDAReviewComment,
-                                 isPDAReviewResultAprov = main.isPDAReviewResultAprov,
 
                                  ReviewBy = main.ReviewBy,
                                  ReviewByName = main.ReviewByName,
                                  ReviewSubmitDate = main.ReviewSubmitDate,
                                  ReviewComment = main.ReviewComment,
                                  ReviewMethod = main.ReviewMethod,
-                                 isReviewResultAprov = main.isReviewResultAprov,
                              };
             maindata = joinedData;
             
@@ -297,6 +292,10 @@ namespace Services.CAR
             if (param.vendorcode != null)
             {
                 condition = " AND vendorcode = @vendorcode ";
+            }
+            if (param.formType != null)
+            {
+                condition += " AND (FormType IN @formType or '' IN @formType) ";
             }
             var result  = await data.IFR.GetTotalRecordForEachStts(param, condition);
             return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);
