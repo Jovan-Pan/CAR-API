@@ -5,6 +5,7 @@ namespace Services;
 public class ConnectionStrings
 {
     public string MDMConnectionString { get; init; } = string.Empty;
+    public string CARConnectionString { get; init; } = string.Empty;
 }
 
 public class NLogSettings
@@ -63,6 +64,14 @@ public class AppSettings
         get
         {
             return ConnectionStrings is null ? string.Empty : ConnectionStrings.MDMConnectionString;
+        }
+    }
+
+    public string CARConnectionString
+    {
+        get
+        {
+            return ConnectionStrings is null ? string.Empty : ConnectionStrings.CARConnectionString;
         }
     }
     public int CacheExpiryByMinutes { get; init; }

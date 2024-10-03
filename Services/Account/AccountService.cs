@@ -16,6 +16,7 @@ internal sealed class AccountService(
     public async Task<(ApiResponse<UserInfo>, TokenResponse)> Login(LoginDto user)
     {
         var result = await mesMasterApi.Login<TokenResponse>(user, false);
+        
         return (await HandleOtpDisabled(result), result);
     }
 

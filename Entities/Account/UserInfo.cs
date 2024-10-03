@@ -7,6 +7,8 @@ public class UserInfo
     public string UseNam { get; set; } = "";
     public string UseEmail { get; set; } = "";
     public string UseDep { get; set; } = "";
+    public string vendor { get; set; } = "";
+    public string vendorDescription { get; set; } = "";
 
     public UserInfo()
     {
@@ -20,5 +22,7 @@ public class UserInfo
         UseNam = user.UseNam;
         UseEmail = user.UseEmail;
         UseDep = user.UseDep;
+        vendor = user.vendor;
+        vendorDescription = user.vendorDescription;
     }
 }

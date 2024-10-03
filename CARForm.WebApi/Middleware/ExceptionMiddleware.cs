@@ -1,6 +1,7 @@
 ﻿using Contracts.Infrastructure;
 using Entities;
 using Microsoft.AspNetCore.Authentication;
+using Services.Contracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text.Json;
@@ -23,6 +24,10 @@ public class ExceptionMiddleware(RequestDelegate next, ILoggerManager logger)
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
+        var _service = context
+                .RequestServices
+                .GetService<IServiceManager>();
+
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         context.Response.ContentType = "application/json";
 
@@ -40,19 +45,22 @@ public class ExceptionMiddleware(RequestDelegate next, ILoggerManager logger)
                 loggedUserId = userIdClaim.Value;
             }
         }
+        _service.ErrorLog.SaveErrorLog(exception, loggedUserId);
 
         string errorMessage = "Error By: " + loggedUserId + ", Error Description: " + exception.ToString();
         logger.LogError(errorMessage);
 
         var apiResponse = ApiResponse<string>.FailResponse(exception.Message);
-
+        
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
         var apiResponseJson = JsonSerializer.Serialize(apiResponse, options);
-
+        if (exception.Message.Equals("Invalid User Id or Password",StringComparison.OrdinalIgnoreCase)) {
+            context.Response.StatusCode = 200;
+        }
         await context.Response.WriteAsync(apiResponseJson);
     }
 }
