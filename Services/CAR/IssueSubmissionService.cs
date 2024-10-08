@@ -144,7 +144,7 @@ namespace Services.CAR
             }
 
             await transaction.CommitAsync();
-            return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully , New Form No : " + newformno);
+            return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully, New Form No : " + newformno);
         }
 
         public async Task<ApiResponse<string>> issuerUpdate(IssueSubmissionParameters mydata)
@@ -329,6 +329,19 @@ namespace Services.CAR
             }
         }
 
+        public async Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata)
+        {
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+
+            await data.ISM.issuerMgrReject(mydata, transaction);
+
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
+        }
+
         public async Task<ApiResponse<string>> issuerMngUpdate(IssueSubmissionParameters mydata)
         {
             await using var conn = await data.ISM.OpenConnectionAsync();
@@ -379,6 +392,18 @@ namespace Services.CAR
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
+        }
+
+        public async Task<ApiResponse<string>> pdaActionReject(IssueSubmissionParameters mydata)
+        {
+
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.pdaActionReject(mydata, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
         public async Task<ApiResponse<string>> ReceiverAction(IssueSubmissionParameters mydata)
@@ -1035,7 +1060,7 @@ namespace Services.CAR
             await data.ISM.ReceiverIssueReject(mydata, transaction);
 
             await transaction.CommitAsync();
-            return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
         public async Task<ApiResponse<string>> ReceiverApproval(IssueSubmissionParameters mydata)
@@ -1048,6 +1073,18 @@ namespace Services.CAR
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
+        }
+
+        public async Task<ApiResponse<string>> ReceiverMngReject(IssueSubmissionParameters mydata)
+        {
+
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.ReceiverMngReject(mydata, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
         public async Task<ApiResponse<string>> ReceiverApprovalToReject(IssueSubmissionParameters mydata)
@@ -1097,7 +1134,7 @@ namespace Services.CAR
             await data.ISM.PDAReviewerAprove(mydata, transaction);
 
             await transaction.CommitAsync();
-            return ApiResponse<string>.SuccessResponse(null, "Data Void Succesfully");
+            return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
         }
 
         public async Task<ApiResponse<string>> ReviewerSubmit(IssueSubmissionParameters mydata)

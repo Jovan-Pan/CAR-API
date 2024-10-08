@@ -13,17 +13,18 @@ namespace Repository.Query
 
         public static readonly string GetTotalRecordForEachStts = @" 
         SELECT 
-            COUNT(CASE WHEN status = 'SUBMITED' THEN 1 END) AS Submitted,
-            COUNT(CASE WHEN status = 'OPEN' THEN 1 END) AS [Open],
+            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT') THEN 1 END) AS Submitted,
+            COUNT(CASE WHEN (status = 'OPEN' or status = 'OPEN-REJECT') THEN 1 END) AS [Open],
             COUNT(CASE WHEN status = 'PDA-DECISION' THEN 1 END) AS PdaDecision,
-	        COUNT(CASE WHEN status = 'ISSUED' THEN 1 END) AS issued,
+	        COUNT(CASE WHEN (status = 'ISSUED' or status = 'ISSUED-REJECT') THEN 1 END) AS issued,
 	        COUNT(CASE WHEN status = 'ACTION-ISSUED' THEN 1 END) AS ActIssued,
             COUNT(CASE WHEN status = 'ISSUED-REJECTED (WA)' THEN 1 END) AS ActIssuedRejecWA,
 	        COUNT(CASE WHEN status = 'ANALYZE' THEN 1 END) AS Analize,
 	        COUNT(CASE WHEN status = 'REVIEW' THEN 1 END) AS review,
 	        COUNT(CASE WHEN status = 'COMPLETE' THEN 1 END) AS Complete
         FROM IssueFeedback
-        WHERE Plant = @plant {0} ";
+        WHERE Plant = @plant and DetectionDate >= DATEADD(MONTH, -@defDataShow, GETDATE())   {0} 
+        ";
 
         public static readonly string GetFormNumberListFilter = @" select distinct FormNo from IssueFeedback
         where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
@@ -66,18 +67,17 @@ namespace Repository.Query
         ,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
         ,PDAActionBy,PDAActionByName,PDAActionDate,PDAActionImmAct,PDAActionComment
         ,PDAActionUpdatedBy,PDAActionUpdatedByName,PDAActionUpdatedDate
-        ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate
+        ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate,PDAAprovalComment as pdaAprovalComment
         ,ImmActRecDetail,CostPC,Curency,ActionResult
         ,ReceiveActionRootCause,RootCauseDetail,procecessGrpCode
         ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason
         ,ReceiveActionBy,ReceiveActionByName,ReceiveActionDate
         ,ReceiveActionUpdatedBy,ReceiveActionUpdatedByName,ReceiveActionUpdatedDate
-        ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate
+        ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment
 
-        ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment,isPDAReviewResultAprov
+        ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
 
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
-        ,isReviewResultAprov
         from IssueFeedback
         where Plant = @plant
         and Dept IN @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)

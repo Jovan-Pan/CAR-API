@@ -42,8 +42,8 @@ namespace Services.CAR
                     if (issendemail == true)
                     {
                         SendEmailParam mailparam = new SendEmailParam();
-                        var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, "NOTIF");
-                        var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, "NOTIF", mydata.Dept);
+                        var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
+                        var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                         if (globalmailMaster.Count() == 0)
                         {
                             mailmsg = "Data Maill Content Not Maintain";
@@ -84,6 +84,9 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
                             body = body.Replace("@Data", Datadetails);
                             body = body.Replace("@UserId", mydata.UserName);
+
+                            body += globalmailMaster.FirstOrDefault().EmailFooter;
+                            body = body.Replace("@Emaillink", globalmailMaster.FirstOrDefault().Emaillink);
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = globalmailMaster.FirstOrDefault().ReplyMailid;

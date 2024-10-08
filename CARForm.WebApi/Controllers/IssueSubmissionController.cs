@@ -26,6 +26,13 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(issuerMgrReject))]
+        public async Task<IActionResult> issuerMgrReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerMgrReject(data);
+            return Ok(result);
+        }
+
         [HttpPost(nameof(issuerMngUpdate))]
         public async Task<IActionResult> issuerMngUpdate([FromForm] IssueSubmissionParameters data)
         {
@@ -54,6 +61,13 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(pdaActionReject))]
+        public async Task<IActionResult> pdaActionReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.pdaActionReject(data);
+            return Ok(result);
+        }
+
         [HttpPost(nameof(ReceiverAction))]
         public async Task<IActionResult> ReceiverAction([FromForm] IssueSubmissionParameters data)
         {
@@ -79,6 +93,13 @@ namespace WebApi.Controllers
         public async Task<IActionResult> ReceiverApproval([FromForm] IssueSubmissionParameters data)
         {
             var result = await business.IssueSubmission.ReceiverApproval(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReceiverMngReject))]
+        public async Task<IActionResult> ReceiverMngReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverMngReject(data);
             return Ok(result);
         }
 

@@ -68,13 +68,25 @@ namespace Repository.Query
         IssueByComment = @Comment,
         IssueUpdatedBy = @UserId,
         IssueUpdatedByName = @UserName,
-        IssueUpdatedDate = GETDATE()
+        IssueUpdatedDate = GETDATE(),
+        Status = 'RE-SUBMIT'
         where FormNo = @FormNumber
         ";
 
         public static readonly string deleteDataAtchIssuer = @"
         delete from IssueFeedbackAtchment
         where FormNo = @FormNo and ActionType = @ActionType and FilePath=@FilePath
+        ";
+
+        public static readonly string issuerMgrReject = @"
+        update IssueFeedback
+        set 
+        Status = 'SUBMITED-REJECT',
+        AcknowledgeByComment = @rejectReason,
+        AcknowledgeBy = @UserId,
+        AcknowledgeByname = @UserName,
+        AcknowledgeByDate = GETDATE()
+        where FormNo = @FormNumber
         ";
 
         public static readonly string issuerMngUpdate = @"
@@ -103,6 +115,7 @@ namespace Repository.Query
         public static readonly string pdaDecisionUpdate = @"
         update IssueFeedback
         set 
+        Status = 'PDA-DECISION',
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
         PDAActionUpdatedBy = @UserId,
@@ -115,6 +128,18 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ISSUED',
+        PDAAprovalComment = @Comment,
+        PDAAprovalBy = @UserId,
+        PDAAprovalByName = @UserName,
+        PDAAprovalDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string pdaActionReject = @"
+        update IssueFeedback
+        set 
+        Status = 'OPEN-REJECT',
+        PDAAprovalComment = @rejectReason,
         PDAAprovalBy = @UserId,
         PDAAprovalByName = @UserName,
         PDAAprovalDate = GETDATE()
@@ -124,7 +149,7 @@ namespace Repository.Query
         public static readonly string ReceiverAction = @"
         update IssueFeedback
         set 
-        Status = 'ACTION-ISSUED',
+        Status = @IssueStatus,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -145,7 +170,7 @@ namespace Repository.Query
         public static readonly string ReceiverActionUpdate = @"
         update IssueFeedback
         set 
-        Status = 'ACTION-ISSUED',
+        Status = @IssueStatus,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -166,8 +191,9 @@ namespace Repository.Query
         public static readonly string ReceiverIssueReject = @"
         update IssueFeedback
         set 
-        Status = 'ISSUED-REJECTED (WA)',
+        Status = 'OPEN-REJECT-RECEIVER',
         ReceiveActionRejectReason = @rejectReason,
+        ReceiveActionComment = @rejectReason,
         ReceiveActionBy = @UserId,
         ReceiveActionByName = @UserName,
         ReceiveActionDate = GETDATE()
@@ -178,6 +204,18 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ANALYZE',
+        ReceiveAprovalComment = @Comment,
+        ReceiveAprovalBy = @UserId,
+        ReceiveAprovalByName = @UserName,
+        ReceiveAprovalDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string ReceiverMngReject = @"
+        update IssueFeedback
+        set 
+        Status = 'ISSUED-REJECT',
+        ReceiveAprovalComment = @rejectReason,
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,
         ReceiveAprovalDate = GETDATE()
@@ -198,7 +236,6 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'VOID',
-        isPDAReviewResultAprov = 0,
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
@@ -210,7 +247,6 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'REJECT',
-        isPDAReviewResultAprov = 0,
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
@@ -231,7 +267,6 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'REVIEW',
-        isPDAReviewResultAprov = 1,
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
@@ -245,7 +280,6 @@ namespace Repository.Query
         Status = 'COMPLETE',
         ReviewComment = @Comment,
         ReviewMethod = @ReviewMethod,
-        isReviewResultAprov = 1,
         ReviewBy = @UserId,
         ReviewByName = @UserName,
         ReviewSubmitDate = GETDATE()
@@ -256,7 +290,6 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'NOT EFFECTIVE',
-        isReviewResultAprov = 0,
         ReviewBy = @UserId,
         ReviewByName = @UserName,
         ReviewSubmitDate = GETDATE(),

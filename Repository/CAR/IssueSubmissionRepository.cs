@@ -71,6 +71,13 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> issuerMgrReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.issuerMgrReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
         public async Task<int> issuerMngUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.issuerMngUpdate;
@@ -99,6 +106,13 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> pdaActionReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.pdaActionReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
         public async Task<int> ReceiverAction(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.ReceiverAction;
@@ -123,6 +137,13 @@ namespace Repository.CAR
         public async Task<int> ReceiverApproval(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.ReceiverApproval;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReceiverMngReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReceiverMngReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }

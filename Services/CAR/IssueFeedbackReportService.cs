@@ -70,7 +70,7 @@ namespace Services.CAR
                 if (param.status.Count() > 0)
                 {
                     Condquery += Environment.NewLine;
-                    Condquery += " AND status IN @status ";
+                    Condquery += @" AND status IN @status ";
                 }
             }
             if (param.dept != null)
@@ -225,6 +225,7 @@ namespace Services.CAR
                                  PDAAprovalBy = main.PDAAprovalBy,
                                  PDAAprovalByName = main.PDAAprovalByName,
                                  PDAAprovalDate = main.PDAAprovalDate,
+                                 pdaAprovalComment = main.pdaAprovalComment,
                                  ImmActRecDetail = main.ImmActRecDetail,
                                  CostPC = main.CostPC,
                                  Curency = main.Curency,
@@ -246,20 +247,19 @@ namespace Services.CAR
                                  ReceiveAprovalBy = main.ReceiveAprovalBy,
                                  ReceiveAprovalByName = main.ReceiveAprovalByName,
                                  ReceiveAprovalDate = main.ReceiveAprovalDate,
+                                 receiveAprovalComment = main.receiveAprovalComment,
 
                                  PDAReviewBy = main.PDAReviewBy,
                                  PDAReviewByName = main.PDAReviewByName,
                                  PDAReviewDate = main.PDAReviewDate,
                                  ReviewDate = main.ReviewDate,
                                  PDAReviewComment = main.PDAReviewComment,
-                                 isPDAReviewResultAprov = main.isPDAReviewResultAprov,
 
                                  ReviewBy = main.ReviewBy,
                                  ReviewByName = main.ReviewByName,
                                  ReviewSubmitDate = main.ReviewSubmitDate,
                                  ReviewComment = main.ReviewComment,
                                  ReviewMethod = main.ReviewMethod,
-                                 isReviewResultAprov = main.isReviewResultAprov,
                              };
             maindata = joinedData;
             
@@ -292,6 +292,10 @@ namespace Services.CAR
             if (param.vendorcode != null)
             {
                 condition = " AND vendorcode = @vendorcode ";
+            }
+            if (param.formType != null)
+            {
+                condition += " AND (FormType IN @formType or '' IN @formType) ";
             }
             var result  = await data.IFR.GetTotalRecordForEachStts(param, condition);
             return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);
