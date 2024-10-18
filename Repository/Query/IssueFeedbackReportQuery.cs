@@ -11,6 +11,32 @@ namespace Repository.Query
         public static readonly string GetTotalRecord = @" select count (*) from IssueFeedback
         where Plant = @plant ";
 
+        public static readonly string getIssuerId = @" 
+        SELECT distinct UserList
+        FROM 
+        (
+            SELECT TOP 1 
+                IssueBy, 
+                AcknowledgeBy, 
+                PDAActionBy, 
+                PDAAprovalBy, 
+                ReceiveActionBy, 
+                ReceiveAprovalBy, 
+                PDAReviewBy, 
+                ReviewBy
+            FROM 
+                IssueFeedback 
+            WHERE 
+                Plant = @plant 
+                AND FormNo = @FormNo
+        ) AS SourceTable
+        UNPIVOT
+        (
+            UserList FOR UserType IN 
+            (IssueBy, AcknowledgeBy, PDAActionBy, PDAAprovalBy, ReceiveActionBy, ReceiveAprovalBy, PDAReviewBy, ReviewBy)
+        ) AS UnpivotedTable;
+        ";
+
         public static readonly string GetTotalRecordForEachStts = @" 
         SELECT 
             COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT') THEN 1 END) AS Submitted,
@@ -60,7 +86,7 @@ namespace Repository.Query
 
         public static readonly string GetMainData = @"
         select  
-        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,SamplingCheck,Dept,VendorCode
+        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
         ,VendorDesc,TttlQty,TttlQtyUOM,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status
         ,IssueBy,IssueByName,IssueDate,IssueByComment
         ,IssueUpdatedBy,IssueUpdatedByName,IssueUpdatedDate

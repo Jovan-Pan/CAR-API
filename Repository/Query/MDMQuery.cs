@@ -161,5 +161,9 @@ namespace Repository.Query
         where a.IsDeleted = 0 and B.IsDeleted = 0
         and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
         ";
+
+        public static readonly string GetissuerEmail = @"
+        select distinct UseEmail from Usr where UseID IN @UseID and DelFlag = 0
+        ";
     }
 }
