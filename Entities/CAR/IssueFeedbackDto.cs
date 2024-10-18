@@ -18,8 +18,9 @@ namespace Entities.CAR
         public string MESDesc { get; set; }
         public string MaterialCode { get; set; }
         public string MaterialDesc { get; set; }
-        
+        public decimal? NcQty { get; set; }
         public string SamplingCheck { get; set; }
+        public decimal? NcRatio { get; set; }
         public string Dept { get; set; }
         public string deptName { get; set; }
         public string VendorCode { get; set; }
