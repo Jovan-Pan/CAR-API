@@ -16,6 +16,7 @@ using Entities.Infrastructure;
 using Services.Helper;
 using Services.Resources;
 using Microsoft.AspNetCore.Http;
+using Microsoft.SqlServer.Server;
 
 namespace Services.CAR
 {
@@ -44,11 +45,18 @@ namespace Services.CAR
                         SendEmailParam mailparam = new SendEmailParam();
                         var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
                         var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                        
+                        var IssuerIds = await data.IFR.getIssuerId(mydata.UserPlant, mydata.FormNumber);
+                        var GetissuerEmail = await mdm.GetissuerEmail(mydata.UserPlant, IssuerIds);
+                        List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+                        recipentList.AddRange(GetissuerEmail);
+                        recipentList = recipentList.Distinct().ToList();
+
                         if (globalmailMaster.Count() == 0)
                         {
                             mailmsg = "Data Maill Content Not Maintain";
                         }
-                        else if (userSubsFormMaster.Count() == 0)
+                        else if (recipentList.Count() == 0)
                         {
                             mailmsg = "no email recipients are set up";
                         }
@@ -57,7 +65,8 @@ namespace Services.CAR
                             mailparam.FromName = "CAR System";
                             mailparam.FromAddress = globalmailMaster.FirstOrDefault().FromMailaddress;
 
-                            string recipent = string.Join(";", userSubsFormMaster.Select(u => u.UseEmail));
+                            string recipent = string.Join(";", recipentList);
+
                             mailparam.Recipient = recipent;
 
                             mailparam.Subject = globalmailMaster.FirstOrDefault().EmailSubject;

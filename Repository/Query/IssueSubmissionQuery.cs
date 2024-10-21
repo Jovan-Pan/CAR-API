@@ -42,11 +42,11 @@ namespace Repository.Query
 
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
-        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,SamplingCheck,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
+        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
         ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,IssueBy,IssueByName,IssueDate,IssueByComment)
         values
         (
-        @UserPlant,@FormType,@FormNumber,@DetectionDate,@Product,@Model,@MaterialType,@MaterialCode,@SamplingCheck,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
+        @UserPlant,@FormType,@FormNumber,@DetectionDate,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
         ,@AffectedCavity,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED',@UserId,@UserName,GETDATE(),@Comment
         )
         ";
@@ -60,7 +60,9 @@ namespace Repository.Query
         public static readonly string issuerUpdateDataIssueFeedback = @"
         update IssueFeedback
         set DetectionDate = @DetectionDate,
+        NcQty = @NcQty,
         SamplingCheck = @SamplingCheck,
+        NcRatio = @NcRatio,
         TttlQty = @TttlQty,
         TttlQtyUOM = @TttlQtyUOM,
         AffectedCavity = @AffectedCavity,
@@ -256,9 +258,9 @@ namespace Repository.Query
 
         public static readonly string CreateNewIssueFeedBcakWithVers = @"
         insert into IssueFeedback(
-        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,SamplingCheck,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
+        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
         ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment)
-        select Plant,FormType,@NewFormNumber,DetectionDate,Product,Model,MaterialType,MaterialCode,SamplingCheck,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
+        select Plant,FormType,@NewFormNumber,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
         ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
         from IssueFeedback where FormNo = @OldFormNumber
         ";

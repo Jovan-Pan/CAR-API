@@ -21,7 +21,9 @@ namespace Entities.ParamRequest
         public string? MaterialType { get; set; }
         public string? MaterialCode { get; set; }
         public string? MaterialDesc { get; set; }
+        public decimal? NcQty { get; set; }
         public int? SamplingCheck { get; set; }
+        public decimal? NcRatio { get; set; }
         public string? Dept { get; set; }
         public string? VendorCode { get; set; }
         public string? VendorDesc { get; set; }
