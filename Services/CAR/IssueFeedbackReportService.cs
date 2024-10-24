@@ -81,6 +81,14 @@ namespace Services.CAR
                     Condquery += " AND Dept IN @dept ";
                 }
             }
+            if (param.statusOfFinding != null)
+            {
+                if (param.statusOfFinding.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND StatusOfFinding IN @statusOfFinding ";
+                }
+            }
             if (param.processGrp != null)
             {
                 if (param.processGrp.Count() > 0)
@@ -182,6 +190,7 @@ namespace Services.CAR
                                  FormType = main.FormType,
                                  FormNo = main.FormNo,
                                  DetectionDate = main.DetectionDate,
+                                 StatusOfFinding = main.StatusOfFinding,
                                  Product = main.Product,
                                  Model = main.Model,
                                  MaterialType = main.MaterialType,

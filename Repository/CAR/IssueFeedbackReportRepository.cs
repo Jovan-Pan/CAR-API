@@ -49,6 +49,7 @@ namespace Repository.CAR
                     status = param.status,
                     dept = param.dept,
                     processGrp = param.processGrp,
+                    statusOfFinding = param.statusOfFinding,
                     product = param.product,
                     model = param.model,
                     mattype = param.mattype,
