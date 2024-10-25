@@ -17,6 +17,7 @@ namespace Entities.ParamRequest
         public IEnumerable<string>? dept { get; set; }
         public IEnumerable<string>? processGrp { get; set; }
         public IEnumerable<string>? product { get; set; }
+        public IEnumerable<string>? statusOfFinding { get; set; }
         public IEnumerable<string>? model { get; set; }
         public IEnumerable<string>? mattype { get; set; }
         public IEnumerable<string>? material { get; set; }

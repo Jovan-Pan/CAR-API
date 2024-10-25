@@ -42,11 +42,11 @@ namespace Repository.Query
 
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
-        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
+        Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
         ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,IssueBy,IssueByName,IssueDate,IssueByComment)
         values
         (
-        @UserPlant,@FormType,@FormNumber,@DetectionDate,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
+        @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
         ,@AffectedCavity,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED',@UserId,@UserName,GETDATE(),@Comment
         )
         ";
@@ -248,7 +248,7 @@ namespace Repository.Query
         public static readonly string PDAReviewerReject = @"
         update IssueFeedback
         set 
-        Status = 'REJECT',
+        Status = 'ISSUED-REJECT',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),

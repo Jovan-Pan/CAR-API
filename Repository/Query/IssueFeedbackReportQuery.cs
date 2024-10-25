@@ -86,7 +86,7 @@ namespace Repository.Query
 
         public static readonly string GetMainData = @"
         select  
-        Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
+        Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
         ,VendorDesc,TttlQty,TttlQtyUOM,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status
         ,IssueBy,IssueByName,IssueDate,IssueByComment
         ,IssueUpdatedBy,IssueUpdatedByName,IssueUpdatedDate

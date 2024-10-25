@@ -12,6 +12,7 @@ namespace Entities.CAR
         public string FormType { get; set; }
         public string FormNo { get; set; }
         public DateTime? DetectionDate { get; set; }
+        public string StatusOfFinding { get; set; }
         public string Product { get; set; }
         public string Model { get; set; }
         public string MaterialType { get; set; }

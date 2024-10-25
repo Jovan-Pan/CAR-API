@@ -421,6 +421,12 @@ namespace Services.CAR
 
             await data.ISM.ReceiverAction(mydata, transaction);
 
+            #region get old data attachment
+            List<string> formNoList = new List<string>();
+            formNoList.Add(mydata.FormNumber);
+            var dataAtch = await data.IFR.GetDataAttchment(mydata.UserPlant, formNoList, transaction);
+            #endregion
+
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
             string pwd = basepathconfig.First().password;
@@ -433,6 +439,83 @@ namespace Services.CAR
                 {
                     if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
                     {
+                        #region delete old Atch
+                        var immediteActAtch = dataAtch.Where(x => x.ActionType == "RECEIVER IMMIDIATE ACTION");
+                        if (immediteActAtch.Any())
+                        {
+                            foreach (var attachment in immediteActAtch)
+                            {
+                                string relativeFilePath = attachment.FilePath.Replace(credentials.BasePath, "");
+                                var fullFilePath = Path.Combine(credentials.BasePath, relativeFilePath.TrimStart('\\'));
+
+                                if (File.Exists(fullFilePath))
+                                {
+                                    IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
+                                    dtaAtch.FormNo = mydata.FormNumber;
+                                    dtaAtch.ActionType = "RECEIVER IMMIDIATE ACTION";
+                                    dtaAtch.OriFileName = attachment.OriFileName;
+                                    dtaAtch.FileName = attachment.FileName;
+                                    dtaAtch.FileExt = attachment.FileExt;
+                                    dtaAtch.FilePath = attachment.FilePath;
+
+                                    await data.ISM.deleteDataAtchIssuer(dtaAtch, transaction);
+
+                                    File.Delete(fullFilePath);
+                                }
+                            }
+                        }
+
+                        var rootCauseAtch = dataAtch.Where(x => x.ActionType == "ROOT CAUSE");
+                        if (rootCauseAtch.Any())
+                        {
+                            foreach (var attachment in rootCauseAtch)
+                            {
+                                string relativeFilePath = attachment.FilePath.Replace(credentials.BasePath, "");
+                                var fullFilePath = Path.Combine(credentials.BasePath, relativeFilePath.TrimStart('\\'));
+
+                                if (File.Exists(fullFilePath))
+                                {
+                                    IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
+                                    dtaAtch.FormNo = mydata.FormNumber;
+                                    dtaAtch.ActionType = "ROOT CAUSE";
+                                    dtaAtch.OriFileName = attachment.OriFileName;
+                                    dtaAtch.FileName = attachment.FileName;
+                                    dtaAtch.FileExt = attachment.FileExt;
+                                    dtaAtch.FilePath = attachment.FilePath;
+
+                                    await data.ISM.deleteDataAtchIssuer(dtaAtch, transaction);
+
+                                    File.Delete(fullFilePath);
+                                }
+                            }
+                        }
+
+                        var correctiveActAtch = dataAtch.Where(x => x.ActionType == "CORRECTIVE ACTION");
+                        if (correctiveActAtch.Any())
+                        {
+                            foreach (var attachment in correctiveActAtch)
+                            {
+                                string relativeFilePath = attachment.FilePath.Replace(credentials.BasePath, "");
+                                var fullFilePath = Path.Combine(credentials.BasePath, relativeFilePath.TrimStart('\\'));
+
+                                if (File.Exists(fullFilePath))
+                                {
+                                    IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
+                                    dtaAtch.FormNo = mydata.FormNumber;
+                                    dtaAtch.ActionType = "CORRECTIVE ACTION";
+                                    dtaAtch.OriFileName = attachment.OriFileName;
+                                    dtaAtch.FileName = attachment.FileName;
+                                    dtaAtch.FileExt = attachment.FileExt;
+                                    dtaAtch.FilePath = attachment.FilePath;
+
+                                    await data.ISM.deleteDataAtchIssuer(dtaAtch, transaction);
+
+                                    File.Delete(fullFilePath);
+                                }
+                            }
+                        }
+                        #endregion
+
                         if (mydata.immediteActReceiverImgFiles != null) {
                             var immediteActReceiverImgFiles = mydata.immediteActReceiverImgFiles.ToList();
                             if (immediteActReceiverImgFiles.Count() > 0)
@@ -1118,11 +1201,11 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.PDAReviewerReject(mydata, transaction);
-            string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
-            await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
+            //string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
+            //await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
 
             await transaction.CommitAsync();
-            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully, New Form No Created : " + newformno);
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
         public async Task<ApiResponse<string>> PDAReviewerAprove(IssueSubmissionParameters mydata)
