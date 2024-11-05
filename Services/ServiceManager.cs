@@ -23,6 +23,7 @@ public sealed class ServiceManager : IServiceManager
     private readonly Lazy<IIssueSubmissionService> _IssueSubmissionService;
     private readonly Lazy<IIssueFeedbackReportService> _IssueFeedbackReportService;
     private readonly Lazy<ISendMailSettingService> _SendMailSettingService;
+    private readonly Lazy<INCTextSentenceService> _NCTextSentenceService;
 
     public ServiceManager(IDataManager data,
         IMasterDataApi masterDataApi,
@@ -35,6 +36,7 @@ public sealed class ServiceManager : IServiceManager
         _masterDataBusiness = new Lazy<IMasterDataService>(() => new MasterDataService(masterDataApi, data.MDM, cacheManager, localization));
         _immActBusiness = new Lazy<IImmidateActionService>(() => new ImmidateActionService(data, cacheManager, localization));
         _rootCauseBusiness = new Lazy<IRootCauseService>(() => new RootCauseService(data, cacheManager, localization));
+        _NCTextSentenceService = new Lazy<INCTextSentenceService>(() => new NCTextSentenceService(data, cacheManager, localization));
 
         _errorLog = new Lazy<IErrorLogService>(() => new ErrorLogService(data));
         _IssueSubmissionService = new Lazy<IIssueSubmissionService>(() => new IssueSubmissionService(data, data.MDM, masterDataApi, cacheManager, localization));
@@ -49,4 +51,5 @@ public sealed class ServiceManager : IServiceManager
     public IIssueSubmissionService IssueSubmission => _IssueSubmissionService.Value;
     public IIssueFeedbackReportService IFR => _IssueFeedbackReportService.Value;
     public ISendMailSettingService sendmailsetting => _SendMailSettingService.Value;
+    public INCTextSentenceService NCTS => _NCTextSentenceService.Value;
 }

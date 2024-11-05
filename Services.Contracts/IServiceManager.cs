@@ -14,4 +14,5 @@ public interface IServiceManager
     IIssueSubmissionService IssueSubmission { get; }
     IIssueFeedbackReportService IFR { get; }
     ISendMailSettingService sendmailsetting { get; }
+    INCTextSentenceService NCTS { get; }
 }
