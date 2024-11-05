@@ -7,11 +7,11 @@ using Repository.MasterData;
 
 namespace Repository;
 
-public sealed class RepositoryManager(DbContext dbContext, IHttpContextAccessor httpContextAccessor) : IDataManager
+public sealed class RepositoryManager(DbContext dbContext) : IDataManager
 {
     private readonly Lazy<IMDMRepository> _mdmRepo = new(() => new MDMRepository(dbContext));
     private readonly Lazy<IImmidateActionRepository> _immediteActrepo = new(() => new ImmidateActionRepository(dbContext));
-    private readonly Lazy<IRootCauseRepository> _rootcauserepo = new(() => new RootCauseRepository(dbContext,httpContextAccessor));
+    private readonly Lazy<IRootCauseRepository> _rootcauserepo = new(() => new RootCauseRepository(dbContext));
     private readonly Lazy<IErrorLogRepository> _ErrorLog = new(() => new ErrorLogRepository(dbContext));
     private readonly Lazy<IIssueSubmissionRepository> _ISM = new(() => new IssueSubmissionRepository(dbContext));
     private readonly Lazy<IIssueFeedbackReportRepository> _IFR = new(() => new IssueFeedbackReportRepository(dbContext));
