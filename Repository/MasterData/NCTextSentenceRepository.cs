@@ -173,18 +173,7 @@ namespace Repository.MasterData
             {
                 await conn.OpenAsync();
             }
-            //DataTable excelData = GlobalFunction.ReadExcelFile(filePath);
-            ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "immedieteActionCategory", "Immidate Name", conditions, condRemark, excelRange, uniqueField);
-            //if (excelData.DataTable.Rows.Count == 0)
-            //{
-            //    return new List<string> { "No data found in the Excel file" };
-            //}
-
-            //// Perform structure validation
-            //if (!excelData.DataTable.Columns.Contains("Plant") || !excelData.DataTable.Columns.Contains("Immidate Name"))
-            //{
-            //    return new List<string> { "Invalid Data structure, please follow template format" };
-            //}
+            DataTable excelData = GlobalFunction.ReadExcelFile(filePath);
 
             using (var transaction = conn.BeginTransaction())
             {
@@ -196,14 +185,14 @@ namespace Repository.MasterData
                             )";
                 await conn.ExecuteAsync(createTempTable, transaction: transaction);
 
-                foreach (DataRow row in excelData.DataTable.Rows)
+                foreach (DataRow row in excelData.Rows)
                 {
-                    if (excelData.DataTable.Columns.Contains("isFirstSentence"))
+                    if (excelData.Columns.Contains("isFirstSentence"))
                     {
                         // Convert '0' or '1' strings to boolean values (bit in SQL)
                         row["isFirstSentence"] = row["isFirstSentence"].ToString() == "Y" ? true : false;
                     }
-                    if (excelData.DataTable.Columns.Contains("isLastSentence"))
+                    if (excelData.Columns.Contains("isLastSentence"))
                     {
                         // Convert '0' or '1' strings to boolean values (bit in SQL)
                         row["isLastSentence"] = row["isLastSentence"].ToString() == "Y" ? true : false;
@@ -215,7 +204,7 @@ namespace Repository.MasterData
                     bulkCopy.ColumnMappings.Add("TextSentence", "TextSentence");
                     bulkCopy.ColumnMappings.Add("isFirstSentence", "isFirstSentence");
                     bulkCopy.ColumnMappings.Add("isLastSentence", "isLastSentence");
-                    await bulkCopy.WriteToServerAsync(excelData.DataTable);
+                    await bulkCopy.WriteToServerAsync(excelData);
                     //await bulkCopy.WriteToServerAsync(excelData);
                 }
 
