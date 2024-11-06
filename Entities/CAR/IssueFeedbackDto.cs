@@ -35,6 +35,8 @@ namespace Entities.CAR
         public string NCReason { get; set; }
         public string NCDescription { get; set; }
         public string Status { get; set; }
+        public string mainStatus { get; set; }
+        
         public string IssueBy { get; set; }
         public string IssueByName { get; set; }
         public DateTime? IssueDate { get; set; }

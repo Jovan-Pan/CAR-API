@@ -73,6 +73,14 @@ namespace Services.CAR
                     Condquery += @" AND status IN @status ";
                 }
             }
+            if (param.mainStatus != null)
+            {
+                if (param.mainStatus.Count() > 0)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += @" AND mainStatus IN @mainStatus ";
+                }
+            }
             if (param.dept != null)
             {
                 if (param.dept.Count() > 0)
@@ -213,6 +221,7 @@ namespace Services.CAR
                                  NCReason = main.NCReason,
                                  NCDescription = main.NCDescription,
                                  Status = main.Status,
+                                 mainStatus = main.mainStatus,
                                  IssueBy = main.IssueBy,
                                  IssueByName = main.IssueByName,
                                  IssueDate = main.IssueDate,

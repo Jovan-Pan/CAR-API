@@ -14,6 +14,8 @@ namespace Entities.ParamRequest
         public IEnumerable<string>? formType { get; set; }
         public IEnumerable<string>? formNumber { get; set; }
         public IEnumerable<string>? status { get; set; }
+        public IEnumerable<string>? mainStatus { get; set; }
+        
         public IEnumerable<string>? dept { get; set; }
         public IEnumerable<string>? processGrp { get; set; }
         public IEnumerable<string>? product { get; set; }
