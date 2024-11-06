@@ -15,7 +15,7 @@ namespace Services.Contracts.MasterData
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> InsertDataNcTextSentence(string TextSentence, bool isFirstSentence, bool isLastSentence, string userId);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> UpdateDataNcTextSentence(int id, string TextSentence, bool isFirstSentence, bool isLastSentence, string userId);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataDelete(int id, string userId);
-        Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataPermDelete(string TextSentence);
+        Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataPermDelete(int id);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataRecover(int id, string userId);
         Task<byte[]> Template();
         Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);

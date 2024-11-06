@@ -18,7 +18,7 @@ namespace Repository.Query
 
         public static readonly string DataDelete = @"UPDATE NCTextSentence SET DelFlag = 1, UpdatedBy = @userId, UpdatedByName=@userId, UpdatedDate =getdate() WHERE id=@id";
 
-        public static readonly string DataPermDelete = @"DELETE FROM NCTextSentence WHERE TextSentence=@TextSentence ";
+        public static readonly string DataPermDelete = @"DELETE FROM NCTextSentence WHERE id=@id ";
 
         public static readonly string DataRecover = @"UPDATE NCTextSentence SET DelFlag = 0, UpdatedBy = @userId, UpdatedByName=@userId, UpdatedDate =getdate() WHERE id=@id";
 
