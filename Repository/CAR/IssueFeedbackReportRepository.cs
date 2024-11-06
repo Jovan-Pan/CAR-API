@@ -47,6 +47,7 @@ namespace Repository.CAR
                     formType = param.formType,
                     formNumber = param.formNumber,
                     status = param.status,
+                    mainStatus = param.mainStatus,
                     dept = param.dept,
                     processGrp = param.processGrp,
                     statusOfFinding = param.statusOfFinding,

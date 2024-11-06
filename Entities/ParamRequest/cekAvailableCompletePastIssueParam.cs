@@ -9,6 +9,7 @@ namespace Entities.ParamRequest
     public class cekAvailableCompletePastIssueParam
     {
         public int plant { get; set; }
+        public string formType { get; set; }
         public string? material { get; set; }
         public string ncreason { get; set; }
         public string nccategory { get; set; }

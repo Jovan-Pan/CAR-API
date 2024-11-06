@@ -12,4 +12,5 @@ public interface IDataManager
     IIssueSubmissionRepository ISM { get; }
     IIssueFeedbackReportRepository IFR { get; }
     ISendMailSettingRepository SMS { get; }
+    INCTextSentenceRepository NCTS { get; }
 }
