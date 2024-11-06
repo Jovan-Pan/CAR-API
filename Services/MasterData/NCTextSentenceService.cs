@@ -37,9 +37,9 @@ namespace Services.MasterData
             var result = await data.NCTS.DataDelete(id, userId);
             return ApiResponse<IEnumerable<NCTextSentenceDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataPermDelete(string TextSentence)
+        public async Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataPermDelete(int id)
         {
-            var result = await data.NCTS.DataPermDelete(TextSentence);
+            var result = await data.NCTS.DataPermDelete(id);
             return ApiResponse<IEnumerable<NCTextSentenceDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataRecover(int id, string userId)
