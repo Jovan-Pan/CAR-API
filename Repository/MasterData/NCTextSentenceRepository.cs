@@ -56,11 +56,11 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<NCTextSentenceDto>(query, new { id = id, userId = userId });
         }
-        public async Task<IEnumerable<NCTextSentenceDto>> DataPermDelete(string TextSentence)
+        public async Task<IEnumerable<NCTextSentenceDto>> DataPermDelete(int id)
         {
             string query = NCTextSentenceQuery.DataPermDelete;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<NCTextSentenceDto>(query, new { TextSentence = TextSentence });
+            return await conn.QueryAsync<NCTextSentenceDto>(query, new { id = id });    
         }
         public async Task<IEnumerable<NCTextSentenceDto>> DataRecover(int id, string userId)
         {

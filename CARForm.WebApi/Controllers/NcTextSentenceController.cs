@@ -36,9 +36,9 @@ namespace WebApi.Controllers
             return Ok(result);
         }
         [HttpPost(nameof(DataPermDelete))]
-        public async Task<IActionResult> DataPermDelete([FromForm] string TextSentence)
+        public async Task<IActionResult> DataPermDelete([FromForm] int id)
         {
-            var result = await business.NCTS.DataPermDelete(TextSentence);
+            var result = await business.NCTS.DataPermDelete(id);
             return Ok(result);
         }
         [HttpPost(nameof(DataRecover))]
