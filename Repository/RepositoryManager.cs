@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository;
 using Contracts.Repository.CAR;
 using Contracts.Repository.MasterData;
+using Microsoft.AspNetCore.Http;
 using Repository.CAR;
 using Repository.MasterData;
 
@@ -15,6 +16,7 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     private readonly Lazy<IIssueSubmissionRepository> _ISM = new(() => new IssueSubmissionRepository(dbContext));
     private readonly Lazy<IIssueFeedbackReportRepository> _IFR = new(() => new IssueFeedbackReportRepository(dbContext));
     private readonly Lazy<ISendMailSettingRepository> _SMS = new(() => new SendMailSettingRepository(dbContext));
+    private readonly Lazy<INCTextSentenceRepository> _NCTS = new(() => new NCTextSentenceRepository(dbContext));
     public IMDMRepository MDM => _mdmRepo.Value;
     public IImmidateActionRepository ImmAct => _immediteActrepo.Value;
     public IRootCauseRepository RootCause => _rootcauserepo.Value;
@@ -22,4 +24,5 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     public IIssueSubmissionRepository ISM => _ISM.Value;
     public IIssueFeedbackReportRepository IFR => _IFR.Value;
     public ISendMailSettingRepository SMS => _SMS.Value;
+    public INCTextSentenceRepository NCTS => _NCTS.Value;
 }

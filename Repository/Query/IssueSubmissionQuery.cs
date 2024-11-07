@@ -43,11 +43,11 @@ namespace Repository.Query
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,IssueBy,IssueByName,IssueDate,IssueByComment)
+        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment)
         values
         (
         @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
-        ,@AffectedCavity,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED',@UserId,@UserName,GETDATE(),@Comment
+        ,@AffectedCavity,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment
         )
         ";
 
@@ -71,7 +71,8 @@ namespace Repository.Query
         IssueUpdatedBy = @UserId,
         IssueUpdatedByName = @UserName,
         IssueUpdatedDate = GETDATE(),
-        Status = 'RE-SUBMIT'
+        Status = 'RE-SUBMIT',
+        MainStatus = 'CAR RAISE'
         where FormNo = @FormNumber
         ";
 
@@ -84,6 +85,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'SUBMITED-REJECT',
+        MainStatus = 'CAR RAISE',
         AcknowledgeByComment = @rejectReason,
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
@@ -95,6 +97,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'OPEN',
+        MainStatus = 'CAR RAISE',
         AcknowledgeByComment = @Comment,
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
@@ -106,6 +109,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'PDA-DECISION',
+        MainStatus = 'CAR RAISE',
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
         PDAActionBy = @UserId,
@@ -118,6 +122,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'PDA-DECISION',
+        MainStatus = 'CAR RAISE',
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
         PDAActionUpdatedBy = @UserId,
@@ -130,6 +135,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ISSUED',
+        MainStatus = 'CAR RAISE',
         PDAAprovalComment = @Comment,
         PDAAprovalBy = @UserId,
         PDAAprovalByName = @UserName,
@@ -141,6 +147,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'OPEN-REJECT',
+        MainStatus = 'CAR RAISE',
         PDAAprovalComment = @rejectReason,
         PDAAprovalBy = @UserId,
         PDAAprovalByName = @UserName,
@@ -152,6 +159,8 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
+        IssueType = @IssueType,
+        MainStatus = case when @IssueStatus = 'ISSUED' then 'CAR RAISE' else 'OPEN' end,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -173,6 +182,8 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
+        IssueType = @IssueType,
+        MainStatus = case when @IssueStatus = 'ISSUED' then 'CAR RAISE' else 'OPEN' end,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -194,6 +205,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'OPEN-REJECT-RECEIVER',
+        MainStatus = 'CAR RAISE',
         ReceiveActionRejectReason = @rejectReason,
         ReceiveActionComment = @rejectReason,
         ReceiveActionBy = @UserId,
@@ -206,6 +218,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ANALYZE',
+        MainStatus = 'OPEN',
         ReceiveAprovalComment = @Comment,
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,
@@ -217,6 +230,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ISSUED-REJECT',
+        MainStatus = 'CAR RAISE',
         ReceiveAprovalComment = @rejectReason,
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,
@@ -228,6 +242,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ISSUED-REJECTED',
+        MainStatus = 'CAR RAISE',
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,
         ReceiveAprovalDate = GETDATE()
@@ -238,6 +253,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'VOID',
+        MainStatus = 'CLOSED',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
@@ -249,6 +265,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ISSUED-REJECT',
+        MainStatus = 'CAR RAISE',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
@@ -259,9 +276,9 @@ namespace Repository.Query
         public static readonly string CreateNewIssueFeedBcakWithVers = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment)
+        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment)
         select Plant,FormType,@NewFormNumber,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
+        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN','CAR RAISE',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
         from IssueFeedback where FormNo = @OldFormNumber
         ";
 
@@ -269,6 +286,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'REVIEW',
+        MainStatus = 'PENDING APPROVAL',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
@@ -280,6 +298,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'COMPLETE',
+        MainStatus = 'CLOSED',
         ReviewComment = @Comment,
         ReviewMethod = @ReviewMethod,
         ReviewBy = @UserId,
@@ -292,6 +311,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'NOT EFFECTIVE',
+        MainStatus = 'CLOSED',
         ReviewBy = @UserId,
         ReviewByName = @UserName,
         ReviewSubmitDate = GETDATE(),
@@ -302,6 +322,7 @@ namespace Repository.Query
         public static readonly string cekAvailableCompletePastIssue = @"
         select FormNo from IssueFeedback 
         where Plant = @plant 
+        and FormType = @formType
         --and MaterialCode = @material 
         and NCCategory = @nccategory 
         and NCReason = @ncreason 
