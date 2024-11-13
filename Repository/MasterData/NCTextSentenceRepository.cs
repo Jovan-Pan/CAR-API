@@ -1,4 +1,4 @@
-﻿using Contracts.Repository.MasterData;
+using Contracts.Repository.MasterData;
 using Dapper;
 using Entities.MasterData;
 using Microsoft.Data.SqlClient;
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace Repository.MasterData
 {
     internal sealed class NCTextSentenceRepository(DbContext dbContext) : INCTextSentenceRepository
     {
-        public async Task<IEnumerable<NCTextSentenceDto>> GetDataNcTextSentence(string search, string SearchADV)
+        public async Task<IEnumerable<NCTextSentenceDto>> GetDataNcTextSentence(string search, string SearchADV, bool delflag)
         {
             string query;
 
@@ -34,6 +35,11 @@ namespace Repository.MasterData
             else
             {
                 query = NCTextSentenceQuery.SearchDatainDB;
+            }
+
+            if (!delflag)
+            {
+                query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<NCTextSentenceDto>(query, new { search = search, SearchADV = SearchADV });
@@ -152,7 +158,7 @@ namespace Repository.MasterData
             columnRange.Style.Numberformat.Format = "mm/dd/yyyy";
         }
 
-        public async Task<IEnumerable<string>> Import(string filePath, string userId)
+        public async Task<ImportResult> Import(string filePath, string userId)
         {
             string excelCol = "TextSentence, isFirstSentence, isLastSentence";
             string excelRange = "A4:E5000";
@@ -160,10 +166,17 @@ namespace Repository.MasterData
             ArrayList conditions = new ArrayList();
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
+            specialCond.Add("UPDATE ##temp set isFirstSentence = (CASE isFirstSentence WHEN 'Y' then 'true' when 'N' then 'false' else isFirstSentence end); ");
+            specialCond.Add("UPDATE ##temp set isLastSentence = (CASE isLastSentence WHEN 'Y' then 'true' when 'N' then 'false' else isLastSentence end); ");
+
             conditions.Add(" ISNULL(TextSentence, '') = ''  or ISNULL(isFirstSentence, '') = '' or ISNULL(isLastSentence, '') = ''  ");
             condRemark.Add("Null Mandatory Data");
             conditions.Add(" LEN(TextSentence) > 100");
             condRemark.Add("TextSentence maximal 100 characters");
+            conditions.Add("isFirstSentence not in ('Y','N') ");
+            condRemark.Add("isFirstSentence value is Y or N");
+            conditions.Add("isLastSentence not in ('Y','N') ");
+            condRemark.Add("isLastSentence value is Y or N");
 
             string uniqueField = "TextSentence";
 
@@ -173,57 +186,254 @@ namespace Repository.MasterData
             {
                 await conn.OpenAsync();
             }
-            DataTable excelData = GlobalFunction.ReadExcelFile(filePath);
+
+            // Read Excel or TXT file
+            ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "Nctextsentence", "Nctextsentence", conditions, condRemark, excelRange, uniqueField);
+
+            if (!excelData.Success)
+            {
+                System.IO.File.Delete(filePath);
+                return new ImportResult { Success = false, Message = "Import Failed: " + excelData.Message };
+            }
+
+            if (!excelData.DataTable.Columns.Contains("Issue Remark"))
+            {
+                excelData.DataTable.Columns.Add("Issue Remark", typeof(string));
+            }
+
+            System.IO.File.Delete(filePath);
 
             using (var transaction = conn.BeginTransaction())
             {
-                // Membuat temp table
-                var createTempTable = @"CREATE TABLE ##temp (
-                                TextSentence nvarchar(100),
-                                isFirstSentence bit,
-                                isLastSentence bit
-                            )";
-                await conn.ExecuteAsync(createTempTable, transaction: transaction);
-
-                foreach (DataRow row in excelData.Rows)
+                try
                 {
-                    if (excelData.Columns.Contains("isFirstSentence"))
+                    // Create temp table
+                    var createTempTable = @"IF OBJECT_ID('tempdb..##temp') IS NOT NULL DROP TABLE ##temp; CREATE TABLE ##temp (";
+                    var columnMappings = new List<string>(); // For SqlBulkCopy mappings
+
+                    // Loop through the columns in the DataTable to create table definition and mappings
+                    foreach (DataColumn column in excelData.DataTable.Columns)
                     {
-                        // Convert '0' or '1' strings to boolean values (bit in SQL)
-                        row["isFirstSentence"] = row["isFirstSentence"].ToString() == "Y" ? true : false;
+                        if (!string.IsNullOrWhiteSpace(column.ColumnName))
+                        {
+                            createTempTable += $"[{column.ColumnName}] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                            columnMappings.Add(column.ColumnName);
+                        }
                     }
-                    if (excelData.Columns.Contains("isLastSentence"))
+
+                    // Append [Issue Remark] if it's not already included
+                    if (!columnMappings.Contains("Issue Remark"))
                     {
-                        // Convert '0' or '1' strings to boolean values (bit in SQL)
-                        row["isLastSentence"] = row["isLastSentence"].ToString() == "Y" ? true : false;
+                        createTempTable += "[Issue Remark] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                        columnMappings.Add("Issue Remark");
+                    }
+
+                    // Remove the last comma and space, and close the SQL statement
+                    createTempTable = createTempTable.TrimEnd(',', ' ') + ")";
+
+                    // Execute the CREATE TABLE statement
+                    await conn.ExecuteAsync(createTempTable, transaction: transaction);
+
+                    // Bulk copy data to temp table
+                    using (var bulkCopy = new SqlBulkCopy((SqlConnection)conn, SqlBulkCopyOptions.Default, (SqlTransaction)transaction))
+                    {
+                        bulkCopy.DestinationTableName = "##temp";
+                        foreach (var columnName in columnMappings)
+                        {
+                            bulkCopy.ColumnMappings.Add(columnName, columnName);
+                        }
+                        await bulkCopy.WriteToServerAsync(excelData.DataTable);
+                    }
+
+                    // Trim columns and initialize Issue Remark
+                    var columnNameTrim = string.Join(", ", excelData.DataTable.Columns.Cast<DataColumn>()
+                        .Select(c => $"[{c.ColumnName}] = LTRIM(RTRIM([{c.ColumnName}]))"));
+
+                    string sql = $@"UPDATE ##temp SET {columnNameTrim}; UPDATE ##temp SET [Issue Remark] = '';";
+
+                    // Check for invalid data
+                    if (conditions != null && conditions.Count > 0)
+                    {
+                        sql += @" IF OBJECT_ID('tempdb..#invaliddata') IS NOT NULL DROP TABLE #invaliddata;
+                                  SELECT TOP 0 * INTO #invaliddata FROM ##temp;";
+
+                        for (int i = 0; i < conditions.Count; i++)
+                        {
+                            sql += $@" 
+                            INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                            SELECT {excelCol}, '{condRemark[i]}'
+                            FROM ##temp
+                            WHERE {conditions[i]};
+
+                            DELETE FROM ##temp WHERE {conditions[i]};";
+                        }
+                    }
+
+                    var TotalCountIsFirstSentence = await conn.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM (SELECT isFirstSentence FROM ##temp WHERE isFirstSentence = 'Y' UNION ALL SELECT isFirstSentence FROM nctextsentence WHERE isFirstSentence = '1' and delflag ='0') AS CombinedData;", transaction: transaction);
+                    var TotalCountIsLastSentence = await conn.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM (SELECT isLastSentence FROM ##temp WHERE isLastSentence = 'Y' UNION ALL SELECT isLastSentence FROM nctextsentence WHERE isLastSentence = '1' and delflag ='0') AS CombinedData;", transaction: transaction);
+                    var CountTempIsfirstsentence = await conn.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ##temp WHERE isFirstSentence = 'Y'", transaction: transaction);
+                    var CountTempisLastSentence = await conn.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM ##temp WHERE isLastSentence = 'Y'", transaction: transaction);
+                    var TempTextsenteceIsfirstsentence = await conn.ExecuteScalarAsync($"SELECT textsentence FROM ##temp WHERE isFirstSentence = 'Y'", transaction: transaction);
+                    var TempTextsenteceisLastSentence = await conn.ExecuteScalarAsync($"SELECT textsentence FROM ##temp WHERE isLastSentence = 'Y'", transaction: transaction);
+                    var checkTextsentenceIsfirstsentence = await conn.ExecuteScalarAsync($@"
+                                                    SELECT t.TextSentence, t.isfirstsentence 
+                                                FROM ##temp t 
+                                                INNER JOIN NCTextSentence n 
+                                                    ON t.TextSentence = n.TextSentence 
+                                                WHERE 
+                                                    (CASE t.isfirstsentence 
+                                                        WHEN 'Y' THEN 1 
+                                                     END) = CAST(n.isfirstsentence AS INT);
+                                                ", transaction: transaction);
+                    var checkTextsentenceisLastSentence = await conn.ExecuteScalarAsync($@"
+                                                    SELECT t.TextSentence, t.isLastSentence 
+                                                FROM ##temp t 
+                                                INNER JOIN NCTextSentence n 
+                                                    ON t.TextSentence = n.TextSentence 
+                                                WHERE 
+                                                    (CASE t.isLastSentence 
+                                                        WHEN 'Y' THEN 1 
+                                                     END) = CAST(n.isLastSentence AS INT);
+                                                ", transaction: transaction);
+
+                    if (TotalCountIsFirstSentence > 1)
+                    {
+                        if (CountTempIsfirstsentence > 0)
+                        {
+                            if (TempTextsenteceIsfirstsentence?.ToString().ToLower() != checkTextsentenceIsfirstsentence?.ToString().ToLower())
+                            {
+                                sql += @"
+                                INSERT INTO #invaliddata (TextSentence, isFirstSentence, isLastSentence, [Issue Remark])
+                                SELECT TextSentence, isFirstSentence, isLastSentence, 
+                                    CASE 
+                                        WHEN isFirstSentence = 'Y' AND (SELECT COUNT(*) FROM ##temp WHERE isFirstSentence = 'Y') > 0 THEN 'Only one item can be marked as the first sentence.'
+                                        ELSE NULL
+                                    END
+                                FROM ##temp
+                                WHERE (isFirstSentence = 'Y' AND (SELECT COUNT(*) FROM ##temp WHERE isFirstSentence = 'Y') > 0);
+
+                                DELETE FROM ##temp
+                                WHERE (isFirstSentence = 'Y' AND (SELECT COUNT(*) FROM ##temp WHERE isFirstSentence = 'Y') > 0);
+                                ";
+                            }
+                        }
+                    }
+
+                    if (TotalCountIsLastSentence > 1)
+                    {
+                        if (CountTempisLastSentence > 0)
+                        {
+                            if (TempTextsenteceisLastSentence?.ToString().ToLower() != checkTextsentenceisLastSentence?.ToString().ToLower())
+                            {
+                                sql += @"
+                                INSERT INTO #invaliddata (TextSentence, isFirstSentence, isLastSentence, [Issue Remark])
+                                SELECT TextSentence, isFirstSentence, isLastSentence, 
+                                    CASE 
+                                        WHEN isLastSentence = 'Y' AND (SELECT COUNT(*) FROM ##temp WHERE isLastSentence = 'Y') > 0 THEN 'Only one item can be marked as the last sentence.'
+                                        ELSE NULL
+                                    END
+                                FROM ##temp
+                                WHERE (isLastSentence = 'Y' AND (SELECT COUNT(*) FROM ##temp WHERE isLastSentence = 'Y') > 0);
+
+                                DELETE FROM ##temp
+                                WHERE (isLastSentence = 'Y' AND (SELECT COUNT(*) FROM ##temp WHERE isLastSentence = 'Y') > 0);
+                                ";
+                            }
+                        }
+                    }
+
+                    // Check for duplicate data
+                    if (!string.IsNullOrEmpty(uniqueField))
+                    {
+                        sql += $@"
+                        WITH cte AS (
+                            SELECT {excelCol}, ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY {uniqueField}) AS row_num
+                            FROM ##temp
+                        )
+                        INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+
+                        DELETE FROM ##temp WHERE {uniqueField} IN (
+                            SELECT {uniqueField} FROM(
+                                                SELECT {uniqueField}
+                                                FROM ##temp
+                                                GROUP BY {uniqueField}
+                                                HAVING COUNT(*) > 1
+                                            ) AS duplicates
+                                        )";
+
+                    }
+
+                    // Execute special conditions if any
+                    if (specialCond != null && specialCond.Count > 0)
+                    {
+                        foreach (string specialCondition in specialCond)
+                        {
+                            sql += specialCondition;
+                        }
+                    }
+
+                    // Execute the SQL command
+                    await conn.ExecuteAsync(sql, transaction: transaction);
+
+                    // Fetch invalid data
+                    var invalidData = await conn.QueryAsync($"SELECT * FROM #invaliddata", transaction: transaction);
+
+                    List<Dictionary<string, object>> dataListInValid = invalidData
+                     .Select(row => new Dictionary<string, object>(row))
+                     .ToList();
+
+                    // Count valid data
+                    var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp", transaction: transaction);
+
+                    if (validDataCount == 0 && dataListInValid.Count == 0)
+                    {
+                        transaction.Rollback();
+                        return new ImportResult { Success = false, Message = "No Data Found" };
+                    }
+                    else
+                    {
+                        string validmsg = "Import Success";
+                        string validlabel = "Success";
+                        if (dataListInValid.Count != 0)
+                        {
+                            validmsg = "Upload success with error. Refer to Import Summary";
+                            validlabel = "Partial Success";
+                        }
+
+                        // Proceed to insert valid data
+                        await conn.QueryAsync<string>(query, new
+                        {
+                            FilePath = filePath,
+                            ExcelCol = excelCol,
+                            ExcelRange = excelRange,
+                            Conditions = conditions,
+                            CondRemark = condRemark,
+                            SpecialCond = specialCond,
+                            UniqueField = uniqueField,
+                            UserId = userId
+                        }, transaction: transaction);
+
+                        transaction.Commit();
+                        return new ImportResult
+                        {
+                            Success = true,
+                            DataInvalid = dataListInValid,
+                            DataValidCount = validDataCount,
+                            DataInvalidCount = dataListInValid.Count,
+                            Message = validmsg,
+                            Label = validlabel
+                        };
                     }
                 }
-                using (var bulkCopy = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, transaction))
+                catch (Exception ex)
                 {
-                    bulkCopy.DestinationTableName = "##temp"; // Temp table
-                    bulkCopy.ColumnMappings.Add("TextSentence", "TextSentence");
-                    bulkCopy.ColumnMappings.Add("isFirstSentence", "isFirstSentence");
-                    bulkCopy.ColumnMappings.Add("isLastSentence", "isLastSentence");
-                    await bulkCopy.WriteToServerAsync(excelData);
-                    //await bulkCopy.WriteToServerAsync(excelData);
+                    transaction.Rollback();
+                    // Log the error if necessary
+                    return new ImportResult { Success = false, Message = "Error occurred: " + ex.Message };
                 }
-
-                var result = await conn.QueryAsync<string>(query, new
-                {
-                    FilePath = filePath,
-                    ExcelCol = excelCol,
-                    ExcelRange = excelRange,
-                    Conditions = conditions,
-                    CondRemark = condRemark,
-                    SpecialCond = specialCond,
-                    UniqueField = uniqueField,
-                    UserId = userId
-                }, transaction: transaction);
-
-                transaction.Commit();
-                return result;
-
             }
         }
     }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
