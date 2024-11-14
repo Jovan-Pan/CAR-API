@@ -1,4 +1,4 @@
-﻿using Contracts.Repository.MasterData;
+using Contracts.Repository.MasterData;
 using Dapper;
 using Entities.CAR;
 using Entities.MasterData;
@@ -26,7 +26,7 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<string>(query, new { plant = plant });
         }
-        public async Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(string? search, string? SearchADV)
+        public async Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(string? search, string? SearchADV,bool delflag)
         {
             string query;
 
@@ -41,6 +41,11 @@ namespace Repository.MasterData
             else
             {
                 query = ImmidateActionQuery.SearchDatainDB;
+            }
+
+            if (!delflag)
+            {
+                query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<ImmidateActionDto>(query, new { search = search, SearchADV = SearchADV });
@@ -82,7 +87,7 @@ namespace Repository.MasterData
         public async Task<byte[]> Template()
         {
             string filePath = AppDomain.CurrentDomain.BaseDirectory + "\\Excel";
-            string fileName = string.Format("immidate_{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            string fileName = string.Format("Immediete_{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
             string fullPath = string.Format("{0}\\{1}", filePath, fileName);
 
             if (!Directory.Exists(filePath))
@@ -116,7 +121,7 @@ namespace Repository.MasterData
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
             var row2Header = new object[] { "Mandatory", "Mandatory" };
             var row3Header = new object[] { "int", "nvarchar(50)" };
-            var row4Header = new object[] { "Plant", "Immediate Name" };
+            var row4Header = new object[] { "Plant", "Immidate Name" };
             var row5Header = new object[] { "2100", "Test" };
 
             var data = new List<object[]>
@@ -168,7 +173,7 @@ namespace Repository.MasterData
             columnRange.Style.Numberformat.Format = "mm/dd/yyyy";
         }
 
-        public async Task<IEnumerable<string>> Import(string filePath, string userId)
+        public async Task<ImportResult> Import(string filePath, string userId)
         {
             string excelCol = "[Plant], [Immidate Name]";
             string excelRange = "A4:E5000";
@@ -189,51 +194,181 @@ namespace Repository.MasterData
             {
                 await conn.OpenAsync();
             }
-            DataTable excelData = GlobalFunction.ReadExcelFile(filePath);
-            if (excelData.Rows.Count == 0)
+
+            // Read Excel or TXT file
+            ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "ImmidateAction", "ImmidateAction", conditions, condRemark, excelRange, uniqueField);
+
+            if (!excelData.Success)
             {
-                return new List<string> { "No data found in the Excel file" };
+                System.IO.File.Delete(filePath);
+                return new ImportResult { Success = false, Message = "Import Failed: " + excelData.Message };
             }
 
-            // Perform structure validation
-            if (!excelData.Columns.Contains("Plant") || !excelData.Columns.Contains("Immidate Name"))
+            if (!excelData.DataTable.Columns.Contains("Issue Remark"))
             {
-                return new List<string> { "Invalid Data structure, please follow template format" };
+                excelData.DataTable.Columns.Add("Issue Remark", typeof(string));
             }
+
+            System.IO.File.Delete(filePath);
 
             using (var transaction = conn.BeginTransaction())
             {
-                // Membuat temp table
-                var createTempTable = @"CREATE TABLE ##temp (
-                                Plant NVARCHAR(50),
-                                [Immidate Name] NVARCHAR(50)
-                            )";
-                await conn.ExecuteAsync(createTempTable, transaction: transaction);
-
-                using (var bulkCopy = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, transaction))
+                try
                 {
-                    bulkCopy.DestinationTableName = "##temp"; // Temp table
-                    bulkCopy.ColumnMappings.Add("Plant", "Plant");
-                    bulkCopy.ColumnMappings.Add("Immidate Name", "Immidate Name");
-                    await bulkCopy.WriteToServerAsync(excelData);
+                    // Create temp table
+                    var createTempTable = @"IF OBJECT_ID('tempdb..##temp') IS NOT NULL DROP TABLE ##temp; CREATE TABLE ##temp (";
+                    var columnMappings = new List<string>(); // For SqlBulkCopy mappings
+
+                    // Loop through the columns in the DataTable to create table definition and mappings
+                    foreach (DataColumn column in excelData.DataTable.Columns)
+                    {
+                        if (!string.IsNullOrWhiteSpace(column.ColumnName))
+                        {
+                            createTempTable += $"[{column.ColumnName}] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                            columnMappings.Add(column.ColumnName);
+                        }
+                    }
+
+                    // Append [Issue Remark] if it's not already included
+                    if (!columnMappings.Contains("Issue Remark"))
+                    {
+                        createTempTable += "[Issue Remark] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                        columnMappings.Add("Issue Remark");
+                    }
+
+                    // Remove the last comma and space, and close the SQL statement
+                    createTempTable = createTempTable.TrimEnd(',', ' ') + ")";
+
+                    // Execute the CREATE TABLE statement
+                    await conn.ExecuteAsync(createTempTable, transaction: transaction);
+
+                    // Bulk copy data to temp table
+                    using (var bulkCopy = new SqlBulkCopy((SqlConnection)conn, SqlBulkCopyOptions.Default, (SqlTransaction)transaction))
+                    {
+                        bulkCopy.DestinationTableName = "##temp";
+                        foreach (var columnName in columnMappings)
+                        {
+                            bulkCopy.ColumnMappings.Add(columnName, columnName);
+                        }
+                        await bulkCopy.WriteToServerAsync(excelData.DataTable);
+                    }
+
+                    // Trim columns and initialize Issue Remark
+                    var columnNameTrim = string.Join(", ", excelData.DataTable.Columns.Cast<DataColumn>()
+                        .Select(c => $"[{c.ColumnName}] = LTRIM(RTRIM([{c.ColumnName}]))"));
+
+                    string sql = $@"UPDATE ##temp SET {columnNameTrim}; UPDATE ##temp SET [Issue Remark] = '';";
+
+                    // Check for invalid data
+                    if (conditions != null && conditions.Count > 0)
+                    {
+                        sql += @" IF OBJECT_ID('tempdb..#invaliddata') IS NOT NULL DROP TABLE #invaliddata;
+                          SELECT TOP 0 * INTO #invaliddata FROM ##temp;";
+
+                        for (int i = 0; i < conditions.Count; i++)
+                        {
+                            sql += $@"
+                        INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                        SELECT {excelCol}, '{condRemark[i]}'
+                        FROM ##temp
+                        WHERE {conditions[i]};
+
+                        DELETE FROM ##temp WHERE {conditions[i]};";
+                        }
+                    }
+
+                    // Check for duplicate data
+                    if (!string.IsNullOrEmpty(uniqueField))
+                    {
+                        sql += $@"
+                        WITH cte AS (
+                            SELECT {excelCol}, ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY {uniqueField}) AS row_num
+                            FROM ##temp
+                        )
+                        INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+
+                        DELETE FROM ##temp WHERE {uniqueField} IN (
+                            SELECT {uniqueField} FROM(
+                                                SELECT {uniqueField}
+                                                FROM ##temp
+                                                GROUP BY {uniqueField}
+                                                HAVING COUNT(*) > 1
+                                            ) AS duplicates
+                                        )";
+
+                    }
+
+                    // Execute special conditions if any
+                    if (specialCond != null && specialCond.Count > 0)
+                    {
+                        foreach (string specialCondition in specialCond)
+                        {
+                            sql += specialCondition;
+                        }
+                    }
+
+                    // Execute the SQL command
+                    await conn.ExecuteAsync(sql, transaction: transaction);
+
+                    // Fetch invalid data
+                    var invalidData = await conn.QueryAsync($"SELECT * FROM #invaliddata", transaction: transaction);
+
+                    List<Dictionary<string, object>> dataListInValid = invalidData
+                     .Select(row => new Dictionary<string, object>(row))
+                     .ToList();
+
+                    // Count valid data
+                    var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp", transaction: transaction);
+
+                    if (validDataCount == 0 && dataListInValid.Count == 0)
+                    {
+                        transaction.Rollback();
+                        return new ImportResult { Success = false, Message = "No Data Found" };
+                    }
+                    else
+                    {
+                        string validmsg = "Import Success";
+                        string validlabel = "Success";
+                        if (dataListInValid.Count != 0)
+                        {
+                            validmsg = "Upload success with error. Refer to Import Summary";
+                            validlabel = "Partial Success";
+                        }
+
+                        // Proceed to insert valid data
+                        await conn.QueryAsync<string>(query, new
+                        {
+                            FilePath = filePath,
+                            ExcelCol = excelCol,
+                            ExcelRange = excelRange,
+                            Conditions = conditions,
+                            CondRemark = condRemark,
+                            SpecialCond = specialCond,
+                            UniqueField = uniqueField,
+                            UserId = userId
+                        }, transaction: transaction);
+
+                        transaction.Commit();
+                        return new ImportResult
+                        {
+                            Success = true,
+                            DataInvalid = dataListInValid,
+                            DataValidCount = validDataCount,
+                            DataInvalidCount = dataListInValid.Count,
+                            Message = validmsg,
+                            Label = validlabel
+                        };
+                    }
                 }
-
-                var result = await conn.QueryAsync<string>(query, new
+                catch (Exception ex)
                 {
-                    FilePath = filePath,
-                    ExcelCol = excelCol,
-                    ExcelRange = excelRange,
-                    Conditions = conditions,
-                    CondRemark = condRemark,
-                    SpecialCond = specialCond,
-                    UniqueField = uniqueField,
-                    UserId = userId
-                }, transaction: transaction);
-
-                transaction.Commit();
-                return result;
-
+                    transaction.Rollback();
+                    // Log the error if necessary
+                    return new ImportResult { Success = false, Message = "Error occurred: " + ex.Message };
+                }
             }
         }
     }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    

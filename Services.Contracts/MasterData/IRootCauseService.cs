@@ -15,12 +15,12 @@ namespace Services.Contracts.MasterData
     {
         Task<ApiResponse<IEnumerable<string>>> getRootCauseList(int plant);
         Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> InsertNewRootCauseCategory(string RootCauseName, string userId, int plant);
-        Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> GetRootCauseCategory(string search,string SearchADV);
+        Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> GetRootCauseCategory(string search,string SearchADV, bool delflag);
         Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> UpdateNewRootCauseCategory(string RootCauseName, int id, string userId);
         Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataDelete(int id, string userId);
         Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataPermDelete(int id);
         Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> DataRecover(int id, string userId);
         Task<byte[]> Template();
-        Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);
+        Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId);
     }
 }

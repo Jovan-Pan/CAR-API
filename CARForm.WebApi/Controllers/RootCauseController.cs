@@ -17,11 +17,11 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
-        [HttpPost(nameof(GetRootCauseCategory))]
-        public async Task<IActionResult> GetRootCauseCategory([FromForm] string? search, [FromForm] string? SearchADV)
+        
+        [HttpGet(nameof(GetRootCauseCategory))]
+        public async Task<IActionResult> GetRootCauseCategory(string? search, string? SearchADV, bool delflag)
         {
-            var result = await business.RootCause.GetRootCauseCategory(search,SearchADV);
+            var result = await business.RootCause.GetRootCauseCategory(search,SearchADV, delflag);
             return Ok(result);
 
         }
@@ -33,7 +33,7 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(UpdateNewRootCauseCategory))]
         public async Task<IActionResult> UpdateNewRootCauseCategory([FromForm] string RootCauseName, [FromForm] int id, [FromForm] string userId)
         {
@@ -41,7 +41,7 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(DataDelete))]
         public async Task<IActionResult> DataDelete([FromForm] int id, [FromForm] string userId)
         {
@@ -49,7 +49,7 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(DataPermDelete))]
         public async Task<IActionResult> DataPermDelete([FromForm] int id)
         {
@@ -64,14 +64,14 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+        
         [HttpGet(nameof(Template))]
         public async Task<IActionResult> Template()
         {
             var fileBytes = await business.RootCause.Template();
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Template");
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(Import))]
         public async Task<IActionResult> Import([FromForm]  IFormFile file, string userId)
         {

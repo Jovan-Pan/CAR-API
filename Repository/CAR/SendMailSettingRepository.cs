@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository.CAR;
 using Dapper;
 using Entities.CAR;
+using Entities.MasterData;
 using Entities.ParamRequest;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
@@ -31,7 +32,7 @@ namespace Repository.CAR
 
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV)
+        public async Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV, bool delflag)
         {
 
             string query;
@@ -48,6 +49,12 @@ namespace Repository.CAR
             {
                 query = SendMailSettingQuery.SearchDatainDB;
             }
+
+            if (!delflag)
+            {
+                query += " and isDeleted = 0";
+            }
+
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<MailSetiingDto>(query, new { search = search, ATsearchADV = ATsearchADV, ATDsearchADV = ATDsearchADV });
 
@@ -99,7 +106,7 @@ namespace Repository.CAR
         public async Task<byte[]> Template()
         {
             string filePath = AppDomain.CurrentDomain.BaseDirectory + "\\Excel";
-            string fileName = string.Format("immidate_{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            string fileName = string.Format("SendEmailSettings_{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
             string fullPath = string.Format("{0}\\{1}", filePath, fileName);
 
             if (!Directory.Exists(filePath))
@@ -133,7 +140,7 @@ namespace Repository.CAR
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
             var row2Header = new object[] { "Mandatory", "Mandatory", "Mandatory", "Mandatory" };
             var row3Header = new object[] { "int", "nvarchar(50)", "nvarchar(150)", "Bit(Y/N)" };
-            var row4Header = new object[] { "Plant", "ActionType", "ActionTypeDesc", "IsSendEmail" };
+            var row4Header = new object[] { "Plant", "Action Type", "Action Type Desc", "IsSendEmail" };
             var row5Header = new object[] { "2100", "Test", "Test", "Y" };
 
             var data = new List<object[]>
@@ -159,7 +166,7 @@ namespace Repository.CAR
             {
                 range.Style.Font.Color.SetColor(Color.Red); // Set the font color to red
             }
-            using (var range = sheet.Cells[1, 1, 3, 5])
+            using (var range = sheet.Cells[1, 1, 3, 4])
             {
                 range.Style.Fill.PatternType = ExcelFillStyle.Solid; // Set the fill pattern
                 range.Style.Fill.BackgroundColor.SetColor(Color.LightBlue); // Set the background color
@@ -185,7 +192,7 @@ namespace Repository.CAR
             columnRange.Style.Numberformat.Format = "mm/dd/yyyy";
         }
 
-        public async Task<IEnumerable<string>> Import(string filePath, string userId)
+        public async Task<ImportResult> Import(string filePath, string userId)
         {
             string excelCol = "[Plant], [Action Type], [Action Type Desc], isSendEmail";
             string excelRange = "A4:E5000";
@@ -193,10 +200,14 @@ namespace Repository.CAR
             ArrayList conditions = new ArrayList();
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
+            specialCond.Add("UPDATE ##temp set isSendEmail = (CASE isSendEmail WHEN 'Y' then 'true' when 'N' then 'false' else isSendEmail end); ");
+
             conditions.Add(" ISNULL([Action Type], '') = '' or ISNULL(Plant, '') = ''  ");
             condRemark.Add("Null Mandatory Data");
             conditions.Add(" LEN([Action Type]) > 50");
             condRemark.Add("Action Type maximal 50 characters");
+            conditions.Add(" isSendEmail not in ('Y','N') ");
+            condRemark.Add("isSendEmail value is Y or N");
 
             string uniqueField = "[Action Type]";
 
@@ -206,206 +217,181 @@ namespace Repository.CAR
             {
                 await conn.OpenAsync();
             }
-            DataTable excelData = GlobalFunction.ReadExcelFile(filePath);
-            if (excelData.Rows.Count == 0)
+
+            // Read Excel or TXT file
+            ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "SendEmailSetting", "SendEmailSetting", conditions, condRemark, excelRange, uniqueField);
+
+            if (!excelData.Success)
             {
-                return new List<string> { "No data found in the Excel file" };
+                System.IO.File.Delete(filePath);
+                return new ImportResult { Success = false, Message = "Import Failed: " + excelData.Message };
             }
 
-            if (!excelData.Columns.Contains("Plant") || !excelData.Columns.Contains("Action Type") || !excelData.Columns.Contains("Action Type Desc"))
+            if (!excelData.DataTable.Columns.Contains("Issue Remark"))
             {
-                return new List<string> { "Invalid Data structure, please follow template format" };
+                excelData.DataTable.Columns.Add("Issue Remark", typeof(string));
             }
+
+            System.IO.File.Delete(filePath);
 
             using (var transaction = conn.BeginTransaction())
             {
-                // Membuat temp table
-                var createTempTable = @"CREATE TABLE ##temp (
-                                Plant int,
-                                [Action Type] NVARCHAR(50),
-                                [Action Type Desc] NVARCHAR(150),
-                                isSendEmail bit
-                            )";
-                await conn.ExecuteAsync(createTempTable, transaction: transaction);
-
-                foreach (DataRow row in excelData.Rows)
+                try
                 {
-                    if (excelData.Columns.Contains("isSendEmail"))
+                    // Create temp table
+                    var createTempTable = @"IF OBJECT_ID('tempdb..##temp') IS NOT NULL DROP TABLE ##temp; CREATE TABLE ##temp (";
+                    var columnMappings = new List<string>(); // For SqlBulkCopy mappings
+
+                    // Loop through the columns in the DataTable to create table definition and mappings
+                    foreach (DataColumn column in excelData.DataTable.Columns)
                     {
-                        // Convert '0' or '1' strings to boolean values (bit in SQL)
-                        row["isSendEmail"] = row["isSendEmail"].ToString() == "Y" ? true : false;
+                        if (!string.IsNullOrWhiteSpace(column.ColumnName))
+                        {
+                            createTempTable += $"[{column.ColumnName}] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                            columnMappings.Add(column.ColumnName);
+                        }
+                    }
+
+                    // Append [Issue Remark] if it's not already included
+                    if (!columnMappings.Contains("Issue Remark"))
+                    {
+                        createTempTable += "[Issue Remark] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                        columnMappings.Add("Issue Remark");
+                    }
+
+                    // Remove the last comma and space, and close the SQL statement
+                    createTempTable = createTempTable.TrimEnd(',', ' ') + ")";
+
+                    // Execute the CREATE TABLE statement
+                    await conn.ExecuteAsync(createTempTable, transaction: transaction);
+
+                    // Bulk copy data to temp table
+                    using (var bulkCopy = new SqlBulkCopy((SqlConnection)conn, SqlBulkCopyOptions.Default, (SqlTransaction)transaction))
+                    {
+                        bulkCopy.DestinationTableName = "##temp";
+                        foreach (var columnName in columnMappings)
+                        {
+                            bulkCopy.ColumnMappings.Add(columnName, columnName);
+                        }
+                        await bulkCopy.WriteToServerAsync(excelData.DataTable);
+                    }
+
+                    // Trim columns and initialize Issue Remark
+                    var columnNameTrim = string.Join(", ", excelData.DataTable.Columns.Cast<DataColumn>()
+                        .Select(c => $"[{c.ColumnName}] = LTRIM(RTRIM([{c.ColumnName}]))"));
+
+                    string sql = $@"UPDATE ##temp SET {columnNameTrim}; UPDATE ##temp SET [Issue Remark] = '';";
+
+                    // Check for invalid data
+                    if (conditions != null && conditions.Count > 0)
+                    {
+                        sql += @" IF OBJECT_ID('tempdb..#invaliddata') IS NOT NULL DROP TABLE #invaliddata;
+                          SELECT TOP 0 * INTO #invaliddata FROM ##temp;";
+
+                        for (int i = 0; i < conditions.Count; i++)
+                        {
+                            sql += $@"
+                        INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                        SELECT {excelCol}, '{condRemark[i]}'
+                        FROM ##temp
+                        WHERE {conditions[i]};
+
+                        DELETE FROM ##temp WHERE {conditions[i]};";
+                        }
+                    }
+
+    
+
+                        // Check for duplicate data
+                    if (!string.IsNullOrEmpty(uniqueField))
+                    {
+                        sql += $@"
+                        WITH cte AS (
+                            SELECT {excelCol}, ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY {uniqueField}) AS row_num
+                            FROM ##temp
+                        )
+                        INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+
+                        DELETE FROM ##temp WHERE {uniqueField} IN (
+                            SELECT {uniqueField} FROM(
+                                                SELECT {uniqueField}
+                                                FROM ##temp
+                                                GROUP BY {uniqueField}
+                                                HAVING COUNT(*) > 1
+                                            ) AS duplicates
+                                        )";
+
+                    }
+
+                    // Execute special conditions if any
+                    if (specialCond != null && specialCond.Count > 0)
+                    {
+                        foreach (string specialCondition in specialCond)
+                        {
+                            sql += specialCondition;
+                        }
+                    }
+
+                    // Execute the SQL command
+                        await conn.ExecuteAsync(sql, transaction: transaction);
+
+                    // Fetch invalid data
+                    var invalidData = await conn.QueryAsync($"SELECT * FROM #invaliddata", transaction: transaction);
+
+                    List<Dictionary<string, object>> dataListInValid = invalidData
+                     .Select(row => new Dictionary<string, object>(row))
+                     .ToList();
+    
+                    // Count valid data
+                    var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp", transaction: transaction);
+
+                    if (validDataCount == 0 && dataListInValid.Count == 0)
+                    {
+                        transaction.Rollback();
+                        return new ImportResult { Success = false, Message = "No Data Found" };
+                    }
+                    else
+                    {
+                        string validmsg = "Import Success";
+                        string validlabel = "Success";
+                        if (dataListInValid.Count != 0)
+                        {
+                            validmsg = "Upload success with error. Refer to Import Summary";
+                            validlabel = "Partial Success";
+                        }
+
+                        // Proceed to insert valid data
+                        await conn.QueryAsync<string>(query, new
+                        {
+                            FilePath = filePath,
+                            ExcelCol = excelCol,
+                            ExcelRange = excelRange,
+                            Conditions = conditions,
+                            CondRemark = condRemark,
+                            SpecialCond = specialCond,
+                            UniqueField = uniqueField,
+                            UserId = userId
+                        }, transaction: transaction);
+
+                        transaction.Commit();
+                        return new ImportResult
+                        {
+                            Success = true,
+                            DataInvalid = dataListInValid,
+                            DataValidCount = validDataCount,
+                            DataInvalidCount = dataListInValid.Count,
+                            Message = validmsg,
+                            Label = validlabel
+                        };
                     }
                 }
-                using (var bulkCopy = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, transaction))
+                catch (Exception ex)
                 {
-                    bulkCopy.DestinationTableName = "##temp"; // Temp table
-                    bulkCopy.ColumnMappings.Add("Plant", "Plant");
-                    bulkCopy.ColumnMappings.Add("Action Type", "Action Type");
-                    bulkCopy.ColumnMappings.Add("Action Type Desc", "Action Type Desc");
-                    bulkCopy.ColumnMappings.Add("isSendEmail", "isSendEmail");
-                    await bulkCopy.WriteToServerAsync(excelData);
+                    transaction.Rollback();
+                    // Log the error if necessary
+                    return new ImportResult { Success = false, Message = "Error occurred: " + ex.Message };
                 }
-
-                var result = await conn.QueryAsync<string>(query, new
-                {
-                    FilePath = filePath,
-                    ExcelCol = excelCol,
-                    ExcelRange = excelRange,
-                    Conditions = conditions,
-                    CondRemark = condRemark,
-                    SpecialCond = specialCond,
-                    UniqueField = uniqueField,
-                    UserId = userId
-                }, transaction: transaction);
-
-                transaction.Commit();
-                return result;
-
-            }
-        }
-        public async Task<byte[]> Export(ExportParam param)
-        {
-            StringBuilder queryBuilder = new StringBuilder(SendMailSettingQuery.Export);
-
-            if (param.plant.HasValue)
-            {
-                queryBuilder.Append(" AND CAST(plant AS VARCHAR) LIKE @plant");
-            }
-
-            if (!string.IsNullOrEmpty(param.actionType))
-            {
-                queryBuilder.Append(" AND actionType LIKE @actionType");
-            }
-
-            if (!string.IsNullOrEmpty(param.actionTypeDesc))
-            {
-                queryBuilder.Append(" AND actionTypeDesc LIKE @actionTypeDesc");
-            }
-
-            if (!string.IsNullOrEmpty(param.CreatedBy))
-            {
-                queryBuilder.Append(" AND CreatedBy LIKE @CreatedBy");
-            }
-
-            if (!string.IsNullOrEmpty(param.CreatedByName))
-            {
-                queryBuilder.Append(" AND CreatedByName LIKE @CreatedByName");
-            }
-
-            if (!string.IsNullOrEmpty(param.updatedBy))
-            {
-                queryBuilder.Append(" AND updatedBy LIKE @updatedBy");
-            }
-
-            if (!string.IsNullOrEmpty(param.updatedByName))
-            {
-                queryBuilder.Append(" AND updatedByName LIKE @updatedByName");
-            }
-            if (!string.IsNullOrEmpty(param.CreatedDateInput))
-            {
-                queryBuilder.Append(" AND FORMAT(CreatedDate, 'dd-MM-yyyy HH:mm:ss.SSS') LIKE @CreatedDate");
-            }
-
-            // Handle updatedDate search with the full 'dd-MM-yyyy HH:mm:ss.SSS' format
-            if (!string.IsNullOrEmpty(param.updatedDateInput))
-            {
-                queryBuilder.Append(" AND FORMAT(updatedDate, 'dd-MM-yyyy HH:mm:ss.SSS') LIKE @updatedDate");
-            }
-
-            // Ensure OR clauses are grouped correctly
-            if (!string.IsNullOrEmpty(param.globalSearch))
-            {
-                queryBuilder.Append(" AND (plant LIKE @globalSearch OR actionType LIKE @globalSearch OR actionTypeDesc LIKE @globalSearch OR CreatedBy LIKE @globalSearch OR CreatedByName LIKE @globalSearch OR FORMAT(CreatedDate, 'dd-MM-yyyy HH:mm:ss') LIKE @globalSearch OR updatedBy LIKE @globalSearch OR updatedByName LIKE @globalSearch OR FORMAT(updatedDate, 'dd-MM-yyyy HH:mm:ss') LIKE @globalSearch)");
-            }
-
-            if (!string.IsNullOrEmpty(param.search))
-            {
-                queryBuilder.Append(" AND (actionType LIKE @search OR actionTypeDesc LIKE @search)");
-            }
-
-            if (!string.IsNullOrEmpty(param.ATsearchADV) || !string.IsNullOrEmpty(param.ATDsearchADV))
-            {
-                queryBuilder.Append(" AND (actionType LIKE @ATsearchADV OR actionTypeDesc LIKE @ATDsearchADV)");
-            }
-
-            string query = queryBuilder.ToString();
-
-            var parameters = new
-            {
-                plant = param.plant.HasValue ? $"%{param.plant}%" : null,
-                actionType = !string.IsNullOrEmpty(param.actionType) ? $"%{param.actionType}%" : null,
-                actionTypeDesc = !string.IsNullOrEmpty(param.actionTypeDesc) ? $"%{param.actionTypeDesc}%" : null,
-                CreatedBy = !string.IsNullOrEmpty(param.CreatedBy) ? $"%{param.CreatedBy}%" : null,
-                CreatedByName = !string.IsNullOrEmpty(param.CreatedByName) ? $"%{param.CreatedByName}%" : null,
-                updatedBy = !string.IsNullOrEmpty(param.updatedBy) ? $"%{param.updatedBy}%" : null,
-                updatedByName = !string.IsNullOrEmpty(param.updatedByName) ? $"%{param.updatedByName}%" : null,
-                CreatedDate = !string.IsNullOrEmpty(param.CreatedDateInput) ? $"%{param.CreatedDateInput}%" : null,
-                updatedDate = !string.IsNullOrEmpty(param.updatedDateInput) ? $"%{param.updatedDateInput}%" : null,
-                globalSearch = !string.IsNullOrEmpty(param.globalSearch) ? $"%{param.globalSearch}%" : null,
-                search = !string.IsNullOrEmpty(param.search) ? $"%{param.search}%" : null,
-                ATsearchADV = !string.IsNullOrEmpty(param.ATsearchADV) ? $"%{param.ATsearchADV}%" : null,
-                ATDsearchADV = !string.IsNullOrEmpty(param.ATDsearchADV) ? $"%{param.ATDsearchADV}%" : null
-            };
-
-            await using var conn = dbContext.CARConnection();
-            var data = (await conn.QueryAsync<ExportParam>(query, parameters)).ToList();
-
-            var projectedData = data.Select(d => new
-            {
-                d.plant,
-                d.actionType,
-                d.actionTypeDesc,
-                d.isSendEmail,
-                d.CreatedBy,
-                d.CreatedByName,
-                d.CreatedDate,
-                d.updatedBy,
-                d.updatedByName,
-                d.updatedDate,
-                d.isDeleted
-            }).ToList();
-
-            using (var package = new ExcelPackage())
-            {
-                // Create a worksheet
-                var worksheet = package.Workbook.Worksheets.Add("MailSettings");
-
-                // Load data into Excel (assuming you have a property list to insert in the Excel)
-                worksheet.Cells["A1"].LoadFromCollection(projectedData, true);
-
-                //if (projectedData.Any())
-                //{
-                //    var firstItem = projectedData.First();
-                //    PropertyInfo[] properties = firstItem.GetType().GetProperties();
-
-                //    // Loop through properties to identify DateTime columns
-                //    for (int i = 0; i < properties.Length; i++)
-                //    {
-                //        var property = properties[i];
-
-                //        // Check if the property is DateTime or DateTime?
-                //        if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(DateTime?))
-                //        {
-                //            // Apply custom date formatting for columns with DateTime type
-                //            worksheet.Column(i + 1).Style.Numberformat.Format = "dd-MM-yyyy HH:mm:ss.SSS";
-                //        }
-                //        else if (property.PropertyType == typeof(double)) // Check for Excel serial numbers
-                //        {
-                //            // Optionally, check if the double value represents a valid Excel DateTime serial number
-                //            if (projectedData.Any(d => ((double?)property.GetValue(d) ?? 0) > 0))
-                //            {
-                //                // Apply date formatting to serial number columns
-                //                worksheet.Column(i + 1).Style.Numberformat.Format = "dd-MM-yyyy HH:mm:ss.SSS";
-                //            }
-                //        }
-                //    }
-                //}
-
-                // Auto-fit columns
-                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-                // Return the Excel file as a byte array
-                return package.GetAsByteArray();
             }
         }
     }

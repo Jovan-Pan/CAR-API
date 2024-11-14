@@ -11,13 +11,13 @@ namespace Services.Contracts.MasterData
 {
     public interface INCTextSentenceService
     {
-        Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> GetDataNcTextSentence(string search, string SearchADV);
+        Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> GetDataNcTextSentence(string search, string SearchADV, bool delflag);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> InsertDataNcTextSentence(string TextSentence, bool isFirstSentence, bool isLastSentence, string userId);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> UpdateDataNcTextSentence(int id, string TextSentence, bool isFirstSentence, bool isLastSentence, string userId);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataDelete(int id, string userId);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataPermDelete(int id);
         Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> DataRecover(int id, string userId);
         Task<byte[]> Template();
-        Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);
+        Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId);
     }
 }
