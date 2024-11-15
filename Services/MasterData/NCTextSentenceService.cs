@@ -17,9 +17,9 @@ namespace Services.MasterData
 {
     internal sealed class NCTextSentenceService(IDataManager data, ICacheManager memCache, ILocalizationService localization):INCTextSentenceService
     {
-        public async Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> GetDataNcTextSentence(string search, string SearchADV)
+        public async Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> GetDataNcTextSentence(string search, string SearchADV,bool delflag)
         {
-            var result = await data.NCTS.GetDataNcTextSentence(search, SearchADV);
+            var result = await data.NCTS.GetDataNcTextSentence(search, SearchADV,delflag);
             return ApiResponse<IEnumerable<NCTextSentenceDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<NCTextSentenceDto>>> InsertDataNcTextSentence(string TextSentence, bool isFirstSentence, bool isLastSentence, string userId)
@@ -52,7 +52,7 @@ namespace Services.MasterData
             var result = await data.NCTS.Template();
             return result;
         }
-        public async Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId)
+        public async Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId)
         {
             string filePath = Path.Combine(file.FileName);
 
@@ -60,21 +60,22 @@ namespace Services.MasterData
             {
                 await file.CopyToAsync(stream);
             }
-            var result = await data.NCTS.Import(filePath, userId);
+            var ImportResult = await data.NCTS.Import(filePath, userId);
 
             System.IO.File.Delete(filePath);
 
-            if (result.Contains("Invalid Data structure, please follow template format"))
-            {
-                return new ApiResponse<IEnumerable<string>>
-                {
-                    Success = false,
-                    Message = "Invalid Data structure, please follow template format",
-                    Content = null
-                };
-            }
+            //if (result.Contains("Invalid Data structure, please follow template format"))
+            //{
+            //    return new ApiResponse<IEnumerable<string>>
+            //    {
+            //        Success = false,
+            //        Message = "Invalid Data structure, please follow template format",
+            //        Content = null
+            //    };
+            //}
 
-            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+            var resultList = new List<ImportResult> { ImportResult };
+            return resultList;
         }
     }
 }

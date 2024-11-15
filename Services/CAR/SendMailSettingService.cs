@@ -17,6 +17,7 @@ using Services.Helper;
 using Services.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.SqlServer.Server;
+using Entities.MasterData;
 
 namespace Services.CAR
 {
@@ -115,9 +116,9 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, (mailmsg.Length == 0 ? "" : " Send Mail Fail : " + mailmsg));
         }
 
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV, bool delflag)
         {
-            var result = await data.SMS.GetSendMailSetting(search, ATsearchADV, ATDsearchADV);
+            var result = await data.SMS.GetSendMailSetting(search, ATsearchADV, ATDsearchADV, delflag);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
 
@@ -152,7 +153,7 @@ namespace Services.CAR
             var result = await data.SMS.Template();
             return result;
         }
-        public async Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId)
+        public async Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId)
         {
             string filePath = Path.Combine(file.FileName);
 
@@ -160,26 +161,22 @@ namespace Services.CAR
             {
                 await file.CopyToAsync(stream);
             }
-            var result = await data.SMS.Import(filePath, userId);
+            var ImportResult = await data.SMS.Import(filePath, userId);
 
-            System.IO.File.Delete(filePath);
+            //System.IO.File.Delete(filePath);
 
-            if (result.Contains("Invalid Data structure, please follow template format"))
-            {
-                return new ApiResponse<IEnumerable<string>>
-                {
-                    Success = false,
-                    Message = "Invalid Data structure, please follow template format",
-                    Content = null
-                };
-            }
-
-            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
-        }
-        public async Task<byte[]> Export(ExportParam param)
-        {
-            var result = await data.SMS.Export(param);
-            return result;
+            //if (result.Contains("Invalid Data structure, please follow template format"))
+            //{
+            //    return new ApiResponse<IEnumerable<string>>
+            //    {
+            //        Success = false,
+            //        Message = "Invalid Data structure, please follow template format",
+            //        Content = null
+            //    };
+            //}
+            var resultList = new List<ImportResult> { ImportResult };
+            return resultList;
+            //return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
         }
     }
 }

@@ -17,10 +17,10 @@ namespace WebApi.Controllers
 
         }
 
-        [HttpPost(nameof(GetImmidateAction))]
-        public async Task<IActionResult> GetImmidateAction([FromForm] string? search, [FromForm] string? SearchADV)
+        [HttpGet(nameof(GetImmidateAction))]
+        public async Task<IActionResult> GetImmidateAction(string? search,string? SearchADV,bool delflag)
         {
-            var result = await business.ImmAct.GetImmidateAction(search, SearchADV);
+            var result = await business.ImmAct.GetImmidateAction(search, SearchADV, delflag);
             return Ok(result);
         }
         [HttpPost(nameof(InsertNewImmidateAction))]
@@ -64,7 +64,7 @@ namespace WebApi.Controllers
             var fileBytes = await business.ImmAct.Template();
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Template");
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(Import))]
         public async Task<IActionResult> Import([FromForm] IFormFile file, string userId)
         {

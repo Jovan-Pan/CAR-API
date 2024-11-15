@@ -13,23 +13,39 @@ namespace Repository.Query
         where DelFlag = 0 and Plant = @plant";
 
         public static readonly string GetImmidateAction = @"
-        select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag from ImmidateAction";
+        select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag
+        from ImmidateAction where 1=1";
 
-        public static readonly string SearchadvData = @"SELECT * FROM ImmidateAction WHERE ImmidateName LIKE '%' + @SearchADV + '%'";
+        public static readonly string SearchadvData = @"
+        SELECT distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag
+        FROM ImmidateAction 
+        WHERE ImmidateName LIKE '%' + @SearchADV + '%'";
 
-        public static readonly string SearchDatainDB = @"SELECT * FROM ImmidateAction WHERE ImmidateName LIKE '%' + @search + '%'";
+        public static readonly string SearchDatainDB = @"
+        SELECT distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag
+        FROM ImmidateAction 
+        WHERE ImmidateName LIKE '%' + @search + '%'";   
 
-        public static readonly string InsertNewImmidateAction = @"INSERT INTO ImmidateAction ( plant,ImmidateName,CreatedBy,CreatedDate) VALUES (@plant,@ImmidateName,@userId,GETDATE())";
+        public static readonly string InsertNewImmidateAction = @"
+        INSERT INTO ImmidateAction ( plant,ImmidateName,CreatedBy,CreatedDate) 
+        VALUES (@plant,@ImmidateName,@userId,GETDATE())";
 
-        public static readonly string UpdateImmidateAction = @" UPDATE ImmidateAction
+        public static readonly string UpdateImmidateAction = @" 
+        UPDATE ImmidateAction
         SET ImmidateName =@ImmidateName,UpdatedBy=@userId,UpdatedDate=GETDATE()
         WHERE ID=@id";
 
-        public static readonly string DataDelete = @"UPDATE ImmidateAction SET DelFlag = 1, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
+        public static readonly string DataDelete = @"
+        UPDATE ImmidateAction
+        SET DelFlag = 1, UpdatedBy = @userId, UpdatedDate =getdate() 
+        WHERE ID = @id";
 
         public static readonly string DataPermDelete = @"DELETE FROM ImmidateAction WHERE ID = @id ";
 
-        public static readonly string DataRecover = @"UPDATE ImmidateAction SET DelFlag = 0, UpdatedBy = @userId, UpdatedDate =getdate() WHERE ID = @id";
+        public static readonly string DataRecover = @"
+        UPDATE ImmidateAction 
+        SET DelFlag = 0, UpdatedBy = @userId, UpdatedDate =getdate() 
+        WHERE ID = @id";
 
         public static readonly string Import = @"UPDATE ImmidateAction 
                                                 SET 
@@ -45,7 +61,7 @@ namespace Repository.Query
                                                 (Plant, ImmidateName, CreatedBy, CreatedDate, Delflag) 
                                                 SELECT 
                                                     B.Plant,
-                                                    UPPER([Immidate Name]), 
+                                                    B.[Immidate Name], 
                                                     UPPER(@UserId),
                                                     GETDATE(), 
                                                     0 

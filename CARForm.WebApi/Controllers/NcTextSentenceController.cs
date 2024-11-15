@@ -10,11 +10,11 @@ namespace WebApi.Controllers
     [ApiController]
     public class NcTextSentenceController(IServiceManager business) : Controller
     {
-        [AllowAnonymous]
-        [HttpPost(nameof(GetDataNcTextSentence))]
-        public async Task<IActionResult> GetDataNcTextSentence([FromForm] string? search, [FromForm] string? SearchADV)
+        
+        [HttpGet(nameof(GetDataNcTextSentence))]
+        public async Task<IActionResult> GetDataNcTextSentence(string? search, string? SearchADV,bool delflag)
         {
-            var result = await business.NCTS.GetDataNcTextSentence(search, SearchADV);
+            var result = await business.NCTS.GetDataNcTextSentence(search, SearchADV, delflag);
             return Ok(result);
         }
         [HttpPost(nameof(InsertDataNcTextSentence))]
