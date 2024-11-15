@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.CAR;
+using Entities.MasterData;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -12,13 +13,13 @@ namespace Services.Contracts.MasterData
     public interface IImmidateActionService
     {
         Task<ApiResponse<IEnumerable<string>>> getImmidateActionList(int plant);
-        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> GetImmidateAction(string? search, string? SearchADV);
+        Task<ApiResponse<IEnumerable<ImmidateActionDto>>> GetImmidateAction(string? search, string? SearchADV, bool delflag);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> InsertNewImmidateAction(string ImmidateName, int plant, string userId);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> UpdateImmidateAction(string ImmidateName, int id, string userId);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataDelete(int id,string userId);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataPermDelete(int id);
         Task<ApiResponse<IEnumerable<ImmidateActionDto>>> DataRecover(int id, string userId);
         Task<byte[]> Template();
-        Task<ApiResponse<IEnumerable<string>>> Import(IFormFile file, string userId);
+        Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId);
     }
 }
