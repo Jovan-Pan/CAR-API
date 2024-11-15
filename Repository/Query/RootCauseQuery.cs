@@ -9,7 +9,7 @@ namespace Repository.Query
     public class RootCauseQuery
     {
         public static readonly string getRootCauseList = @"
-        select distinct RootCauseName from RootCauseCategory`
+        select distinct RootCauseName from RootCauseCategory
         where DelFlag = 0 and Plant = @plant";
 
         public static readonly string InsertNewRootCauseName = @"
