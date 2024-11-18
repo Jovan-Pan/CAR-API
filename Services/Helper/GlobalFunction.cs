@@ -89,14 +89,14 @@ namespace Services.Helper
                     for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
                     {
                         var columnHeader = worksheet.Cells[startRow, col].Text.Trim();
-                        //if (string.IsNullOrWhiteSpace(columnHeader))
-                        //{
-                        //    return new ExcelReadResponseDto { Message = "Invalid Data structure, please follow template format." };
-                        //}
-                        //else
-                        //{
+                        if (string.IsNullOrWhiteSpace(columnHeader))
+                        {
+                            return new ExcelReadResponseDto { Message = "Invalid Data structure, please follow template format." };
+                        }
+                        else
+                        {
                             dataTable.Columns.Add(columnHeader);
-                        //}
+                        }
                     }
 
                     // Check if all expected columns are present
