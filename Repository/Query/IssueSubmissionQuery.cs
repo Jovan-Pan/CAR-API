@@ -81,6 +81,18 @@ namespace Repository.Query
         where FormNo = @FormNo and ActionType = @ActionType and FilePath=@FilePath
         ";
 
+        public static readonly string issuerMgrVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        AcknowledgeByComment = @rejectReason,
+        AcknowledgeBy = @UserId,
+        AcknowledgeByname = @UserName,
+        AcknowledgeByDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
         public static readonly string issuerMgrReject = @"
         update IssueFeedback
         set 
@@ -102,6 +114,11 @@ namespace Repository.Query
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
         AcknowledgeByDate = GETDATE()
+
+        ,Dept = @Dept
+        ,VendorCode = @VendorCode
+        ,VendorDesc = @VendorDesc
+
         where FormNo = @FormNumber
         ";
 
@@ -198,6 +215,19 @@ namespace Repository.Query
         ReceiveActionUpdatedBy = @UserId,
         ReceiveActionUpdatedByName = @UserName,
         ReceiveActionUpdatedDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string ReceiverActionAppeal = @"
+        update IssueFeedback
+        set 
+        Status = 'SUBMITED-APPEAL',
+        MainStatus = 'CAR RAISE',
+        ReceiveActionRejectReason = @rejectReason,
+        ReceiveActionComment = @rejectReason,
+        ReceiveActionBy = @UserId,
+        ReceiveActionByName = @UserName,
+        ReceiveActionDate = GETDATE()
         where FormNo = @FormNumber
         ";
 

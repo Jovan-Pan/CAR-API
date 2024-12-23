@@ -71,6 +71,13 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> issuerMgrVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.issuerMgrVoid;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
         public async Task<int> issuerMgrReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.issuerMgrReject;
@@ -123,6 +130,13 @@ namespace Repository.CAR
         public async Task<int> ReceiverActionUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.ReceiverActionUpdate;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> ReceiverActionAppeal(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReceiverActionAppeal;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }

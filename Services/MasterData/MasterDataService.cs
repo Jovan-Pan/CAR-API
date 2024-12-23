@@ -122,4 +122,10 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         var result = await mdm.getReason(plant, reasontype);
         return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
     }
+
+    public async Task<ApiResponse<bool>> GetisSpAdmin(int plant, string UseID)
+    {
+        var result = await mdm.GetisSpAdmin(plant, UseID);
+        return ApiResponse<bool>.SuccessResponse(result);
+    }
 }

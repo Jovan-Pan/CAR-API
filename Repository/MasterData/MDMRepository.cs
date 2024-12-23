@@ -169,4 +169,11 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<string>(Processquery, new { plant,UseID });
     }
+
+    public async Task<bool> GetisSpAdmin(int plant, string UseID)
+    {
+        string Processquery = MDMQuery.GetisSpAdmin;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryFirstOrDefaultAsync<bool>(Processquery, new { plant, UseID });
+    }
 }

@@ -134,4 +134,12 @@ public class MasterDataController(IServiceManager business) : Controller
         var result = await business.MasterData.getReason(plant, reasontype);
         return Ok(result);
     }
+
+    [HttpPost(nameof(GetisSpAdmin))]
+    public async Task<IActionResult> GetisSpAdmin([FromBody] FormAuthorizeParam param)
+    {
+        var result = await business.MasterData.GetisSpAdmin(param.plant,param.userId);
+        return Ok(result);
+
+    }
 }

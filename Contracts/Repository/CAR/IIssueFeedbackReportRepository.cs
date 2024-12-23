@@ -25,5 +25,6 @@ namespace Contracts.Repository.CAR
         Task<IEnumerable<string>> GetMatTypeListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<IEnumerable<string>> GetMaterialListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<IEnumerable<VendorDto>> GetVendorListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
+        Task<int> ProcessUpdate(IssueFeedbacReportUpdateParam mydata, SqlTransaction transaction);
     }
 }

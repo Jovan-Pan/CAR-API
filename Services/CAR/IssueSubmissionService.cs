@@ -329,6 +329,19 @@ namespace Services.CAR
             }
         }
 
+        public async Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata)
+        {
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+
+            await data.ISM.issuerMgrVoid(mydata, transaction);
+
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
+        }
+
         public async Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata)
         {
             await using var conn = await data.ISM.OpenConnectionAsync();
@@ -1132,6 +1145,18 @@ namespace Services.CAR
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
+        }
+
+        public async Task<ApiResponse<string>> ReceiverActionAppeal(IssueSubmissionParameters mydata)
+        {
+
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.ReceiverActionAppeal(mydata, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Appeal Succesfully");
         }
 
         public async Task<ApiResponse<string>> ReceiverIssueReject(IssueSubmissionParameters mydata)
