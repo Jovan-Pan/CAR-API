@@ -39,7 +39,7 @@ namespace Repository.Query
 
         public static readonly string GetTotalRecordForEachStts = @" 
         SELECT 
-            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT') THEN 1 END) AS Submitted,
+            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT' or status = 'SUBMITED-APPEAL') THEN 1 END) AS Submitted,
             COUNT(CASE WHEN (status = 'OPEN' or status = 'OPEN-REJECT') THEN 1 END) AS [Open],
             COUNT(CASE WHEN status = 'PDA-DECISION' THEN 1 END) AS PdaDecision,
 	        COUNT(CASE WHEN (status = 'ISSUED' or status = 'ISSUED-REJECT') THEN 1 END) AS issued,
@@ -113,6 +113,15 @@ namespace Repository.Query
         select B.FormNo,B.ActionType,B.OriFileName,B.FileName,B.FileExt,B.FilePath from IssueFeedback A
          join IssueFeedbackAtchment B on A.FormNo = B.FormNo
          where A.Plant = @plant and A.FormNo IN @FormNo
+        ";
+
+        public static readonly string ProcessUpdate = @" 
+        update IssueFeedback 
+        set UpdateBy = @UserId
+        ,UpdateByName =@UserName
+        ,UpdatedDate = GETDATE()
+        ,StatusOfFinding = @StatusOfFinding
+        where FormNo = @FormNo and Plant = @UserPlant
         ";
     }
 }

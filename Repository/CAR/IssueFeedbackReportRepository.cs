@@ -157,5 +157,12 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<VendorDto>(query, new { plant, deptAuthList, productAuthList });
         }
+
+        public async Task<int> ProcessUpdate(IssueFeedbacReportUpdateParam mydata, SqlTransaction transaction)
+        {
+            string query = IssueFeedbackReportQuery.ProcessUpdate;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
     }
 }

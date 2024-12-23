@@ -152,6 +152,13 @@ namespace WebApi.Controllers
             }
         }
 
+        [HttpPost(nameof(ProcessUpdate))]
+        public async Task<IActionResult> ProcessUpdate([FromForm] IssueFeedbacReportUpdateParam data)
+        {
+            var result = await business.IFR.ProcessUpdate(data);
+            return Ok(result);
+        }
+
         private string ConvertToBase64(IFormFile file)
         {
             using (var memoryStream = new MemoryStream())
