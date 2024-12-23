@@ -22,8 +22,10 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<IEnumerable<string>>> GetMatTypeListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<ApiResponse<IEnumerable<TMATERIALDto>>> GetMaterialListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList, string searchTerm);
         Task<ApiResponse<IEnumerable<VendorDto>>> GetVendorListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
+        Task<ApiResponse<string>> ProcessUpdate(IssueFeedbacReportUpdateParam mydata);
 
         Task<(Stream FileStream, string MimeType, string FileName)> GetFilePreviewAsync(GetAttachmentParam request);
         Task<List<(string Base64Content, string MimeType, string FileName)>> GetFilesAttchment(IEnumerable<GetAttachmentParam> request);
+
     }
 }

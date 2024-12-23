@@ -165,5 +165,40 @@ namespace Repository.Query
         public static readonly string GetissuerEmail = @"
         select distinct UseEmail from Usr where UseID IN @UseID and DelFlag = 0
         ";
+
+        public static readonly string GetisSpAdmin = @"
+        --declare @plant int = 2100, @UseID nvarchar(max) = 'hafiz'
+
+        declare @setVal nvarchar(max) = 
+        (select G.IDValue from tGlobal G 
+        join TPLANTVSGLOBAL GP on G.ID = GP.SettingID
+        where G.DelFlag = 0 and GP.DelFlag = 0
+        and GP.Plant = @plant
+        and G.id = 'SUPER-ADMIN-GROUP') 
+
+        declare @grpList table (
+	        groupid nvarchar(max)
+        )
+
+        declare @Validgrp table (
+	        data nvarchar(max),
+	        isexist bit
+        )
+
+        insert into @grpList (groupid)
+        select UA.GroupID from TUSER_AUTHORIZE UA 
+        join TGROUP G on UA.GroupID = G.GroupID and G.DelFlag = 0 and UA.System = G.SYSTEM
+        where UserID = @UseID and UA.SYSTEM = 'CAR' and UA.DelFlag = 0
+
+        insert into @Validgrp
+        SELECT data, 
+            CASE 
+                WHEN data IN (SELECT groupid FROM @grpList) THEN 1 
+                ELSE 0 
+            END AS isExist
+        FROM dbo.Split(@setVal, ',')
+
+        select case when (select count(*) from @Validgrp where isexist = 1) > 0 then 1 else 0 end isSpAdmin
+        ";
     }
 }
