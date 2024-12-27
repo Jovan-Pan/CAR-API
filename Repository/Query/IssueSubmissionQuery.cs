@@ -71,8 +71,11 @@ namespace Repository.Query
         IssueUpdatedBy = @UserId,
         IssueUpdatedByName = @UserName,
         IssueUpdatedDate = GETDATE(),
-        Status = 'RE-SUBMIT',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE'
+        ,Dept = @Dept
+        ,VendorCode = @VendorCode
+        ,VendorDesc = @VendorDesc
         where FormNo = @FormNumber
         ";
 
@@ -108,7 +111,7 @@ namespace Repository.Query
         public static readonly string issuerMngUpdate = @"
         update IssueFeedback
         set 
-        Status = 'OPEN',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         AcknowledgeByComment = @Comment,
         AcknowledgeBy = @UserId,
@@ -138,7 +141,7 @@ namespace Repository.Query
         public static readonly string pdaDecisionUpdate = @"
         update IssueFeedback
         set 
-        Status = 'PDA-DECISION',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
@@ -151,7 +154,7 @@ namespace Repository.Query
         public static readonly string pdaApproval = @"
         update IssueFeedback
         set 
-        Status = 'ISSUED',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         PDAAprovalComment = @Comment,
         PDAAprovalBy = @UserId,
