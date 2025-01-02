@@ -26,6 +26,14 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(issuerVoid))]
+        public async Task<IActionResult> issuerVoid([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerVoid(data);
+            return Ok(result);
+        }
+
+
         [HttpPost(nameof(issuerMgrVoid))]
         public async Task<IActionResult> issuerMgrVoid([FromForm] IssueSubmissionParameters data)
         {

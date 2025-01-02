@@ -64,6 +64,13 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> issuerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.issuerVoid;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
         public async Task<int> deleteDataAtchIssuer(IssueFeedbackAtchmentDto mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.deleteDataAtchIssuer;

@@ -79,6 +79,18 @@ namespace Repository.Query
         where FormNo = @FormNumber
         ";
 
+        public static readonly string issuerVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        IssueByComment = @rejectReason,
+        IssueUpdatedBy = @UserId,
+        IssueUpdatedByName = @UserName,
+        IssueUpdatedDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
         public static readonly string deleteDataAtchIssuer = @"
         delete from IssueFeedbackAtchment
         where FormNo = @FormNo and ActionType = @ActionType and FilePath=@FilePath
