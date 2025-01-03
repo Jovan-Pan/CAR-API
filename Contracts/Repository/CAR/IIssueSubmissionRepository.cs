@@ -19,6 +19,7 @@ namespace Contracts.Repository.CAR
 
         Task<int> InsertDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> InsertDataAtchIssuer(IssueFeedbackAtchmentDto mydata, SqlTransaction transaction);
+        Task<int> issuerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> issuerUpdateDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> deleteDataAtchIssuer(IssueFeedbackAtchmentDto mydata, SqlTransaction transaction);
         Task<int> issuerMgrVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);

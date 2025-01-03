@@ -12,6 +12,7 @@ namespace Services.Contracts.CAR
     public interface IIssueSubmissionService
     {
         Task<ApiResponse<string>> ProcessSubmit(IssueSubmissionParameters data);
+        Task<ApiResponse<string>> issuerVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> issuerUpdate(IssueSubmissionParameters mydata);
         Task<DirectoryCredentials> GetDirectoryAuth(string Domain, string UserID, string Password, string BasePath);
         Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata);
