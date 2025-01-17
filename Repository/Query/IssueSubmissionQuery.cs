@@ -71,14 +71,41 @@ namespace Repository.Query
         IssueUpdatedBy = @UserId,
         IssueUpdatedByName = @UserName,
         IssueUpdatedDate = GETDATE(),
-        Status = 'RE-SUBMIT',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE'
+        ,Dept = @Dept
+        ,VendorCode = @VendorCode
+        ,VendorDesc = @VendorDesc
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string issuerVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        IssueByComment = @rejectReason,
+        IssueUpdatedBy = @UserId,
+        IssueUpdatedByName = @UserName,
+        IssueUpdatedDate = GETDATE()
         where FormNo = @FormNumber
         ";
 
         public static readonly string deleteDataAtchIssuer = @"
         delete from IssueFeedbackAtchment
         where FormNo = @FormNo and ActionType = @ActionType and FilePath=@FilePath
+        ";
+
+        public static readonly string issuerMgrVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        AcknowledgeByComment = @rejectReason,
+        AcknowledgeBy = @UserId,
+        AcknowledgeByname = @UserName,
+        AcknowledgeByDate = GETDATE()
+        where FormNo = @FormNumber
         ";
 
         public static readonly string issuerMgrReject = @"
@@ -96,12 +123,17 @@ namespace Repository.Query
         public static readonly string issuerMngUpdate = @"
         update IssueFeedback
         set 
-        Status = 'OPEN',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         AcknowledgeByComment = @Comment,
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
         AcknowledgeByDate = GETDATE()
+
+        ,Dept = @Dept
+        ,VendorCode = @VendorCode
+        ,VendorDesc = @VendorDesc
+
         where FormNo = @FormNumber
         ";
 
@@ -121,7 +153,7 @@ namespace Repository.Query
         public static readonly string pdaDecisionUpdate = @"
         update IssueFeedback
         set 
-        Status = 'PDA-DECISION',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
@@ -134,7 +166,7 @@ namespace Repository.Query
         public static readonly string pdaApproval = @"
         update IssueFeedback
         set 
-        Status = 'ISSUED',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         PDAAprovalComment = @Comment,
         PDAAprovalBy = @UserId,
@@ -198,6 +230,19 @@ namespace Repository.Query
         ReceiveActionUpdatedBy = @UserId,
         ReceiveActionUpdatedByName = @UserName,
         ReceiveActionUpdatedDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string ReceiverActionAppeal = @"
+        update IssueFeedback
+        set 
+        Status = 'SUBMITED-APPEAL',
+        MainStatus = 'CAR RAISE',
+        ReceiveActionRejectReason = @rejectReason,
+        ReceiveActionComment = @rejectReason,
+        ReceiveActionBy = @UserId,
+        ReceiveActionByName = @UserName,
+        ReceiveActionDate = GETDATE()
         where FormNo = @FormNumber
         ";
 

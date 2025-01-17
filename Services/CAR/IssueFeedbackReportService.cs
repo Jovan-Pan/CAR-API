@@ -386,6 +386,19 @@ namespace Services.CAR
             return ApiResponse<IEnumerable<VendorDto>>.SuccessResponse(result);
         }
 
+        public async Task<ApiResponse<string>> ProcessUpdate(IssueFeedbacReportUpdateParam mydata)
+        {
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+
+            await data.IFR.ProcessUpdate(mydata, transaction);
+
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
+        }
+
         public async Task<(Stream FileStream, string MimeType, string FileName)> GetFilePreviewAsync(GetAttachmentParam request)
         {
             var basepathconfig = await mdm.getBasePathConfig(request.Plant);
@@ -489,6 +502,7 @@ namespace Services.CAR
 
             return resultFiles;
         }
+
 
         private string GetMimeType(string filePath)
         {

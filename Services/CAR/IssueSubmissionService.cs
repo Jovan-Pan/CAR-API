@@ -299,6 +299,19 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
         }
 
+        public async Task<ApiResponse<string>> issuerVoid(IssueSubmissionParameters mydata)
+        {
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+
+            await data.ISM.issuerVoid(mydata, transaction);
+
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
+        }
+
         public async Task<DirectoryCredentials> GetDirectoryAuth(string Domain, string UserID, string Password, string BasePath)
         {
             try
@@ -327,6 +340,19 @@ namespace Services.CAR
             {
                 throw;
             }
+        }
+
+        public async Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata)
+        {
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+
+            await data.ISM.issuerMgrVoid(mydata, transaction);
+
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
         }
 
         public async Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata)
@@ -1132,6 +1158,18 @@ namespace Services.CAR
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
+        }
+
+        public async Task<ApiResponse<string>> ReceiverActionAppeal(IssueSubmissionParameters mydata)
+        {
+
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.ReceiverActionAppeal(mydata, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Appeal Succesfully");
         }
 
         public async Task<ApiResponse<string>> ReceiverIssueReject(IssueSubmissionParameters mydata)

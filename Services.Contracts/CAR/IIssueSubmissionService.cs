@@ -12,8 +12,10 @@ namespace Services.Contracts.CAR
     public interface IIssueSubmissionService
     {
         Task<ApiResponse<string>> ProcessSubmit(IssueSubmissionParameters data);
+        Task<ApiResponse<string>> issuerVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> issuerUpdate(IssueSubmissionParameters mydata);
         Task<DirectoryCredentials> GetDirectoryAuth(string Domain, string UserID, string Password, string BasePath);
+        Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> issuerMngUpdate(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaDecision(IssueSubmissionParameters mydata);
@@ -22,6 +24,7 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<string>> pdaActionReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverAction(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverActionUpdate(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> ReceiverActionAppeal(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverIssueReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverApproval(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReceiverMngReject(IssueSubmissionParameters mydata);

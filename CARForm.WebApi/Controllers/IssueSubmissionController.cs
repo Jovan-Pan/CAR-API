@@ -26,6 +26,21 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(issuerVoid))]
+        public async Task<IActionResult> issuerVoid([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerVoid(data);
+            return Ok(result);
+        }
+
+
+        [HttpPost(nameof(issuerMgrVoid))]
+        public async Task<IActionResult> issuerMgrVoid([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.issuerMgrVoid(data);
+            return Ok(result);
+        }
+
         [HttpPost(nameof(issuerMgrReject))]
         public async Task<IActionResult> issuerMgrReject([FromForm] IssueSubmissionParameters data)
         {
@@ -79,6 +94,13 @@ namespace WebApi.Controllers
         public async Task<IActionResult> ReceiverActionUpdate([FromForm] IssueSubmissionParameters data)
         {
             var result = await business.IssueSubmission.ReceiverActionUpdate(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(ReceiverActionAppeal))]
+        public async Task<IActionResult> ReceiverActionAppeal([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.ReceiverActionAppeal(data);
             return Ok(result);
         }
 
