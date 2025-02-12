@@ -13,4 +13,13 @@ public interface IDataManager
     IIssueFeedbackReportRepository IFR { get; }
     ISendMailSettingRepository SMS { get; }
     INCTextSentenceRepository NCTS { get; }
+    ICARCategoryRepository CARCategory { get; }
+    IRiskCategoryRepository RiskCategory { get; }
+    ITypeOfContraventionRepository Typeofcontravention { get; }
+    IPossibleHazardsRepository PossibleHazards { get; }
+    IDynamicFormConfigurationRepository DynamicFormConfiguration { get; }
+    IDynamicNewFormRepository DynamicNewForm { get; }
+    IDynamicFlowConfigurationRepository DynamicFlowConfiguration { get; }
+    ITableMappingFieldNameRepository TableMappingFieldName { get; }
+
 }
