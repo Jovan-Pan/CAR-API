@@ -48,9 +48,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost(nameof(issuerMngUpdate))]
-        public async Task<IActionResult> issuerMngUpdate([FromForm] IssueSubmissionParameters data)
+        public async Task<IActionResult> issuerMngUpdate([FromForm] DynamicFormParameterDTO data)
         {
-            var result = await business.IssueSubmission.issuerMngUpdate(data);
+            var result = await business.DynamicNewForm.issuerMngUpdate(data);
             return Ok(result);
         }
 

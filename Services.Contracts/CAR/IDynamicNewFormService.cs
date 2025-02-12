@@ -18,7 +18,7 @@ namespace Services.Contracts.CAR
         Task<DirectoryCredentials> GetDirectoryAuth(string Domain, string UserID, string Password, string BasePath);
         Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> issuerMngUpdate(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> issuerMngUpdate(DynamicFormParameterDTO mydata);
         Task<ApiResponse<string>> pdaDecision(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaDecisionUpdate(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaApproval(IssueSubmissionParameters mydata);

@@ -242,9 +242,9 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> issuerMngUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> issuerMngUpdate(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.issuerMngUpdate;
+            string query = DynamicNewFormQuery.issuerMngUpdate;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }

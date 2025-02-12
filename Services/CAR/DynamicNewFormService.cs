@@ -369,13 +369,13 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
-        public async Task<ApiResponse<string>> issuerMngUpdate(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> issuerMngUpdate(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.issuerMngUpdate(mydata, transaction);
+            await data.DynamicNewForm.issuerMngUpdate(mydata, transaction);
 
 
             await transaction.CommitAsync();
