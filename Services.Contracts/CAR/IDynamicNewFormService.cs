@@ -13,28 +13,28 @@ namespace Services.Contracts.CAR
     {
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(bool delflag);
         Task<ApiResponse<string>> ProcessSubmit(DynamicFormParameterDTO data);
-        Task<ApiResponse<string>> issuerVoid(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> issuerUpdate(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> issuerVoid(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> issuerUpdate(DynamicFormParameterDTO mydata);
         Task<DirectoryCredentials> GetDirectoryAuth(string Domain, string UserID, string Password, string BasePath);
-        Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> issuerMgrVoid(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> issuerMgrReject(DynamicFormParameterDTO mydata);
         Task<ApiResponse<string>> issuerMngUpdate(DynamicFormParameterDTO mydata);
-        Task<ApiResponse<string>> pdaDecision(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> pdaDecisionUpdate(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> pdaApproval(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> pdaActionReject(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverAction(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverActionUpdate(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverActionAppeal(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverIssueReject(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverApproval(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverMngReject(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReceiverApprovalToReject(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> PDAReviewerVoid(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> PDAReviewerReject(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> PDAReviewerAprove(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReviewerSubmit(IssueSubmissionParameters mydata);
-        Task<ApiResponse<string>> ReviewerReject(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> pdaDecision(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> pdaDecisionUpdate(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> pdaApproval(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> pdaActionReject(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverAction(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverActionUpdate(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverActionAppeal(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverIssueReject(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverApproval(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverMngReject(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReceiverApprovalToReject(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> PDAReviewerVoid(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> PDAReviewerReject(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> PDAReviewerAprove(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReviewerSubmit(DynamicFormParameterDTO mydata);
+        Task<ApiResponse<string>> ReviewerReject(DynamicFormParameterDTO mydata);
         Task<ApiResponse<string>> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
     }
 }

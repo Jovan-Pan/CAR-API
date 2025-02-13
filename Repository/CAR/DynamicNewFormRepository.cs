@@ -207,37 +207,37 @@ namespace Repository.CAR
             return $"INSERT INTO {tableName} (Plant, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant, {values},'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE())";
         }
 
-        public async Task<int> issuerUpdateDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> issuerUpdateDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.issuerUpdateDataIssueFeedback;
+            string query = DynamicNewFormQuery.issuerUpdateDataIssueFeedback;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> issuerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> issuerVoid(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.issuerVoid;
+            string query = DynamicNewFormQuery.issuerVoid;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
         public async Task<int> deleteDataAtchIssuer(IssueFeedbackAtchmentDto mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.deleteDataAtchIssuer;
+            string query = DynamicNewFormQuery.deleteDataAtchIssuer;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> issuerMgrVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> issuerMgrVoid(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.issuerMgrVoid;
+            string query = DynamicNewFormQuery.issuerMgrVoid;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> issuerMgrReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> issuerMgrReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.issuerMgrReject;
+            string query = DynamicNewFormQuery.issuerMgrReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
@@ -245,126 +245,136 @@ namespace Repository.CAR
         public async Task<int> issuerMngUpdate(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
             string query = DynamicNewFormQuery.issuerMngUpdate;
+            string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
+            var conn = transaction.Connection;
+            var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
+                        .ToDictionary(x => x.FieldName, x => x.UIDisplay);
+            var parameters = GetSqlParametersFromEntity(mydata, columnMappings);
+            var dParams = new Dapper.DynamicParameters();
+            foreach (var param in parameters)
+            {
+                dParams.Add(param.ParameterName, param.Value);
+            }
+            return await conn.ExecuteAsync(query, dParams, transaction);
+            //return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> pdaDecision(DynamicFormParameterDTO mydata, SqlTransaction transaction)
+        {
+            string query = DynamicNewFormQuery.pdaDecision;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> pdaDecision(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> pdaDecisionUpdate(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.pdaDecision;
+            string query = DynamicNewFormQuery.pdaDecisionUpdate;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> pdaDecisionUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> pdaApproval(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.pdaDecisionUpdate;
+            string query = DynamicNewFormQuery.pdaApproval;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> pdaApproval(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> pdaActionReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.pdaApproval;
+            string query = DynamicNewFormQuery.pdaActionReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> pdaActionReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverAction(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.pdaActionReject;
+            string query = DynamicNewFormQuery.ReceiverAction;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverAction(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverActionUpdate(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverAction;
+            string query = DynamicNewFormQuery.ReceiverActionUpdate;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverActionUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverActionAppeal(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverActionUpdate;
+            string query = DynamicNewFormQuery.ReceiverActionAppeal;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverActionAppeal(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverIssueReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverActionAppeal;
+            string query = DynamicNewFormQuery.ReceiverIssueReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverIssueReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverApproval(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverIssueReject;
+            string query = DynamicNewFormQuery.ReceiverApproval;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverApproval(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverMngReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverApproval;
+            string query = DynamicNewFormQuery.ReceiverMngReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverMngReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReceiverApprovalToReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverMngReject;
+            string query = DynamicNewFormQuery.ReceiverApprovalToReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReceiverApprovalToReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> PDAReviewerVoid(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReceiverApprovalToReject;
+            string query = DynamicNewFormQuery.PDAReviewerVoid;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> PDAReviewerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> PDAReviewerReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.PDAReviewerVoid;
-            var conn = transaction.Connection;
-            return await conn.ExecuteAsync(query, mydata, transaction);
-        }
-
-        public async Task<int> PDAReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
-        {
-            string query = IssueSubmissionQuery.PDAReviewerReject;
+            string query = DynamicNewFormQuery.PDAReviewerReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
 
-        public async Task<int> PDAReviewerAprove(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> PDAReviewerAprove(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.PDAReviewerAprove;
+            string query = DynamicNewFormQuery.PDAReviewerAprove;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReviewerSubmit(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReviewerSubmit(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReviewerSubmit;
+            string query = DynamicNewFormQuery.ReviewerSubmit;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> ReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        public async Task<int> ReviewerReject(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.ReviewerReject;
+            string query = DynamicNewFormQuery.ReviewerReject;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
         public async Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param)
         {
-            string query = IssueSubmissionQuery.cekAvailableCompletePastIssue;
+            string query = DynamicNewFormQuery.cekAvailableCompletePastIssue;
             await using var conn = dbContext.CARConnection();
             return await conn.QueryFirstOrDefaultAsync<string>(query, param);
         }

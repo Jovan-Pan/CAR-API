@@ -29,7 +29,7 @@ namespace Services.CAR
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);
 
 
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             if (!basepathconfig.Any())
@@ -37,7 +37,7 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
-            string newformno = await data.ISM.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
+            string newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
             mydata.FormNumber = newformno;
 
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
@@ -147,11 +147,11 @@ namespace Services.CAR
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(newformno, "Data Submit Succesfully, New Form No : " + newformno);
         }
-        public async Task<ApiResponse<string>> issuerUpdate(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> issuerUpdate(DynamicFormParameterDTO mydata)
         {
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);
 
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             if (!basepathconfig.Any())
@@ -159,7 +159,7 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
-            await data.ISM.issuerUpdateDataIssueFeedback(mydata, transaction);
+            await data.DynamicNewForm.issuerUpdateDataIssueFeedback(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -198,7 +198,7 @@ namespace Services.CAR
                                     dtaAtch.FileExt = attachment.FileExt;
                                     dtaAtch.FilePath = attachment.FilePath;
 
-                                    await data.ISM.deleteDataAtchIssuer(dtaAtch, transaction);
+                                    await data.DynamicNewForm.deleteDataAtchIssuer(dtaAtch, transaction);
 
                                     File.Delete(fullFilePath);
                                 }
@@ -300,13 +300,13 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
         }
 
-        public async Task<ApiResponse<string>> issuerVoid(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> issuerVoid(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.issuerVoid(mydata, transaction);
+            await data.DynamicNewForm.issuerVoid(mydata, transaction);
 
 
             await transaction.CommitAsync();
@@ -343,26 +343,26 @@ namespace Services.CAR
             }
         }
 
-        public async Task<ApiResponse<string>> issuerMgrVoid(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> issuerMgrVoid(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.issuerMgrVoid(mydata, transaction);
+            await data.DynamicNewForm.issuerMgrVoid(mydata, transaction);
 
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
         }
 
-        public async Task<ApiResponse<string>> issuerMgrReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> issuerMgrReject(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.issuerMgrReject(mydata, transaction);
+            await data.DynamicNewForm.issuerMgrReject(mydata, transaction);
 
 
             await transaction.CommitAsync();
@@ -382,63 +382,63 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
         }
 
-        public async Task<ApiResponse<string>> pdaDecision(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> pdaDecision(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.pdaDecision(mydata, transaction);
+            await data.DynamicNewForm.pdaDecision(mydata, transaction);
 
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
         }
 
-        public async Task<ApiResponse<string>> pdaDecisionUpdate(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> pdaDecisionUpdate(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.pdaDecisionUpdate(mydata, transaction);
+            await data.DynamicNewForm.pdaDecisionUpdate(mydata, transaction);
 
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
         }
 
-        public async Task<ApiResponse<string>> pdaApproval(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> pdaApproval(DynamicFormParameterDTO mydata)
         {
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
 
-            await data.ISM.pdaApproval(mydata, transaction);
+            await data.DynamicNewForm.pdaApproval(mydata, transaction);
 
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
         }
 
-        public async Task<ApiResponse<string>> pdaActionReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> pdaActionReject(DynamicFormParameterDTO mydata)
         {
 
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.pdaActionReject(mydata, transaction);
+            await data.DynamicNewForm.pdaActionReject(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverAction(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverAction(DynamicFormParameterDTO mydata)
         {
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);
 
 
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             if (!basepathconfig.Any())
@@ -446,7 +446,7 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
-            await data.ISM.ReceiverAction(mydata, transaction);
+            await data.DynamicNewForm.ReceiverAction(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -800,7 +800,7 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverActionUpdate(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverActionUpdate(DynamicFormParameterDTO mydata)
         {
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);
 
@@ -813,7 +813,7 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
-            await data.ISM.ReceiverActionUpdate(mydata, transaction);
+            await data.DynamicNewForm.ReceiverActionUpdate(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -1167,85 +1167,85 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverActionAppeal(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverActionAppeal(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.ReceiverActionAppeal(mydata, transaction);
+            await data.DynamicNewForm.ReceiverActionAppeal(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Appeal Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverIssueReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverIssueReject(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.ReceiverIssueReject(mydata, transaction);
+            await data.DynamicNewForm.ReceiverIssueReject(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverApproval(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverApproval(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.ReceiverApproval(mydata, transaction);
+            await data.DynamicNewForm.ReceiverApproval(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverMngReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverMngReject(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.ReceiverMngReject(mydata, transaction);
+            await data.DynamicNewForm.ReceiverMngReject(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReceiverApprovalToReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReceiverApprovalToReject(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.ReceiverApprovalToReject(mydata, transaction);
+            await data.DynamicNewForm.ReceiverApprovalToReject(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve to Reject Succesfully");
         }
 
-        public async Task<ApiResponse<string>> PDAReviewerVoid(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> PDAReviewerVoid(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.PDAReviewerVoid(mydata, transaction);
+            await data.DynamicNewForm.PDAReviewerVoid(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Void Succesfully");
         }
 
-        public async Task<ApiResponse<string>> PDAReviewerReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> PDAReviewerReject(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.PDAReviewerReject(mydata, transaction);
+            await data.DynamicNewForm.PDAReviewerReject(mydata, transaction);
             //string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
             //await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
 
@@ -1253,19 +1253,19 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
         }
 
-        public async Task<ApiResponse<string>> PDAReviewerAprove(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> PDAReviewerAprove(DynamicFormParameterDTO mydata)
         {
 
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.PDAReviewerAprove(mydata, transaction);
+            await data.DynamicNewForm.PDAReviewerAprove(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReviewerSubmit(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReviewerSubmit(DynamicFormParameterDTO mydata)
         {
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);
 
@@ -1278,7 +1278,7 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
-            await data.ISM.ReviewerSubmit(mydata, transaction);
+            await data.DynamicNewForm.ReviewerSubmit(mydata, transaction);
 
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
@@ -1386,15 +1386,15 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
         }
 
-        public async Task<ApiResponse<string>> ReviewerReject(IssueSubmissionParameters mydata)
+        public async Task<ApiResponse<string>> ReviewerReject(DynamicFormParameterDTO mydata)
         {
 
-            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-            await data.ISM.ReviewerReject(mydata, transaction);
+            await data.DynamicNewForm.ReviewerReject(mydata, transaction);
 
-            string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
+            string newformno = await data.DynamicNewForm.GenerateNewFormNoWithVer(mydata, transaction);
             await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
 
             await transaction.CommitAsync();
