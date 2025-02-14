@@ -56,7 +56,7 @@ namespace Repository.Query
                                                 (Plant, RootCauseName, CreatedBy, CreatedDate, Delflag) 
                                                 SELECT 
                                                     B.Plant,
-                                                    UPPER([Root Cause Name]), 
+                                                    B.[Root Cause Name], 
                                                     UPPER(@userId),
                                                     GETDATE(), 
                                                     0 

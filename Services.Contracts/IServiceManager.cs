@@ -15,4 +15,12 @@ public interface IServiceManager
     IIssueFeedbackReportService IFR { get; }
     ISendMailSettingService sendmailsetting { get; }
     INCTextSentenceService NCTS { get; }
+    ICARCategoryService CARCategory { get; }
+    IRiskCategoryService RiskCategory { get; }
+    ITypeofcontraventionService Typeofcontravention { get; }
+    IPossibleHazardsService PossibleHazards { get; }
+    IDynamicFormConfigurationService DynamicFormConfiguration { get; }
+    IDynamicFlowConfigurationService DynamicFlowConfiguration { get; }
+    ITableMappingFieldNameService TableMappingFieldName { get; }
+    IDynamicNewFormService DynamicNewForm { get; }
 }

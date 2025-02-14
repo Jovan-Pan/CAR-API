@@ -77,7 +77,7 @@ namespace Repository.Query
                                                     B.[Action Type Desc],
                                                     B.isSendEmail,
                                                     UPPER(@UserId),
-                                                    UPPER(@UserId),,
+                                                    UPPER(@UserId),
                                                     GETDATE(),
                                                     0 
                                                 FROM ##temp B
