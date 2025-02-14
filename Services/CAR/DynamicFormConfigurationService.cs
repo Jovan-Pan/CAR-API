@@ -32,9 +32,9 @@ namespace Services.CAR
             var result = await data.DynamicFormConfiguration.InsertNewData(DynamicFormConfigurationDto);
             return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
+        public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(string Plant, string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
         {
-            var result = await data.DynamicFormConfiguration.GetDynamicFormConfiguration(search, delflag, formTypeAdv, fieldNameAdv, fieldTypeAdv, fieldLengthAdv, mandatoryAdv, fieldElementAdv, optionDataResourceAdv, dbResourceAdv, queryAdv, dataOptionAdv, sequenceAdv);
+            var result = await data.DynamicFormConfiguration.GetDynamicFormConfiguration(Plant,search, delflag, formTypeAdv, fieldNameAdv, fieldTypeAdv, fieldLengthAdv, mandatoryAdv, fieldElementAdv, optionDataResourceAdv, dbResourceAdv, queryAdv, dataOptionAdv, sequenceAdv);
             return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> UpdateData(DynamicFormConfigurationDto DynamicFormConfigurationDto)

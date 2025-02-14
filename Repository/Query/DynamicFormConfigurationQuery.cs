@@ -28,15 +28,18 @@ namespace Repository.Query
                                                                     ORDER BY ORDINAL_POSITION";
 
         public static readonly string GetDynamicFormConfiguration = @"
-        select Distinct Id,plant,FormType,FieldName,FieldType,FieldLength,Mandatory,FieldElement,OptionDataResource,
-        DBResource,Query,DataOption,Sequence,CreatedBy,CreatedByName,CreatedDate,UpdatedBy,UpdatedByName,UpdatedDate,delflag
-        from DynamicFormConfiguration Where 1=1";
+         select Distinct dfc.Id,dfc.plant,dfc.FormType,dfc.FieldName,tbfn.UIdisplay,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
+         dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
+         from DynamicFormConfiguration dfc
+         INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
+         Where 1=1 and dfc.Plant = @Plant";
 
         public static readonly string SearchADV = @"
         select Distinct Id,plant,FormType,FieldName,FieldType,FieldLength,Mandatory,FieldElement,OptionDataResource,
         DBResource,Query,DataOption,Sequence,CreatedBy,CreatedByName,CreatedDate,UpdatedBy,UpdatedByName,UpdatedDate,delflag
-        from DynamicFormConfiguration WHERE ( 
-        @formTypeAdv IS NULL OR FormType LIKE '%' + @formTypeAdv + '%')
+        from DynamicFormConfiguration WHERE  
+        Plant = @plant
+        AND (@formTypeAdv IS NULL OR FormType LIKE '%' + @formTypeAdv + '%')
         AND (@fieldNameAdv IS NULL OR FieldName LIKE '%' + @fieldNameAdv + '%')
         AND (@fieldTypeAdv IS NULL OR FieldType LIKE '%' + @fieldTypeAdv + '%')
         AND (@fieldLengthAdv IS NULL OR FieldLength LIKE '%' + @fieldLengthAdv + '%')

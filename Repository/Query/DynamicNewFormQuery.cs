@@ -8,6 +8,13 @@ namespace Repository.Query
 {
     public class DynamicNewFormQuery
     {
+        public static readonly string GetDynamicFormConfiguration = @"
+         select Distinct dfc.Id,dfc.plant,dfc.FormType,dfc.FieldName,tbfn.UIdisplay,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
+         dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
+         from DynamicFormConfiguration dfc
+         INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
+         Where 1=1 ";
+
         public static readonly string GenerateNewFormNo = @"
         --declare @FormType nvarchar(20) = 'CAR', @plant int = 2100
          declare @lastformno nvarchar(20) =  (select MAX(REPLACE(FormNo,@FormType,'')) 

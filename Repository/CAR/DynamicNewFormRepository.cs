@@ -29,11 +29,11 @@ namespace Repository.CAR
         {
             string query;
 
-            query = DynamicFormConfigurationQuery.GetDynamicFormConfiguration;
+            query = DynamicNewFormQuery.GetDynamicFormConfiguration;
          
             if (!delflag)
             {
-                query += " and DelFlag = 0";
+                query += " and dfc.DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
             //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {

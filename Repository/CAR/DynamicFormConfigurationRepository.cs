@@ -102,7 +102,7 @@ namespace Repository.CAR
 
             });
         }
-        public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
+        public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(string Plant,string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
         {
             string query;
 
@@ -121,12 +121,13 @@ namespace Repository.CAR
 
             if (!delflag)
             {
-                query += " and DelFlag = 0";
+                query += " and dfc.DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
             //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
             var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new
             {    
+            Plant = Plant ,
             search = search,
             formTypeAdv = formTypeAdv,
             fieldNameAdv = fieldNameAdv,
