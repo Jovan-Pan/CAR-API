@@ -11,7 +11,7 @@ namespace Contracts.Repository.CAR
 {
     public interface IDynamicNewFormRepository
     {
-        Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(bool delflag);
+        //Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(bool delflag);
         Task<SqlConnection> OpenConnectionAsync();
         Task<string> GenerateNewFormNo(int plant, string FormType, SqlTransaction transaction);
 

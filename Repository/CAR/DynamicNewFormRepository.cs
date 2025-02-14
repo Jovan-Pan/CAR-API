@@ -25,74 +25,78 @@ namespace Repository.CAR
             return connection;
         }
 
-        public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration( bool delflag)
-        {
-            string query;
+        //public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(bool delflag, string Language, string Plant)
+        //{
+        //    string query;
 
-            query = DynamicNewFormQuery.GetDynamicFormConfiguration;
+        //    query = DynamicNewFormQuery.GetDynamicFormConfiguration;
          
-            if (!delflag)
-            {
-                query += " and dfc.DelFlag = 0";
-            }
-            await using var conn = dbContext.CARConnection();
-            //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
-            var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query);
+        //    if (!delflag)
+        //    {
+        //        query += " and dfc.DelFlag = 0";
+        //    }
+        //    await using var conn = dbContext.CARConnection();
+        //    //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
+        //    var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new
+        //    {
+        //        Language = Language,
+        //        Plant = Plant,
+        //    });
 
 
-            foreach (var item in result)
-            {
-                if (item.OptionDataResource == "Execute Query")
-                {
-                    string queryLowerCase = item.Query.ToLower();
-                    string queryWithPlantReplaced;
+        //    foreach (var item in result)
+        //    {
+        //        if (item.OptionDataResource == "Execute Query")
+        //        {
+        //            string queryLowerCase = item.Query.ToLower();
+        //            string queryWithPlantReplaced;
 
-                    if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
-                        var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
+        //            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+        //            {
+        //                string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
+        //                var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
 
-                        string usePlant = executedParameters.UsePlant ?? string.Empty;
-                        string useUserId = executedParameters.UseUserId ?? string.Empty;
+        //                string usePlant = executedParameters.UsePlant ?? string.Empty;
+        //                string useUserId = executedParameters.UseUserId ?? string.Empty;
 
-                        queryWithPlantReplaced = item.Query.ToLower()
-                                                    .Replace("@plant", usePlant)
-                                                    .Replace("@userid", $"'{useUserId}'");
+        //                queryWithPlantReplaced = item.Query.ToLower()
+        //                                            .Replace("@plant", usePlant)
+        //                                            .Replace("@userid", $"'{useUserId}'");
 
-                    }
-                    else
-                    {
-                        queryWithPlantReplaced = item.Query;
-                    }
-                    string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
-                    var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+        //            }
+        //            else
+        //            {
+        //                queryWithPlantReplaced = item.Query;
+        //            }
+        //            string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
+        //            var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
 
-                    // Initialize the list if it is null
-                    if (item.ExecutedQueryResult == null)
-                    {
-                        item.ExecutedQueryResult = new List<Dictionary<string, object>>();
-                    }
+        //            // Initialize the list if it is null
+        //            if (item.ExecutedQueryResult == null)
+        //            {
+        //                item.ExecutedQueryResult = new List<Dictionary<string, object>>();
+        //            }
 
-                    // Accumulate rows from the executed query result
-                    foreach (var row in executedQueryResult)
-                    {
-                        var executedQueryResultDict = new Dictionary<string, object>();
+        //            // Accumulate rows from the executed query result
+        //            foreach (var row in executedQueryResult)
+        //            {
+        //                var executedQueryResultDict = new Dictionary<string, object>();
 
-                        foreach (var kvp in (IDictionary<string, object>)row)
-                        {
-                            if (kvp.Key != null)
-                            {
-                                executedQueryResultDict[kvp.Key] = kvp.Value;
-                            }
-                        }
+        //                foreach (var kvp in (IDictionary<string, object>)row)
+        //                {
+        //                    if (kvp.Key != null)
+        //                    {
+        //                        executedQueryResultDict[kvp.Key] = kvp.Value;
+        //                    }
+        //                }
 
-                        item.ExecutedQueryResult.Add(executedQueryResultDict);
-                    }
-                }
-            }
+        //                item.ExecutedQueryResult.Add(executedQueryResultDict);
+        //            }
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
         public async Task<string> GenerateNewFormNo(int plant, string FormType, SqlTransaction transaction)
         {
             string query = DynamicNewFormQuery.GenerateNewFormNo;

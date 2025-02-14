@@ -28,11 +28,11 @@ namespace Repository.Query
                                                                     ORDER BY ORDINAL_POSITION";
 
         public static readonly string GetDynamicFormConfiguration = @"
-         select Distinct dfc.Id,dfc.plant,dfc.FormType,dfc.FieldName,tbfn.UIdisplay,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
+         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
          dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
          from DynamicFormConfiguration dfc
          INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
-         Where 1=1 and dfc.Plant = @Plant";
+         Where dfc.Plant = @Plant and language = @language and tbfn.DelFlag =0";
 
         public static readonly string SearchADV = @"
         select Distinct Id,plant,FormType,FieldName,FieldType,FieldLength,Mandatory,FieldElement,OptionDataResource,
