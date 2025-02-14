@@ -9,7 +9,8 @@ namespace Contracts.Repository.MasterData
 {
     public interface ITableMappingFieldNameRepository
     {
-        Task<IEnumerable<TableMappingFieldNameDto>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? Language);
+        Task<IEnumerable<TableMappingFieldNameDto>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? plant);
+        Task<IEnumerable<TableMappingFieldNameDto>> CheckExistingData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);
         Task<IEnumerable<TableMappingFieldNameDto>> InsertNewData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);
         Task<IEnumerable<TableMappingFieldNameDto>> UpdateData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);
         Task<IEnumerable<TableMappingFieldNameDto>> DataDelete(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);

@@ -19,7 +19,7 @@ namespace Repository.MasterData
 {
     internal sealed class TableMappingFieldNameRepository(DbContext dbContext) :ITableMappingFieldNameRepository
     {
-        public async Task<IEnumerable<TableMappingFieldNameDto>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? Language)
+        public async Task<IEnumerable<TableMappingFieldNameDto>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? plant)
         {
             string query;
 
@@ -40,12 +40,25 @@ namespace Repository.MasterData
             {
                 query += " and DelFlag = 0";
             }
-            if(!string.IsNullOrEmpty(Language))
+            if(!string.IsNullOrEmpty(plant))
             {
-                query += "and Language = @Language";
+                query += " and Plant = @plant";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<TableMappingFieldNameDto>(query, new { search = search, SearchADVFN = SearchADVFN, SearchADVUID = SearchADVUID, SearchADVLANG = SearchADVLANG, Language = Language });
+            return await conn.QueryAsync<TableMappingFieldNameDto>(query, new { search = search, SearchADVFN = SearchADVFN, SearchADVUID = SearchADVUID, SearchADVLANG = SearchADVLANG, Plant = plant });
+        }
+
+        public async Task<IEnumerable<TableMappingFieldNameDto>> CheckExistingData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto)
+        {
+            string PlantParam = CRUDTableMappingFieldNameDto.Plant;
+            string FieldNameParam = CRUDTableMappingFieldNameDto.FieldName;
+            string LanguageParam = CRUDTableMappingFieldNameDto.Language;
+
+            string query;
+            query = TableMappingFieldNameQuery.CheckExistingData;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<TableMappingFieldNameDto>(query, new { Plant = PlantParam, FieldName = FieldNameParam, Language = LanguageParam });
         }
 
         public async Task<IEnumerable<TableMappingFieldNameDto>> InsertNewData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto)

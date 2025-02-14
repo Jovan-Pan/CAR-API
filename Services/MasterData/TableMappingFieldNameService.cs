@@ -15,9 +15,15 @@ namespace Services.MasterData
 {
     internal sealed class TableMappingFieldNameService(IDataManager data, ICacheManager memCache, ILocalizationService localization) : ITableMappingFieldNameService
     {
-        public async Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? Language)
+        public async Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? plant)
         {
-            var result = await data.TableMappingFieldName.GetTableMappingFieldName(search, SearchADVFN, SearchADVUID, SearchADVLANG, delflag, Language);
+            var result = await data.TableMappingFieldName.GetTableMappingFieldName(search, SearchADVFN, SearchADVUID, SearchADVLANG, delflag, plant);
+            return ApiResponse<IEnumerable<TableMappingFieldNameDto>>.SuccessResponse(result);
+        }
+
+        public async Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> CheckExistingData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto)
+        {
+            var result = await data.TableMappingFieldName.CheckExistingData(CRUDTableMappingFieldNameDto);
             return ApiResponse<IEnumerable<TableMappingFieldNameDto>>.SuccessResponse(result);
         }
 

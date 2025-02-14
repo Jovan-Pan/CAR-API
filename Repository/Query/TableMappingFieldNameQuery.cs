@@ -13,6 +13,11 @@ namespace Repository.Query
         FROM TableMappingFieldName
         WHERE 1=1";
 
+        public static readonly string CheckExistingData = @"
+        select ID, Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
+        FROM TableMappingFieldName 
+        where Plant = @Plant and FieldName = @FieldName and [Language] = @Language";
+
         public static readonly string SearchDataADV = @"
         SELECT DISTINCT ID, Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM TableMappingFieldName
