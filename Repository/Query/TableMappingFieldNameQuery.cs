@@ -67,7 +67,7 @@ namespace Repository.Query
             DelFlag = 0
         FROM TableMappingFieldName A
         INNER JOIN ##temp B 
-        ON (A.FieldName = B.FieldName)
+        ON (A.FieldName = B.FieldName AND A.Plant = B.Plant AND A.Language = B.Language)
 
         INSERT INTO TableMappingFieldName 
         (Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, DelFlag) 
@@ -84,7 +84,7 @@ namespace Repository.Query
         WHERE NOT EXISTS (
             SELECT A.FieldName
             FROM TableMappingFieldName A 
-            WHERE A.FieldName = B.FieldName
+            WHERE A.FieldName = B.FieldName AND A.Plant = B.Plant AND A.Language = B.Language
         )";
     }
 }
