@@ -9,7 +9,7 @@ namespace Repository.Query
     public class DynamicNewFormQuery
     {
         public static readonly string GetDynamicFormConfiguration = @"
-         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
+         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldType,dfc.FieldName as FieldNameForModel, dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
          dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
          from DynamicFormConfiguration dfc
          INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
@@ -132,15 +132,13 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
-        MainStatus = 'CAR RAISE',
+        MainStatus = @MainStatus,
         AcknowledgeByComment = @Comment,
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
         AcknowledgeByDate = GETDATE()
 
         ,Dept = @Dept
-        ,VendorCode = @VendorCode
-        ,VendorDesc = @VendorDesc
 
         where FormNo = @FormNumber
         ";
@@ -148,8 +146,8 @@ namespace Repository.Query
         public static readonly string pdaDecision = @"
         update IssueFeedback
         set 
-        Status = 'PDA-DECISION',
-        MainStatus = 'CAR RAISE',
+        Status = @IssueStatus,
+        MainStatus = @MainStatus,
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
         PDAActionBy = @UserId,
@@ -162,7 +160,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
-        MainStatus = 'CAR RAISE',
+        MainStatus = @MainStatus,
         PDAActionImmAct = @PDAImmediteAct,
         PDAActionComment = @Comment,
         PDAActionUpdatedBy = @UserId,
@@ -175,7 +173,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
-        MainStatus = 'CAR RAISE',
+        MainStatus = @MainStatus,
         PDAAprovalComment = @Comment,
         PDAAprovalBy = @UserId,
         PDAAprovalByName = @UserName,
@@ -200,7 +198,7 @@ namespace Repository.Query
         set 
         Status = @IssueStatus,
         IssueType = @IssueType,
-        MainStatus = case when @IssueStatus = 'ISSUED' then 'CAR RAISE' else 'OPEN' end,
+        MainStatus = @MainStatus,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -223,7 +221,7 @@ namespace Repository.Query
         set 
         Status = @IssueStatus,
         IssueType = @IssueType,
-        MainStatus = case when @IssueStatus = 'ISSUED' then 'CAR RAISE' else 'OPEN' end,
+        MainStatus = @MainStatus,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -271,7 +269,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'ANALYZE',
-        MainStatus = 'OPEN',
+        MainStatus = @MainStatus,
         ReceiveAprovalComment = @Comment,
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,
@@ -339,7 +337,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = 'REVIEW',
-        MainStatus = 'PENDING APPROVAL',
+        MainStatus = @MainStatus,
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),
