@@ -198,7 +198,7 @@ namespace Repository.CAR
             // List of parameters to exclude
             var excludedParameters = new HashSet<string>
             {
-                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@Comment"
+                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@Comment","@MainStatus"
             };
 
             var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
