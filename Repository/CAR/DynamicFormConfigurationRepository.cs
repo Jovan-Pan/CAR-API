@@ -36,7 +36,7 @@ namespace Repository.CAR
             string queryLowerCase = TestingQueryParam.query.ToLower();
             string queryWithPlantReplaced;
 
-            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+            if (queryLowerCase.Contains("@plant", StringComparison.OrdinalIgnoreCase) || queryLowerCase.Contains("@userid", StringComparison.OrdinalIgnoreCase))
             {
                 string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
                 var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
@@ -144,56 +144,56 @@ namespace Repository.CAR
             });
 
 
-            foreach (var item in result)
-            {
-                if (item.OptionDataResource == "Execute Query")
-                {
-                    string queryLowerCase = item.Query.ToLower();
-                    string queryWithPlantReplaced;
+            //foreach (var item in result)
+            //{
+            //    if (item.OptionDataResource == "Execute Query")
+            //    {
+            //        string queryLowerCase = item.Query.ToLower();
+            //        string queryWithPlantReplaced;
 
-                    if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
-                        var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
+            //        if (queryLowerCase.Contains("@plant", StringComparison.OrdinalIgnoreCase) || queryLowerCase.Contains("@userid", StringComparison.OrdinalIgnoreCase))
+            //        {
+            //            string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
+            //            var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
 
-                        string usePlant = executedParameters.UsePlant ?? string.Empty; 
-                        string useUserId = executedParameters.UseUserId ?? string.Empty;
+            //            string usePlant = executedParameters.UsePlant ?? string.Empty; 
+            //            string useUserId = executedParameters.UseUserId ?? string.Empty;
 
-                        queryWithPlantReplaced = item.Query.ToLower()
-                                                    .Replace("@plant", usePlant)
-                                                    .Replace("@userid", $"'{useUserId}'");
-                        
-                    }
-                    else
-                    {
-                        queryWithPlantReplaced = item.Query;
-                    }
-                    string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
-                    var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+            //            queryWithPlantReplaced = item.Query.ToLower()
+            //                                        .Replace("@plant", usePlant)
+            //                                        .Replace("@userid", $"'{useUserId}'");
 
-                    // Initialize the list if it is null
-                    if (item.ExecutedQueryResult == null)
-                    {
-                        item.ExecutedQueryResult = new List<Dictionary<string, object>>();
-                    }
+            //        }
+            //        else
+            //        {
+            //            queryWithPlantReplaced = item.Query;
+            //        }
+            //        string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
+            //        var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
 
-                    // Accumulate rows from the executed query result
-                    foreach (var row in executedQueryResult)
-                    {
-                        var executedQueryResultDict = new Dictionary<string, object>();
+            //        // Initialize the list if it is null
+            //        if (item.ExecutedQueryResult == null)
+            //        {
+            //            item.ExecutedQueryResult = new List<Dictionary<string, object>>();
+            //        }
 
-                        foreach (var kvp in (IDictionary<string, object>)row)
-                        {
-                            if (kvp.Key != null)
-                            {
-                                executedQueryResultDict[kvp.Key] = kvp.Value;
-                            }
-                        }
+            //        // Accumulate rows from the executed query result
+            //        foreach (var row in executedQueryResult)
+            //        {
+            //            var executedQueryResultDict = new Dictionary<string, object>();
 
-                        item.ExecutedQueryResult.Add(executedQueryResultDict);
-                    }
-                }
-            }
+            //            foreach (var kvp in (IDictionary<string, object>)row)
+            //            {
+            //                if (kvp.Key != null)
+            //                {
+            //                    executedQueryResultDict[kvp.Key] = kvp.Value;
+            //                }
+            //            }
+
+            //            item.ExecutedQueryResult.Add(executedQueryResultDict);
+            //        }
+            //    }
+            //}
 
             return result;
         }
