@@ -15,7 +15,7 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<IEnumerable<IssueFeedbackColumnInfo>>> GetIssueFeedbackColumn();
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetTestingQueryResult(TestingQueryParam TestingQueryParam);
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> InsertNewData(DynamicFormConfigurationDto DynamicFormConfigurationDto);
-        Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(string Plant, string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv);
+        Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(string Language, string Plant, string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv);
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> UpdateData(DynamicFormConfigurationDto DynamicFormConfigurationDto);
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> DataDelete(DynamicFormConfigurationDto DynamicFormConfigurationDto);
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> DataPermDelete(DynamicFormConfigurationDto DynamicFormConfigurationDto);

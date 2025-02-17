@@ -11,7 +11,8 @@ namespace Services.Contracts.MasterData
 {
     public interface ITableMappingFieldNameService
     {
-        Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? Language);
+        Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag, string? plant);
+        Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> CheckExistingData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);
         Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> InsertNewData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);
         Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> UpdateData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);
         Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> DataDelete(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto);

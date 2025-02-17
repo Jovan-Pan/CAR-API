@@ -1,4 +1,5 @@
 ﻿using Entities.MasterData;
+using Entities.ParamRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
@@ -11,11 +12,18 @@ namespace WebApi.Controllers
     public class TableMappingFieldNameController(IServiceManager business) : Controller
     {
         [HttpGet(nameof(GetTableMappingFieldName))]
-        public async Task<IActionResult> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag,string? Language)
+        public async Task<IActionResult> GetTableMappingFieldName(string? search, string? SearchADVFN, string? SearchADVUID, string? SearchADVLANG, bool delflag,string? plant)
         {
-            var result = await business.TableMappingFieldName.GetTableMappingFieldName(search, SearchADVFN, SearchADVUID, SearchADVLANG, delflag, Language);
+            var result = await business.TableMappingFieldName.GetTableMappingFieldName(search, SearchADVFN, SearchADVUID, SearchADVLANG, delflag, plant);
             return Ok(result);
 
+        }
+
+        [HttpPost(nameof(CheckExistingData))]
+        public async Task<IActionResult> CheckExistingData(CRUDTableMappingFieldNameDto CRUDTableMappingFieldNameDto)
+        {
+            var result = await business.TableMappingFieldName.CheckExistingData(CRUDTableMappingFieldNameDto);
+            return Ok(result);
         }
 
         [HttpPost(nameof(InsertNewData))]

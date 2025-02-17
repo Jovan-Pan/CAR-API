@@ -11,7 +11,7 @@ namespace Services.Contracts.CAR
 {
     public interface IDynamicNewFormService
     {
-        Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(bool delflag);
+        //Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(bool delflag);
         Task<ApiResponse<string>> ProcessSubmit(DynamicFormParameterDTO data);
         Task<ApiResponse<string>> issuerVoid(DynamicFormParameterDTO mydata);
         Task<ApiResponse<string>> issuerUpdate(DynamicFormParameterDTO mydata);
