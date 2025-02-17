@@ -28,7 +28,7 @@ namespace Repository.Query
                                                                     ORDER BY ORDINAL_POSITION";
 
         public static readonly string GetDynamicFormConfiguration = @"
-         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
+         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldName as FieldNameForModel,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
          dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
          from DynamicFormConfiguration dfc
          INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant

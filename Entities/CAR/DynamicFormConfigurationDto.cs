@@ -11,6 +11,7 @@ namespace Entities.CAR
         public int? Id { get; set; }
         public int? plant { get; set; }
         public string? FormType { get; set; }
+        public string? FieldNameForModel { get; set; }
         public string? FieldName { get; set; }
         public string? FieldType { get; set; }
         public int? FieldLength { get; set; }

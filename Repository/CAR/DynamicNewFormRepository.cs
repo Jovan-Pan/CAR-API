@@ -126,21 +126,22 @@ namespace Repository.CAR
         }
         public async Task<int> InsertDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
+            //string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
             var conn = transaction.Connection;
-            var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
-                        .ToDictionary(x => x.FieldName, x => x.UIDisplay);
-            var parameters = GetSqlParametersFromEntity(mydata, columnMappings);
+            //var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
+            //            //.ToDictionary(x => x.FieldName, x => x.UIDisplay);
+            var parameters = GetSqlParametersFromEntity(mydata);
             var query = BuildInsertQuery("IssueFeedback", parameters);
             var dParams = new Dapper.DynamicParameters();
             foreach (var param in parameters)
             {
                 dParams.Add(param.ParameterName, param.Value);
             }
+
             return await conn.ExecuteAsync(query, dParams, transaction);
         }
 
-        public static List<SqlParameter> GetSqlParametersFromEntity(object entity, Dictionary<string, string> columnMappings)
+        public static List<SqlParameter> GetSqlParametersFromEntity(object entity)
         {
             var sqlParameters = new List<SqlParameter>();
             //string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
@@ -157,22 +158,22 @@ namespace Repository.CAR
                         int index = 0;
                         foreach (var dynParam in dynamicParams)
                         {
-                            //sqlParameters.Add(new SqlParameter($"@{dynParam.FieldName}", value));
-                            //// sqlParameters.Add(new SqlParameter(dynParam.FieldName, dynParam.FieldValue));
-                            //index++;
+                            sqlParameters.Add(new SqlParameter($"@{dynParam.FieldName}", dynParam.FieldValue));
+                             //sqlParameters.Add(new SqlParameter(dynParam.FieldName, dynParam.FieldValue));
+                            index++;
                             //if (sqlColumnList.Contains(dynParam.FieldName))
                             //{
                             //    sqlParameters.Add(new SqlParameter($"@{dynParam.FieldName}", dynParam.FieldValue ?? DBNull.Value));
                             //}
-                            var matchingKey = columnMappings.FirstOrDefault(x => x.Value.Equals(dynParam.FieldName, StringComparison.InvariantCultureIgnoreCase));
-                            if (!string.IsNullOrEmpty(matchingKey.Key))
-                            {
-                                sqlParameters.Add(new SqlParameter($"@{matchingKey.Key}", dynParam.FieldValue));
-                            }
-                            else
-                            {
-                                sqlParameters.Add(new SqlParameter($"@{dynParam.FieldName}", dynParam.FieldValue));
-                            }
+                            //var matchingKey = columnMappings.FirstOrDefault(x => x.Value.Equals(dynParam.FieldName, StringComparison.InvariantCultureIgnoreCase));
+                            //if (!string.IsNullOrEmpty(matchingKey.Key))
+                            //{
+                            //    sqlParameters.Add(new SqlParameter($"@{matchingKey.Key}", dynParam.FieldValue));
+                            //}
+                            //else
+                            //{
+                            //    sqlParameters.Add(new SqlParameter($"@{dynParam.FieldName}", dynParam.FieldValue));
+                            //}
 
                         }
                     }
@@ -208,7 +209,7 @@ namespace Repository.CAR
             }));
             var values = string.Join(", ", filteredParameters.Select(p => p.ParameterName));
 
-            return $"INSERT INTO {tableName} (Plant, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant, {values},'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE())";
+            return $"INSERT INTO {tableName} (Plant, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant, {values},@IssueStatus,@MainStatus,@UserId,@UserName,GETDATE())";
         }
 
         public async Task<int> issuerUpdateDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
@@ -251,13 +252,17 @@ namespace Repository.CAR
             string query = DynamicNewFormQuery.issuerMngUpdate;
             string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
             var conn = transaction.Connection;
-            var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
-                        .ToDictionary(x => x.FieldName, x => x.UIDisplay);
-            var parameters = GetSqlParametersFromEntity(mydata, columnMappings);
+            //var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
+            //            .ToDictionary(x => x.FieldName, x => x.UIDisplay);
+            var parameters = GetSqlParametersFromEntity(mydata);
             var dParams = new Dapper.DynamicParameters();
             foreach (var param in parameters)
             {
                 dParams.Add(param.ParameterName, param.Value);
+            }
+            if (mydata.Dept == "VEND" )
+            {
+                query += ",VendorCode = @VendorCode,VendorDesc = @VendorDesc";
             }
             return await conn.ExecuteAsync(query, dParams, transaction);
             //return await conn.ExecuteAsync(query, mydata, transaction);
