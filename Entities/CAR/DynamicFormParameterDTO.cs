@@ -18,6 +18,28 @@ namespace Entities.CAR
         public string? NCCategory { get; set; }
         public string? Comment { get; set; }
         public string? IssueType { get; set; }
+        public string? Dept { get; set; }
+
+        public string? rejectReason { get; set; }
+        public string? PDAImmediteAct { get; set; }
+
+        public string? ImmActRecDetail { get; set; }
+        public decimal? CostPC { get; set; }
+        public string? Curency { get; set; }
+        public decimal? ActionResult { get; set; }
+        public string? rootcause { get; set; }
+        public string? RootCauseDetail { get; set; }
+        public string? procecessGrpCode { get; set; }
+        public string? correctiveAct { get; set; }
+        public DateTime? EffectiveDate { get; set; }
+        public DateTime? ReviewDate { get; set; }
+        public string? ReviewMethod { get; set; }
+
+        public string? mailWStatus { get; set; }
+        public string? mailactionType { get; set; }
+        public string? sendmailUserAction { get; set; }
+
+        public string? MainStatus { get; set; }
         public List<DynamicParameter>? DynamicParameters { get; set; }
     }
 
