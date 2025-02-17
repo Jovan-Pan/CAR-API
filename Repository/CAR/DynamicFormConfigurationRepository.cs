@@ -36,17 +36,32 @@ namespace Repository.CAR
             string queryLowerCase = TestingQueryParam.query.ToLower();
             string queryWithPlantReplaced;
 
-            if (queryLowerCase.Contains("@plant", StringComparison.OrdinalIgnoreCase) || queryLowerCase.Contains("@userid", StringComparison.OrdinalIgnoreCase))
+            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
             {
-                string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
-                var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
+                string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
 
-                string usePlant = executedParameters.UsePlant ?? string.Empty;
-                string useUserId = executedParameters.UseUserId ?? string.Empty;
+                HashSet<string> allowedParams = executedParameters
+                                      .Select(p => p.ToLower()) 
+                                      .ToHashSet();
+
+                var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                var foundParams = regex.Matches(TestingQueryParam.query)
+                                       .Select(match => match.Value.ToLower())
+                                       .ToHashSet();
+
+                var invalidParams = foundParams.Except(allowedParams);
+                if (invalidParams.Any())
+                {
+                    return new List<DynamicFormConfigurationDto>
+                    {
+                        
+                    };
+                }
 
                 queryWithPlantReplaced = TestingQueryParam.query.ToLower()
-                                            .Replace("@plant", usePlant)
-                                            .Replace("@userid", $"'{useUserId}'");
+                                            .Replace("@plant", TestingQueryParam.plant)
+                                            .Replace("@userid", $"'{TestingQueryParam.userid}'");
             }
             else
             {
@@ -102,7 +117,7 @@ namespace Repository.CAR
 
             });
         }
-        public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(string Language, string Plant,string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
+        public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(string userid, string Language, string Plant,string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
         {
             string query;
 
@@ -129,6 +144,7 @@ namespace Repository.CAR
             {
             Language = Language,
             Plant = Plant ,
+            userid = userid,
             search = search,
             formTypeAdv = formTypeAdv,
             fieldNameAdv = fieldNameAdv,
@@ -144,56 +160,71 @@ namespace Repository.CAR
             });
 
 
-            //foreach (var item in result)
-            //{
-            //    if (item.OptionDataResource == "Execute Query")
-            //    {
-            //        string queryLowerCase = item.Query.ToLower();
-            //        string queryWithPlantReplaced;
+            foreach (var item in result)
+            {
+                if (item.OptionDataResource == "Execute Query")
+                {
+                    string queryLowerCase = item.Query.ToLower();
+                    string queryWithPlantReplaced;
 
-            //        if (queryLowerCase.Contains("@plant", StringComparison.OrdinalIgnoreCase) || queryLowerCase.Contains("@userid", StringComparison.OrdinalIgnoreCase))
-            //        {
-            //            string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
-            //            var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
+                    if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                        var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
 
-            //            string usePlant = executedParameters.UsePlant ?? string.Empty; 
-            //            string useUserId = executedParameters.UseUserId ?? string.Empty;
+                        HashSet<string> allowedParams = executedParameters
+                                              .Select(p => p.ToLower())
+                                              .ToHashSet();
 
-            //            queryWithPlantReplaced = item.Query.ToLower()
-            //                                        .Replace("@plant", usePlant)
-            //                                        .Replace("@userid", $"'{useUserId}'");
+                        var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                        var foundParams = regex.Matches(item.Query)
+                                               .Select(match => match.Value.ToLower())
+                                               .ToHashSet();
 
-            //        }
-            //        else
-            //        {
-            //            queryWithPlantReplaced = item.Query;
-            //        }
-            //        string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
-            //        var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+                        var invalidParams = foundParams.Except(allowedParams);
+                        if (invalidParams.Any())
+                        {
+                            return new List<DynamicFormConfigurationDto>
+                            {
 
-            //        // Initialize the list if it is null
-            //        if (item.ExecutedQueryResult == null)
-            //        {
-            //            item.ExecutedQueryResult = new List<Dictionary<string, object>>();
-            //        }
+                            };
+                        }
 
-            //        // Accumulate rows from the executed query result
-            //        foreach (var row in executedQueryResult)
-            //        {
-            //            var executedQueryResultDict = new Dictionary<string, object>();
+                        queryWithPlantReplaced = item.Query.ToLower()
+                                                    .Replace("@plant", Plant)
+                                                    .Replace("@userid", $"'{userid}'");
+                        
+                    }
+                    else
+                    {
+                        queryWithPlantReplaced = item.Query;
+                    }
+                    string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
+                    var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
 
-            //            foreach (var kvp in (IDictionary<string, object>)row)
-            //            {
-            //                if (kvp.Key != null)
-            //                {
-            //                    executedQueryResultDict[kvp.Key] = kvp.Value;
-            //                }
-            //            }
+                    // Initialize the list if it is null
+                    if (item.ExecutedQueryResult == null)
+                    {
+                        item.ExecutedQueryResult = new List<Dictionary<string, object>>();
+                    }
 
-            //            item.ExecutedQueryResult.Add(executedQueryResultDict);
-            //        }
-            //    }
-            //}
+                    // Accumulate rows from the executed query result
+                    foreach (var row in executedQueryResult)
+                    {
+                        var executedQueryResultDict = new Dictionary<string, object>();
+
+                        foreach (var kvp in (IDictionary<string, object>)row)
+                        {
+                            if (kvp.Key != null)
+                            {
+                                executedQueryResultDict[kvp.Key] = kvp.Value;
+                            }
+                        }
+
+                        item.ExecutedQueryResult.Add(executedQueryResultDict);
+                    }
+                }
+            }
 
             return result;
         }

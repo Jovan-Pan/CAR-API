@@ -37,9 +37,9 @@ namespace WebApi.Controllers
         }
         [AllowAnonymous]
         [HttpGet(nameof(GetDynamicFormConfiguration))]
-        public async Task<IActionResult> GetDynamicFormConfiguration(string Language,string Plant, string? search, bool delflag, string? formTypeAdv,string? fieldNameAdv,string? fieldTypeAdv,string? fieldLengthAdv,string? mandatoryAdv,string? fieldElementAdv,string? optionDataResourceAdv,string? dbResourceAdv,string? queryAdv,string? dataOptionAdv,string? sequenceAdv)
+        public async Task<IActionResult> GetDynamicFormConfiguration(string userid,string Language,string Plant, string? search, bool delflag, string? formTypeAdv,string? fieldNameAdv,string? fieldTypeAdv,string? fieldLengthAdv,string? mandatoryAdv,string? fieldElementAdv,string? optionDataResourceAdv,string? dbResourceAdv,string? queryAdv,string? dataOptionAdv,string? sequenceAdv)
         {
-            var result = await business.DynamicFormConfiguration.GetDynamicFormConfiguration(Language, Plant,search, delflag,formTypeAdv,fieldNameAdv,fieldTypeAdv,fieldLengthAdv,mandatoryAdv,fieldElementAdv,optionDataResourceAdv,dbResourceAdv,queryAdv,dataOptionAdv,sequenceAdv);
+            var result = await business.DynamicFormConfiguration.GetDynamicFormConfiguration(userid, Language, Plant,search, delflag,formTypeAdv,fieldNameAdv,fieldTypeAdv,fieldLengthAdv,mandatoryAdv,fieldElementAdv,optionDataResourceAdv,dbResourceAdv,queryAdv,dataOptionAdv,sequenceAdv);
            return Ok(result);
 
         }
