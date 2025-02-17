@@ -53,5 +53,7 @@ namespace Entities.CAR
     {
         public string DBResource { get; set; }
         public string query { get; set; }
+        public string userid { get; set; }
+        public string plant { get; set; }
     }
 }
