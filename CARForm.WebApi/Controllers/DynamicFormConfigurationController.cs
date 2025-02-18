@@ -11,7 +11,7 @@ namespace WebApi.Controllers
     [ApiController]
     public class DynamicFormConfigurationController(IServiceManager business) : Controller
     {
-        [AllowAnonymous]
+        
         [HttpGet(nameof(GetIssueFeedbackcolumn))]
         public async Task<IActionResult> GetIssueFeedbackcolumn()
         {
@@ -19,7 +19,7 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(GetTestingQueryResult))]
         public async Task<IActionResult> GetTestingQueryResult(TestingQueryParam TestingQueryParam)
         {
@@ -27,7 +27,7 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+        
         [HttpPost(nameof(InsertNewData))]
         public async Task<IActionResult> InsertNewData(DynamicFormConfigurationDto DynamicFormConfigurationDto)
             {
@@ -35,7 +35,7 @@ namespace WebApi.Controllers
             return Ok(result);  
 
         }
-        [AllowAnonymous]
+        
         [HttpGet(nameof(GetDynamicFormConfiguration))]
         public async Task<IActionResult> GetDynamicFormConfiguration(string userid,string Language,string Plant, string? search, bool delflag, string? formTypeAdv,string? fieldNameAdv,string? fieldTypeAdv,string? fieldLengthAdv,string? mandatoryAdv,string? fieldElementAdv,string? optionDataResourceAdv,string? dbResourceAdv,string? queryAdv,string? dataOptionAdv,string? sequenceAdv)
         {

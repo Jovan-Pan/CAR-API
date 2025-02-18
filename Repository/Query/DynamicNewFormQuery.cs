@@ -9,15 +9,42 @@ namespace Repository.Query
     public class DynamicNewFormQuery
     {
         public static readonly string GetDynamicFormConfiguration = @"
-         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldType,dfc.FieldName as FieldNameForModel, dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
-         dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
-         from DynamicFormConfiguration dfc
-         INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
-         Where dfc.Plant = @Plant and language = @language and tbfn.DelFlag =0";
+        WITH LanguageData AS(
+    SELECT
+        dfc.Id,
+        dfc.plant,
+        dfc.FormType,
+        tbfn.UIDisplay AS FieldName_ZH,  -- Nama field dalam ZH
+        dfc.FieldName AS FieldNameForModel,
+        tbfn.language,
+        dfc.FieldType,
+        dfc.FieldLength,
+        dfc.Mandatory,
+        dfc.FieldElement,
+        dfc.OptionDataResource,
+        dfc.DBResource,
+        dfc.Query,
+        dfc.DataOption,
+        dfc.Sequence,
+        dfc.CreatedBy,
+        dfc.CreatedByName,
+        dfc.CreatedDate,
+        dfc.UpdatedBy,
+        dfc.UpdatedByName,
+        dfc.UpdatedDate,
+        dfc.delflag
+    FROM DynamicFormConfiguration dfc
+    INNER JOIN TableMappingFieldName tbfn
+        ON dfc.FieldName = tbfn.FieldName
+        AND dfc.plant = tbfn.plant
+    WHERE dfc.Plant = @plant
+    AND tbfn.DelFlag = 0
+    AND tbfn.language = @language
 
+";
 
         public static readonly string GenerateNewFormNo = @"
-        --declare @FormType nvarchar(20) = 'CAR', @plant int = 2100
+      --declare @FormType nvarchar(20) = 'CAR', @plant int = 2100
          declare @lastformno nvarchar(20) =  (select MAX(REPLACE(FormNo,@FormType,'')) 
 								         from IssueFeedback 
 								         where Plant=@plant and FormType=@FormType 
@@ -137,8 +164,6 @@ namespace Repository.Query
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
         AcknowledgeByDate = GETDATE()
-
-        ,Dept = @Dept
 
         where FormNo = @FormNumber
         ";
@@ -375,9 +400,9 @@ namespace Repository.Query
         where Plant = @plant 
         and FormType = @formType
         --and MaterialCode = @material 
-        and NCCategory = @nccategory 
-        and NCReason = @ncreason 
-        and Dept=@dept 
+        and (NCCategory = @nccategory or @nccategory is null)
+        and (NCReason = @ncreason or @ncreason is null) 
+        and (Dept=@dept or @dept is null) 
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";

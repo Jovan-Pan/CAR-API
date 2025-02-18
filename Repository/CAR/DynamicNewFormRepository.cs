@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Xml.Linq;
@@ -25,78 +26,100 @@ namespace Repository.CAR
             return connection;
         }
 
-        //public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(bool delflag, string Language, string Plant)
-        //{
-        //    string query;
+        public async Task<IEnumerable<DynamicFormConfigurationDto>> GetDynamicFormConfiguration(string userid, string Language, string Plant, bool delflag)
+        {
 
-        //    query = DynamicNewFormQuery.GetDynamicFormConfiguration;
-         
-        //    if (!delflag)
-        //    {
-        //        query += " and dfc.DelFlag = 0";
-        //    }
-        //    await using var conn = dbContext.CARConnection();
-        //    //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
-        //    var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new
-        //    {
-        //        Language = Language,
-        //        Plant = Plant,
-        //    });
+            string query = DynamicNewFormQuery.GetDynamicFormConfiguration;
+           
+            if (!delflag)
+            {
+                query += " and dfc.DelFlag = 0 ";
+            }
+            query += "),\r\nDefaultLanguage AS(\r\n    SELECT\r\n        dfc.Id,\r\n        dfc.plant,\r\n        dfc.FormType,\r\n        tbfn.UIDisplay AS FieldName_EN,\r\n        dfc.FieldName AS FieldNameForModel,\r\n        tbfn.language,\r\n        dfc.FieldType,\r\n        dfc.FieldLength,\r\n        dfc.Mandatory,\r\n        dfc.FieldElement,\r\n        dfc.OptionDataResource,\r\n        dfc.DBResource,\r\n        dfc.Query,\r\n        dfc.DataOption,\r\n        dfc.Sequence,\r\n        dfc.CreatedBy,\r\n        dfc.CreatedByName,\r\n        dfc.CreatedDate,\r\n        dfc.UpdatedBy,\r\n        dfc.UpdatedByName,\r\n        dfc.UpdatedDate,\r\n        dfc.delflag\r\n    FROM DynamicFormConfiguration dfc\r\n    INNER JOIN TableMappingFieldName tbfn\r\n        ON dfc.FieldName = tbfn.FieldName\r\n        AND dfc.plant = tbfn.plant\r\n    WHERE dfc.Plant = @plant\r\n    AND tbfn.DelFlag = 0\r\n    AND tbfn.language = 'EN'";
+
+            if (!delflag)
+            {
+                query += " and dfc.DelFlag = 0 ";
+            }
+            query += ")\r\nSELECT\r\n    COALESCE(ld.Id, dl.Id) AS Id,\r\n    COALESCE(ld.plant, dl.plant) AS plant,\r\n    COALESCE(ld.FormType, dl.FormType) AS FormType,\r\n    COALESCE(ld.FieldName_ZH, dl.FieldName_EN) AS FieldName,\r\n    COALESCE(ld.FieldNameForModel, dl.FieldNameForModel) AS FieldNameForModel,\r\n    COALESCE(ld.language, dl.language) AS language,\r\n    COALESCE(ld.FieldType, dl.FieldType) AS FieldType,\r\n    COALESCE(ld.FieldLength, dl.FieldLength) AS FieldLength,\r\n    COALESCE(ld.Mandatory, dl.Mandatory) AS Mandatory,\r\n    COALESCE(ld.FieldElement, dl.FieldElement) AS FieldElement,\r\n    COALESCE(ld.OptionDataResource, dl.OptionDataResource) AS OptionDataResource,\r\n    COALESCE(ld.DBResource, dl.DBResource) AS DBResource,\r\n    COALESCE(ld.Query, dl.Query) AS Query,\r\n    COALESCE(ld.DataOption, dl.DataOption) AS DataOption,\r\n    COALESCE(ld.Sequence, dl.Sequence) AS Sequence,\r\n    COALESCE(ld.CreatedBy, dl.CreatedBy) AS CreatedBy,\r\n    COALESCE(ld.CreatedByName, dl.CreatedByName) AS CreatedByName,\r\n    COALESCE(ld.CreatedDate, dl.CreatedDate) AS CreatedDate,\r\n    COALESCE(ld.UpdatedBy, dl.UpdatedBy) AS UpdatedBy,\r\n    COALESCE(ld.UpdatedByName, dl.UpdatedByName) AS UpdatedByName,\r\n    COALESCE(ld.UpdatedDate, dl.UpdatedDate) AS UpdatedDate,\r\n    COALESCE(ld.delflag, dl.delflag) AS delflag\r\nFROM DefaultLanguage dl\r\nLEFT JOIN LanguageData ld ON dl.Id = ld.Id;";
+            await using var conn = dbContext.CARConnection();
+            //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
+            var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new
+            {
+                Language = Language,
+                Plant = Plant,
+                userid = userid
+            });
 
 
-        //    foreach (var item in result)
-        //    {
-        //        if (item.OptionDataResource == "Execute Query")
-        //        {
-        //            string queryLowerCase = item.Query.ToLower();
-        //            string queryWithPlantReplaced;
+            foreach (var item in result)
+            {
+                if (item.OptionDataResource == "Execute Query")
+                {
+                    string queryLowerCase = item.Query.ToLower();
+                    string queryWithPlantReplaced;
 
-        //            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
-        //            {
-        //                string takeParameterDB = "SELECT UsePlant, UseUserId FROM AllowParameters";
-        //                var executedParameters = await conn.QueryFirstOrDefaultAsync<UsingParameter>(takeParameterDB);
+                    if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                        var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
 
-        //                string usePlant = executedParameters.UsePlant ?? string.Empty;
-        //                string useUserId = executedParameters.UseUserId ?? string.Empty;
+                        HashSet<string> allowedParams = executedParameters
+                                              .Select(p => p.ToLower())
+                                              .ToHashSet();
 
-        //                queryWithPlantReplaced = item.Query.ToLower()
-        //                                            .Replace("@plant", usePlant)
-        //                                            .Replace("@userid", $"'{useUserId}'");
+                        var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                        var foundParams = regex.Matches(item.Query)
+                                               .Select(match => match.Value.ToLower())
+                                               .ToHashSet();
 
-        //            }
-        //            else
-        //            {
-        //                queryWithPlantReplaced = item.Query;
-        //            }
-        //            string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
-        //            var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+                        var invalidParams = foundParams.Except(allowedParams);
+                        if (invalidParams.Any())
+                        {
+                            return new List<DynamicFormConfigurationDto>
+                            {
 
-        //            // Initialize the list if it is null
-        //            if (item.ExecutedQueryResult == null)
-        //            {
-        //                item.ExecutedQueryResult = new List<Dictionary<string, object>>();
-        //            }
+                            };
+                        }
 
-        //            // Accumulate rows from the executed query result
-        //            foreach (var row in executedQueryResult)
-        //            {
-        //                var executedQueryResultDict = new Dictionary<string, object>();
+                        queryWithPlantReplaced = item.Query.ToLower()
+                                                    .Replace("@plant", Plant)
+                                                    .Replace("@userid", $"'{userid}'");
 
-        //                foreach (var kvp in (IDictionary<string, object>)row)
-        //                {
-        //                    if (kvp.Key != null)
-        //                    {
-        //                        executedQueryResultDict[kvp.Key] = kvp.Value;
-        //                    }
-        //                }
+                    }
+                    else
+                    {
+                        queryWithPlantReplaced = item.Query;
+                    }
+                    string executedQuery = "USE " + item.DBResource + "; " + queryWithPlantReplaced;
+                    var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
 
-        //                item.ExecutedQueryResult.Add(executedQueryResultDict);
-        //            }
-        //        }
-        //    }
+                    // Initialize the list if it is null
+                    if (item.ExecutedQueryResult == null)
+                    {
+                        item.ExecutedQueryResult = new List<Dictionary<string, object>>();
+                    }
 
-        //    return result;
-        //}
+                    // Accumulate rows from the executed query result
+                    foreach (var row in executedQueryResult)
+                    {
+                        var executedQueryResultDict = new Dictionary<string, object>();
+
+                        foreach (var kvp in (IDictionary<string, object>)row)
+                        {
+                            if (kvp.Key != null)
+                            {
+                                executedQueryResultDict[kvp.Key] = kvp.Value;
+                            }
+                        }
+
+                        item.ExecutedQueryResult.Add(executedQueryResultDict);
+                    }
+                }
+            }
+
+            return result;
+        }
         public async Task<string> GenerateNewFormNo(int plant, string FormType, SqlTransaction transaction)
         {
             string query = DynamicNewFormQuery.GenerateNewFormNo;
@@ -263,6 +286,10 @@ namespace Repository.CAR
             if (mydata.Dept == "VEND" )
             {
                 query += ",VendorCode = @VendorCode,VendorDesc = @VendorDesc";
+            }
+            else if (!string.IsNullOrEmpty(mydata.Dept))
+            {
+                query += "Dept = @Dept";
             }
             return await conn.ExecuteAsync(query, dParams, transaction);
             //return await conn.ExecuteAsync(query, mydata, transaction);
