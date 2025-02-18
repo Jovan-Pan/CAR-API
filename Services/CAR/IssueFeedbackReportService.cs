@@ -173,7 +173,7 @@ namespace Services.CAR
 
             var mdmMattype = await mdm.GetMatType(param.Plant);
             GetMaterialParam mparam = new GetMaterialParam();
-            IEnumerable<string> materialCodes = maindata.Select(data => data.MaterialCode);
+            IEnumerable<string> materialCodes = maindata.Select(data => data.MaterialCode).Where(code => !string.IsNullOrEmpty(code));
             mparam.plant = param.Plant;
             mparam.MaterialList = materialCodes;
             var mdmMaterial = await mdm.GetMaterialWoProdAut(mparam);
@@ -308,7 +308,7 @@ namespace Services.CAR
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
         {
-            string condition = " AND Dept IN @DeptList AND Product IN @ProductList ";
+            string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
             if (param.vendorcode != null)
             {
                 condition = " AND vendorcode = @vendorcode ";

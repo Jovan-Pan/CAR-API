@@ -106,7 +106,7 @@ namespace Repository.Query
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
         from IssueFeedback
         where Plant = @plant
-        and Dept IN @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
+        and (Dept IS NULL OR Dept IN @deptAuthList) and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         ";
 
         public static readonly string GetDataAttchment = @"
