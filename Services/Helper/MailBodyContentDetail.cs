@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OfficeOpenXml.Style;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,30 +43,31 @@ namespace Services.Helper
             <td style=""border: 1px solid black; padding: 8px;"">@AffectedCavity</td>
         </tr>
         <tr>
-            <td style=""border: 1px solid black; padding: 8px;"">Model</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@Model</td>
+             <td style=""border: 1px solid black; padding: 8px;"">Material Code</td>
+            <td style=""border: 1px solid black; padding: 8px;"">@MaterialCode</td>
             <td style=""border: 1px solid black; padding: 8px;"">NC Category</td>
             <td style=""border: 1px solid black; padding: 8px;"">@NCCategory</td>
         </tr>
         <tr>
-            <td style=""border: 1px solid black; padding: 8px;"">Material type</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@Materialtype</td>
+            <td style=""border: 1px solid black; padding: 8px;"">Material Desc</td>
+            <td style=""border: 1px solid black; padding: 8px;"">@MaterialDesc</td>
             <td style=""border: 1px solid black; padding: 8px;"">NC Description</td>
             <td style=""border: 1px solid black; padding: 8px;"">@NCDescription</td>
         </tr>
-        <tr>
-            <td style=""border: 1px solid black; padding: 8px;"">Material Code</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@MaterialCode</td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
-        </tr>
-        <tr>
-            <td style=""border: 1px solid black; padding: 8px;"">Material Desc</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@MaterialDesc</td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
-        </tr>
     </table>
         ";
+
+        //<tr>
+        //   <td style = ""border: 1px solid black; padding: 8px;"">Model</td>
+        //    <td style = ""border: 1px solid black; padding: 8px;"">@Model</td>
+        //    <td style = ""border: 1px solid black; padding: 8px;""></td>
+        //    <td style = ""border: 1px solid black; padding: 8px;""></td>
+        //</tr>
+        //<tr>
+        //    <td style = ""border: 1px solid black; padding: 8px;"">Material type</td>
+        //    <td style = ""border: 1px solid black; padding: 8px;"">@Materialtype</td>
+        //    <td style = ""border: 1px solid black; padding: 8px;""></td>
+        //    <td style = ""border: 1px solid black; padding: 8px;""></td>
+        //</tr>
     }
 }

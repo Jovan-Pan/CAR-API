@@ -81,11 +81,11 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus);
                             Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
                             Datadetails = Datadetails.Replace("@Product", mydata.Product);
-                            Datadetails = Datadetails.Replace("@Model", mydata.Model);
-                            Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
+                            //Datadetails = Datadetails.Replace("@Model", mydata.Model);
+                            //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
                             Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode);
                             Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "" : mydata.MaterialDesc.ToString());
-                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.SamplingCheck == null ? "" : mydata.SamplingCheck.ToString());
+                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "" : mydata.NcRatio.ToString());
                             Datadetails = Datadetails.Replace("@Dept", mydata.Dept);
                             Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null ? "" : (mydata.VendorCode.ToString() + "-" + mydata.VendorDesc));
                             Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "" : mydata.TttlQty.ToString());
