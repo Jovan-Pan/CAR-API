@@ -19,11 +19,11 @@ namespace Services.CAR
 {
     internal sealed class DynamicNewFormService(IDataManager data, IMDMRepository mdm, IMasterDataApi mdmP, ICacheManager memCache, ILocalizationService localization) : IDynamicNewFormService
     {
-        //public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(bool delflag)
-        //{
-        //    var result = await data.DynamicNewForm.GetDynamicFormConfiguration(delflag);
-        //    return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
-        //}
+        public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(string userid, string Language, string Plant, bool delflag)
+        {
+            var result = await data.DynamicNewForm.GetDynamicFormConfiguration(userid, Language, Plant, delflag);
+            return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
+        }
         public async Task<ApiResponse<string>> ProcessSubmit(DynamicFormParameterDTO mydata)
         {
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);

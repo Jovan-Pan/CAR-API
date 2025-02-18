@@ -11,6 +11,13 @@ namespace WebApi.Controllers
     [ApiController]
     public class DynamicNewFormController(IServiceManager business) : Controller
     {
+        [HttpGet(nameof(GetDynamicFormConfiguration))]
+        public async Task<IActionResult> GetDynamicFormConfiguration(string userid, string Language, string Plant, bool delflag)
+        {
+            var result = await business.DynamicNewForm.GetDynamicFormConfiguration(userid, Language, Plant, delflag);
+            return Ok(result);
+
+        }
         [HttpPost(nameof(ProcessSubmit))]
         public async Task<IActionResult> ProcessSubmit([FromForm] DynamicFormParameterDTO data)
         {
