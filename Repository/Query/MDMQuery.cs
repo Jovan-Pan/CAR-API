@@ -79,8 +79,7 @@ namespace Repository.Query
         and (matgrp = @matgroup or @matgroup is null)
         and (MaterialType = @mattype or @mattype is null)
         and (Material like '%'+ @searchTerm +'%' or MaterialDesc like '%'+ @searchTerm +'%' or @searchTerm is null) 
-        and Material in @MaterialList
-        order by Material asc
+        and (Material IS NULL OR Material in @MaterialList)
         ";
 
         public static readonly string GetNCCategory = @"
