@@ -173,6 +173,17 @@ namespace Repository.CAR
             foreach (var prop in entity.GetType().GetProperties())
             {
                 var value = prop.GetValue(entity);
+
+                if (value is Microsoft.AspNetCore.Http.IFormFile)
+                {
+                    continue;
+                    
+                }
+                if (value is IEnumerable<Microsoft.AspNetCore.Http.IFormFile> fileCollection)
+                {
+                    continue;
+                }
+
                 if (value != null)
                 {
                     if (prop.Name.Equals("DynamicParameters", StringComparison.InvariantCultureIgnoreCase) &&
@@ -221,7 +232,7 @@ namespace Repository.CAR
             // List of parameters to exclude
             var excludedParameters = new HashSet<string>
             {
-                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@Comment","@MainStatus"
+                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@Comment","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles"
             };
 
             var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
@@ -235,11 +246,48 @@ namespace Repository.CAR
             return $"INSERT INTO {tableName} (Plant, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant, {values},@IssueStatus,@MainStatus,@UserId,@UserName,GETDATE())";
         }
 
+        public static string BuildUpdateQuery(string tableName, List<SqlParameter> parameters)
+        {
+            var columnReplacements = new Dictionary<string, string>
+            {
+                 { "FormNumber", "FormNo" },
+                 { "Comment", "IssueByComment" }
+            };
+
+            // List of parameters yang tidak ingin diupdate (misalnya, kolom sistem atau yang hanya untuk insert)
+            var excludedParameters = new HashSet<string>
+            {
+                 "@UserPlant", "@IssueStatus", "@MainStatus", "@UserId", "@UserName",
+                 "@mailWStatus", "@mailactionType", "@sendmailUserAction", "@NCCategoryImgFiles", "@NCCategoryFiles","@FormType","@FormNumber","@IssueType"
+            };
+
+            // Buat list parameter yang akan diupdate
+            var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
+
+            // Bangun SET clause: col1 = @param1, col2 = @param2, dst.
+            var setClause = string.Join(", ", filteredParameters.Select(p =>
+            {
+                var paramName = p.ParameterName.Substring(1); // Hilangkan '@'
+                var columnName = columnReplacements.ContainsKey(paramName) ? columnReplacements[paramName] : paramName;
+                return $"{columnName} = {p.ParameterName}";
+            }));
+
+            // Asumsikan primary key adalah FormNo
+            return $"UPDATE {tableName} SET {setClause}, IssueUpdatedBy = @UserId, IssueUpdatedByName = @UserName, IssueUpdatedDate = GETDATE(), Status = @IssueStatus, MainStatus = @MainStatus WHERE FormNo = @FormNumber";
+        }
+
         public async Task<int> issuerUpdateDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = DynamicNewFormQuery.issuerUpdateDataIssueFeedback;
+            //string query = DynamicNewFormQuery.issuerUpdateDataIssueFeedback;
             var conn = transaction.Connection;
-            return await conn.ExecuteAsync(query, mydata, transaction);
+            var parameters = GetSqlParametersFromEntity(mydata);
+            var query = BuildUpdateQuery("IssueFeedback", parameters);
+            var dParams = new Dapper.DynamicParameters();
+            foreach (var param in parameters)
+            {
+                dParams.Add(param.ParameterName, param.Value);
+            }
+            return await conn.ExecuteAsync(query, dParams, transaction);
         }
 
         public async Task<int> issuerVoid(DynamicFormParameterDTO mydata, SqlTransaction transaction)
@@ -272,7 +320,7 @@ namespace Repository.CAR
 
         public async Task<int> issuerMngUpdate(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            string query = DynamicNewFormQuery.issuerMngUpdate;
+             string query = DynamicNewFormQuery.issuerMngUpdate;
             string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
             var conn = transaction.Connection;
             //var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
@@ -282,6 +330,10 @@ namespace Repository.CAR
             foreach (var param in parameters)
             {
                 dParams.Add(param.ParameterName, param.Value);
+            }
+            if(!string.IsNullOrEmpty(mydata.Comment))
+            {
+                query += ",AcknowledgeByComment = @Comment";
             }
             if (mydata.Dept == "VEND" )
             {
