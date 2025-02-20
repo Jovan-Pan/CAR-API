@@ -164,8 +164,6 @@ namespace Repository.Query
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
         AcknowledgeByDate = GETDATE()
-
-        where FormNo = @FormNumber
         ";
 
         public static readonly string pdaDecision = @"
