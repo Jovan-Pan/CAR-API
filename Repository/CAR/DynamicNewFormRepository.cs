@@ -289,8 +289,9 @@ namespace Repository.CAR
             }
             else if (!string.IsNullOrEmpty(mydata.Dept))
             {
-                query += "Dept = @Dept";
+                query += ",Dept = @Dept";
             }
+            query += "where FormNo = @FormNumber";
             return await conn.ExecuteAsync(query, dParams, transaction);
             //return await conn.ExecuteAsync(query, mydata, transaction);
         }
