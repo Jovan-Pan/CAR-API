@@ -160,7 +160,6 @@ namespace Repository.Query
         set 
         Status = @IssueStatus,
         MainStatus = @MainStatus,
-        AcknowledgeByComment = @Comment,
         AcknowledgeBy = @UserId,
         AcknowledgeByname = @UserName,
         AcknowledgeByDate = GETDATE()
