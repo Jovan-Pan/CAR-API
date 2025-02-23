@@ -206,7 +206,7 @@ namespace Repository.Query
         public static readonly string pdaActionReject = @"
         update IssueFeedback
         set 
-        Status = 'OPEN-REJECT',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         PDAAprovalComment = @rejectReason,
         PDAAprovalBy = @UserId,
@@ -264,7 +264,7 @@ namespace Repository.Query
         public static readonly string ReceiverActionAppeal = @"
         update IssueFeedback
         set 
-        Status = 'SUBMITED-APPEAL',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         ReceiveActionRejectReason = @rejectReason,
         ReceiveActionComment = @rejectReason,
@@ -277,7 +277,7 @@ namespace Repository.Query
         public static readonly string ReceiverIssueReject = @"
         update IssueFeedback
         set 
-        Status = 'OPEN-REJECT-RECEIVER',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         ReceiveActionRejectReason = @rejectReason,
         ReceiveActionComment = @rejectReason,
@@ -302,7 +302,7 @@ namespace Repository.Query
         public static readonly string ReceiverMngReject = @"
         update IssueFeedback
         set 
-        Status = 'ISSUED-REJECT',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         ReceiveAprovalComment = @rejectReason,
         ReceiveAprovalBy = @UserId,
@@ -337,7 +337,7 @@ namespace Repository.Query
         public static readonly string PDAReviewerReject = @"
         update IssueFeedback
         set 
-        Status = 'ISSUED-REJECT',
+        Status = @IssueStatus,
         MainStatus = 'CAR RAISE',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
@@ -383,7 +383,7 @@ namespace Repository.Query
         public static readonly string ReviewerReject = @"
         update IssueFeedback
         set 
-        Status = 'NOT EFFECTIVE',
+        Status = @IssueStatus,
         MainStatus = 'CLOSED',
         ReviewBy = @UserId,
         ReviewByName = @UserName,

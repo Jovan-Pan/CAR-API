@@ -333,15 +333,15 @@ namespace Repository.CAR
             }
             if(!string.IsNullOrEmpty(mydata.Comment))
             {
-                query += ",AcknowledgeByComment = @Comment";
+                query += ",AcknowledgeByComment = @Comment ";
             }
             if (mydata.Dept == "VEND" )
             {
-                query += ",VendorCode = @VendorCode,VendorDesc = @VendorDesc";
+                query += ",VendorCode = @VendorCode,VendorDesc = @VendorDesc ";
             }
             else if (!string.IsNullOrEmpty(mydata.Dept))
             {
-                query += ",Dept = @Dept";
+                query += ",Dept = @Dept ";
             }
             query += "where FormNo = @FormNumber";
             return await conn.ExecuteAsync(query, dParams, transaction);
