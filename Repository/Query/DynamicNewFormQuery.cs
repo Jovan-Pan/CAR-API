@@ -384,7 +384,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
-        MainStatus = 'CLOSED',
+        MainStatus = @MainStatus,
         ReviewBy = @UserId,
         ReviewByName = @UserName,
         ReviewSubmitDate = GETDATE(),
