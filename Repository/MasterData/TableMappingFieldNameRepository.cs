@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,6 +31,14 @@ namespace Repository.MasterData
             else if (!string.IsNullOrEmpty(SearchADVFN) || !string.IsNullOrEmpty(SearchADVUID) || !string.IsNullOrEmpty(SearchADVLANG))
             {
                 query = TableMappingFieldNameQuery.SearchDataADV;
+                if(!string.IsNullOrEmpty(SearchADVUID))
+                {
+                    query += " and UIDisplay LIKE '%' + @SearchADVUID + '%'";
+                }
+                else if (!string.IsNullOrEmpty(SearchADVLANG))
+                {
+                    query += "and Language LIKE '%' + @SearchADVLANG + '%'";
+                }
             }
             else
             {
@@ -188,8 +197,69 @@ namespace Repository.MasterData
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL(Plant, '') = '' OR ISNULL(FieldName, '') = '' OR ISNULL(UIDisplay, '') = '' OR ISNULL(Language, '') = ''");
-            condRemark.Add("Null Mandatory Data");
+            List<string> mandatoryFields = new List<string> { "Plant", "FieldName", "UIDisplay", "Language" };
+
+            await using var conn = dbContext.CARConnection();
+            if (conn.State == ConnectionState.Closed)
+            {
+                await conn.OpenAsync();
+            }
+
+            var validLanguages = (await conn.QueryAsync<string>(
+           "USE MDM;SELECT idvalue FROM TGLOBAL WHERE id = 'LanguageOptions'"
+
+            )).ToList();
+
+            var validFieldName = (await conn.QueryAsync<string>(
+                "USE CAR;Select COLUMN_NAME AS ColumnName FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'IssueFeedback' ORDER BY ORDINAL_POSITION")).ToList();
+
+            var validPlant = (await conn.QueryAsync<string>(
+               "USE MDM;select plant from tplant")).ToList();
+
+                        //conditions.Add("ISNULL(Plant, '') = '' OR ISNULL(FieldName, '') = '' OR ISNULL(UIDisplay, '') = '' OR ISNULL(Language, '') = ''");
+                        //condRemark.Add("Null Mandatory FieldName Data");
+                        //List<string> mandatoryFields = new List<string> { "Plant", "FieldName", "UIDisplay", "Language" };
+                        List<string> validLanguageList = new List<string>();
+
+            if (validLanguages.Count > 0)
+            {
+                validLanguageList = validLanguages[0]
+                    .Split(',')
+                    .Select(lang => lang.Trim().ToUpper())
+                    .ToList();
+            }
+
+            if (validFieldName.Count > 0)
+            {
+                string validFieldNameStr = string.Join("', '", validFieldName); // Format: 'EN', 'ZH'
+                conditions.Add($"UPPER(LTRIM(RTRIM(FieldName))) NOT IN ('{validFieldNameStr}')");
+                condRemark.Add($"Field Name is not Existing in IssueFeedBack");
+            }
+
+            if(validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"Plant is not Existing IN TPLANT");
+            }
+        
+
+            if (validLanguageList.Count > 0)
+            {
+                string validLanguageStr = string.Join("', '", validLanguageList);
+
+                // Perbaiki kondisi SQL
+                conditions.Add($"UPPER(LTRIM(RTRIM(Language))) NOT IN ('{validLanguageStr}')");
+                condRemark.Add($"Language value only {string.Join(" and ", validLanguageList)}");
+            }
+
+            foreach (var field in mandatoryFields)
+            {
+                conditions.Add($"ISNULL({field}, '') = ''");
+                condRemark.Add($"{field} is required");
+            }
+            conditions.Add("Plant <> '' AND TRY_CAST(Plant AS INT) IS NULL");
+            condRemark.Add("Plant Value Must Be a number");
             conditions.Add("LEN(FieldName) > 100");
             condRemark.Add("FieldName maximal 100 characters");
             conditions.Add("LEN(UIDisplay) > 100");
@@ -197,9 +267,9 @@ namespace Repository.MasterData
             conditions.Add("LEN(Language) > 50");
             condRemark.Add("Language maximal 100 characters");
 
-            string uniqueField = "FieldName";
+            string uniqueField = "FieldName,Plant,Language";
 
-            await using var conn = dbContext.CARConnection();
+            //await using var conn = dbContext.CARConnection();
 
             if (conn.State == ConnectionState.Closed)
             {
@@ -299,14 +369,12 @@ namespace Repository.MasterData
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
                         SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                        WITH cte AS (
+                            SELECT *,
+                                   ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 

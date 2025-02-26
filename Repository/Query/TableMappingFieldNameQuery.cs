@@ -21,9 +21,7 @@ namespace Repository.Query
         public static readonly string SearchDataADV = @"
         SELECT DISTINCT ID, Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM TableMappingFieldName
-        WHERE FieldName LIKE '%' + @SearchADVFN + '%' OR
-        UIDisplay LIKE '%' + @SearchADVUID + '%' OR
-        Language LIKE '%' + @SearchADVLANG + '%'";
+        WHERE FieldName LIKE '%' + @SearchADVFN + '%'";
 
         public static readonly string SearchDataInDB = @"
         SELECT DISTINCT ID, Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
@@ -54,7 +52,8 @@ namespace Repository.Query
         SET DelFlag = 0, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE() 
         WHERE ID = @id";
 
-        public static readonly string Import = @"
+        public static readonly string Import = @"   
+        USE CAR;
         UPDATE TableMappingFieldName
         SET 
             Plant = B.Plant,
