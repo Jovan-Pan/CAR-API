@@ -20,8 +20,7 @@ namespace Repository.Query
 
         public static readonly string SearchDataADV = @"
         SELECT DISTINCT ID, Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
-        FROM TableMappingFieldName
-        WHERE FieldName LIKE '%' + @SearchADVFN + '%'";
+        FROM TableMappingFieldName WHERE 1=1 ";
 
         public static readonly string SearchDataInDB = @"
         SELECT DISTINCT ID, Plant, FieldName, UIDisplay, Language, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
