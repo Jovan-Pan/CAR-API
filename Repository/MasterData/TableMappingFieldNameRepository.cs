@@ -31,11 +31,18 @@ namespace Repository.MasterData
             else if (!string.IsNullOrEmpty(SearchADVFN) || !string.IsNullOrEmpty(SearchADVUID) || !string.IsNullOrEmpty(SearchADVLANG))
             {
                 query = TableMappingFieldNameQuery.SearchDataADV;
-                if(!string.IsNullOrEmpty(SearchADVUID))
+
+                if (!string.IsNullOrEmpty(SearchADVFN))
+                {
+                    query += " and FieldName LIKE '%' + @SearchADVFN + '%'";
+                }
+
+                if (!string.IsNullOrEmpty(SearchADVUID))
                 {
                     query += " and UIDisplay LIKE '%' + @SearchADVUID + '%'";
                 }
-                else if (!string.IsNullOrEmpty(SearchADVLANG))
+                
+                if (!string.IsNullOrEmpty(SearchADVLANG))
                 {
                     query += "and Language LIKE '%' + @SearchADVLANG + '%'";
                 }

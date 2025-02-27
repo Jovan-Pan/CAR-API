@@ -89,5 +89,12 @@ namespace WebApi.Controllers
             return Ok(result);
 
         }
+        [HttpGet(nameof(GetTableMappingFieldName))]
+        public async Task<IActionResult> GetTableMappingFieldName(string? plant)
+        {
+            var result = await business.DynamicFormConfiguration.GetTableMappingFieldName(plant);
+            return Ok(result);
+
+        }
     }
 }

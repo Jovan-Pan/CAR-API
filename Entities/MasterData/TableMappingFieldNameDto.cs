@@ -20,6 +20,8 @@ namespace Entities.MasterData
         public string? UpdatedByName { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool DelFlag { get; set; }
+
+        public string? FieldNameManipulate { get; set; }
     }
 
     public class CRUDTableMappingFieldNameDto
