@@ -20,5 +20,6 @@ namespace Contracts.Repository.CAR
         Task<IEnumerable<DynamicFormConfigurationDto>> DataRecover(DynamicFormConfigurationDto DynamicFormConfigurationDto);
         Task<byte[]> Template();
         Task<ImportResult> Import(string filePath, string userId);
+        Task<IEnumerable<TableMappingFieldNameDto>> GetTableMappingFieldName(string? plant);
     }
 } 

@@ -22,5 +22,6 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> DataRecover(DynamicFormConfigurationDto DynamicFormConfigurationDto);
         Task<byte[]> Template();
         Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId);
+        Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> GetTableMappingFieldName(string? plant);
     }
 }

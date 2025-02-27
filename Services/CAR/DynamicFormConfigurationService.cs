@@ -80,5 +80,10 @@ namespace Services.CAR
             var resultList = new List<ImportResult> { ImportResult };
             return resultList;
         }
+        public async Task<ApiResponse<IEnumerable<TableMappingFieldNameDto>>> GetTableMappingFieldName(string? plant)
+        {
+            var result = await data.DynamicFormConfiguration.GetTableMappingFieldName(plant);
+            return ApiResponse<IEnumerable<TableMappingFieldNameDto>>.SuccessResponse(result);
+        }
     }
 }

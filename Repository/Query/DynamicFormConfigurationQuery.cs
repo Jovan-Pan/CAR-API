@@ -44,7 +44,7 @@ namespace Repository.Query
         AND (@fieldNameAdv IS NULL OR FieldName LIKE '%' + @fieldNameAdv + '%')
         AND (@fieldTypeAdv IS NULL OR FieldType LIKE '%' + @fieldTypeAdv + '%')
         AND (@fieldLengthAdv IS NULL OR FieldLength LIKE '%' + @fieldLengthAdv + '%')
-        AND (@mandatoryAdv IS NULL OR Mandatory LIKE '%' + @mandatoryAdv + '%')
+        AND (Mandatory = @mandatoryAdv OR @mandatoryAdv IS NULL)
         AND (@fieldElementAdv IS NULL OR FieldElement LIKE '%' + @fieldElementAdv + '%')
         AND (@optionDataResourceAdv IS NULL OR OptionDataResource LIKE '%' + @optionDataResourceAdv + '%')
         AND (@dbResourceAdv IS NULL OR DBResource LIKE '%' + @dbResourceAdv + '%')
@@ -95,7 +95,7 @@ namespace Repository.Query
 
         UPDATE DynamicFormConfiguration
         SET FormType = @FormType,FieldElement = @FieldElement,OptionDataResource = @OptionDataResource,
-        DBResource = @DBResource,Query=@Query,Sequence= @sequence, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE()
+        DBResource = @DBResource,Query=@Query,DataOption = @DataOption,Sequence= @sequence, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE()
         WHERE ID = @id";
 
         public static readonly string DeleteData = @"
@@ -171,5 +171,46 @@ namespace Repository.Query
 
                                                 -- Execute the query dynamically
                                                 EXEC sp_executesql @query;";
-    }
+
+        public static readonly string GetTableMappingFieldName = @"WITH RankedData AS (
+            SELECT 
+                ID, 
+                Plant, 
+                FieldName, 
+                UIDisplay, 
+                Language, 
+                CreatedBy, 
+                CreatedByName, 
+                CreatedDate, 
+                UpdatedBy, 
+                UpdatedByName, 
+                UpdatedDate, 
+                DelFlag,
+                -- Prioritizing 'EN' over 'ZH' using ROW_NUMBER
+                ROW_NUMBER() OVER (PARTITION BY FieldName ORDER BY 
+                    CASE WHEN Language = 'EN' THEN 1 ELSE 2 END) AS RowNum
+            FROM TableMappingFieldName
+            WHERE DelFlag = 0 and Plant = @Plant
+        )
+        SELECT 
+            ID, 
+            Plant, 
+            FieldName, 
+            UIDisplay, 
+            Language, 
+            CreatedBy, 
+            CreatedByName, 
+            CreatedDate, 
+            UpdatedBy, 
+            UpdatedByName, 
+            UpdatedDate, 
+            DelFlag,
+            -- FieldNameManipulate based on the condition
+            CASE 
+                WHEN Language = 'EN' THEN UIDisplay 
+                ELSE FieldName
+            END AS FieldNameManipulate
+        FROM RankedData
+        WHERE RowNum = 1;";
+    } 
 }

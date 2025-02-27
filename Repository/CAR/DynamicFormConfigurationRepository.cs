@@ -134,14 +134,14 @@ namespace Repository.CAR
                 query = DynamicFormConfigurationQuery.SearchDB;
             }
 
-            if (!delflag)
-            {
-                query += " and dfc.DelFlag = 0 ";
-            }
+            //if (!delflag)
+            //{
+            //    query += " and dfc.DelFlag = 0 ";
+            //}
             
             await using var conn = dbContext.CARConnection();
             //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
-            var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new
+            var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new 
             {
             Language = Language,
             Plant = Plant ,
@@ -151,7 +151,7 @@ namespace Repository.CAR
             fieldNameAdv = fieldNameAdv,
             fieldTypeAdv = fieldTypeAdv,
             fieldLengthAdv = fieldLengthAdv,
-            mandatoryAdv = mandatoryAdv,
+            mandatoryAdv = !string.IsNullOrEmpty(mandatoryAdv) && (mandatoryAdv.ToLower() == "true" || mandatoryAdv.ToLower() == "false")? (mandatoryAdv.ToLower() == "true" ? 0 : 1): (int?)null,
             fieldElementAdv = fieldElementAdv,
             optionDataResourceAdv = optionDataResourceAdv,
             dbResourceAdv = dbResourceAdv,
@@ -234,7 +234,7 @@ namespace Repository.CAR
         {
             string query = DynamicFormConfigurationQuery.UpdateData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { OptionDataResource = DynamicFormConfigurationDto.OptionDataResource, id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence, FormType = DynamicFormConfigurationDto.FormType, FieldElement = DynamicFormConfigurationDto.FieldElement ,DBResource = DynamicFormConfigurationDto.DBResource, Query = DynamicFormConfigurationDto.Query});
+            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { OptionDataResource = DynamicFormConfigurationDto.OptionDataResource, id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence, FormType = DynamicFormConfigurationDto.FormType, FieldElement = DynamicFormConfigurationDto.FieldElement ,DBResource = DynamicFormConfigurationDto.DBResource, Query = DynamicFormConfigurationDto.Query, DataOption = DynamicFormConfigurationDto.DataOption });
         }
 
         public async Task<IEnumerable<DynamicFormConfigurationDto>> DataDelete(DynamicFormConfigurationDto DynamicFormConfigurationDto)
@@ -584,6 +584,13 @@ namespace Repository.CAR
                     return new ImportResult { Success = false, Message = "Error occurred: " + ex.Message };
                 }
             }
+        }
+        public async Task<IEnumerable<TableMappingFieldNameDto>> GetTableMappingFieldName(string? plant)
+        {
+            string query = DynamicFormConfigurationQuery.GetTableMappingFieldName;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<TableMappingFieldNameDto>(query, new { Plant = plant });
         }
     }
 }   
