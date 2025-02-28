@@ -14,9 +14,19 @@ namespace Repository.Query
         WHERE 1=1";
 
         public static readonly string SearchADV = @"
-        SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
+        SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate,UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM DynamicFlowConfiguration
-        WHERE FormType LIKE '%' + @SearchFTADV + '%' OR Flow LIKE '%' + @SearchADV + '%'";
+        WHERE 
+            (@SearchFTADV IS NULL OR FormType LIKE '%' + @SearchFTADV + '%')
+            AND DelFlag = 0
+            AND (
+                @SearchADV IS NULL
+                OR NOT EXISTS (
+                    SELECT 1
+                    FROM STRING_SPLIT(@SearchADV, ',') AS param
+                    WHERE Flow NOT LIKE '%' + LTRIM(RTRIM(param.value)) + '%'
+            )
+        )";
 
         public static readonly string SearchInDB = @"
         SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag

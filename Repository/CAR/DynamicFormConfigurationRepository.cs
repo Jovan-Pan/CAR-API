@@ -124,21 +124,28 @@ namespace Repository.CAR
             if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(formTypeAdv) && string.IsNullOrEmpty(fieldNameAdv) && string.IsNullOrEmpty(fieldTypeAdv) &&string.IsNullOrEmpty(fieldLengthAdv) && string.IsNullOrEmpty(mandatoryAdv) &&string.IsNullOrEmpty(fieldElementAdv) && string.IsNullOrEmpty(optionDataResourceAdv) &&string.IsNullOrEmpty(dbResourceAdv) && string.IsNullOrEmpty(queryAdv) &&string.IsNullOrEmpty(dataOptionAdv) && string.IsNullOrEmpty(sequenceAdv))
             {
                 query = DynamicFormConfigurationQuery.GetDynamicFormConfiguration;
+                if (!delflag)
+                {
+                    query += " and dfc.DelFlag = 0 ";
+                }
             }
             else if (!string.IsNullOrEmpty(formTypeAdv) || !string.IsNullOrEmpty(fieldNameAdv) || !string.IsNullOrEmpty(fieldTypeAdv) || !string.IsNullOrEmpty(fieldLengthAdv) || !string.IsNullOrEmpty(mandatoryAdv) || !string.IsNullOrEmpty(fieldElementAdv) || !string.IsNullOrEmpty(optionDataResourceAdv) || !string.IsNullOrEmpty(dbResourceAdv) || !string.IsNullOrEmpty(queryAdv) || !string.IsNullOrEmpty(dataOptionAdv) || !string.IsNullOrEmpty(sequenceAdv))
             {
                 query = DynamicFormConfigurationQuery.SearchADV;
+                if (!delflag)
+                {
+                    query += " and DelFlag = 0 ";
+                }
             }
             else
             {
                 query = DynamicFormConfigurationQuery.SearchDB;
+                if (!delflag)
+                {
+                    query += " and DelFlag = 0 ";
+                }
             }
 
-            //if (!delflag)
-            //{
-            //    query += " and dfc.DelFlag = 0 ";
-            //}
-            
             await using var conn = dbContext.CARConnection();
             //return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new {
             var result = await conn.QueryAsync<DynamicFormConfigurationDto>(query, new 
@@ -349,6 +356,14 @@ namespace Repository.CAR
             ArrayList conditions = new ArrayList();
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
+
+            await using var conn = dbContext.CARConnection();
+
+            if (conn.State == ConnectionState.Closed)
+            {
+                await conn.OpenAsync();
+            }
+
             specialCond.Add("UPDATE ##temp set Mandatory = (CASE Mandatory WHEN 'Y' then 'true' when 'N' then 'false' else Mandatory end); ");
 
             conditions.Add("ISNULL(Plant, '') = ''");
@@ -402,14 +417,49 @@ namespace Repository.CAR
             //conditions.Add("(SELECT COUNT(*) FROM DynamicFormConfiguration WHERE FormType = @FormType AND FieldName = @FieldName) = 0");
             //condRemark.Add("FormType and FieldName combination must be unique");
 
-            string uniqueField = "FormType,FieldName";
+            string uniqueField = "Plant,FormType,FieldName";
 
-            await using var conn = dbContext.CARConnection();
+            var validFieldName = (await conn.QueryAsync<string>(
+                "USE CAR;Select COLUMN_NAME AS ColumnName FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'IssueFeedback' ORDER BY ORDINAL_POSITION")).ToList();
 
-            if (conn.State == ConnectionState.Closed)
+            var validFormType = (await conn.QueryAsync<string>(
+                "use MDM;select IDValue from tGlobal where ID = 'CARDynamicFormTypeOption'")).ToList();
+
+            if (validFieldName.Count > 0)
             {
-                await conn.OpenAsync();
+                string validFieldNameStr = string.Join("', '", validFieldName); // Format: 'EN', 'ZH'
+                conditions.Add($"UPPER(LTRIM(RTRIM(FieldName))) NOT IN ('{validFieldNameStr}')");
+                condRemark.Add($"Field Name is not Existing in IssueFeedBack");
             }
+
+            List<string> validFormTypeList = new List<string>();
+
+            if (validFormTypeList.Count > 0)
+            {
+                validFormTypeList = validFormTypeList[0]
+                    .Split(',')
+                    .Select(lang => lang.Trim().ToUpper())
+                    .ToList();
+            }
+
+            if (validFormTypeList.Count > 0)
+            {
+                string validFormTypeStr = string.Join("', '", validFormTypeList);
+
+                conditions.Add($"UPPER(LTRIM(RTRIM(Language))) NOT IN ('{validFormTypeStr}')");
+                condRemark.Add($"FormType is not Existing in Setting");
+            }
+
+            var validPlant = (await conn.QueryAsync<string>(
+               "USE MDM;select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"Plant is not Existing IN TPLANT");
+            }
+
 
             // Read Excel or TXT file
             ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "DynamicFormConfiguration", "DynamicFormConfiguration", conditions, condRemark, excelRange, uniqueField);
@@ -504,16 +554,12 @@ namespace Repository.CAR
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
                         SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp 
-                        WHERE EXISTS(
-                            SELECT 1
-                            FROM(
-                                SELECT {uniqueField}
-                                FROM ##temp
-                                GROUP BY {uniqueField}
-                                HAVING COUNT(*) > 1
-                            ) AS duplicates
-                                )";
+                       WITH cte AS (
+                            SELECT *,
+                                   ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
                     }
                     if (specialCond != null && specialCond.Count > 0)
                     // Execute special conditions if any

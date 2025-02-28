@@ -95,7 +95,7 @@ namespace Repository.Query
 
         UPDATE DynamicFormConfiguration
         SET FormType = @FormType,FieldElement = @FieldElement,OptionDataResource = @OptionDataResource,
-        DBResource = @DBResource,Query=@Query,DataOption = @DataOption,Sequence= @sequence, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE()
+        DBResource = @DBResource,Query=@Query,DataOption = @DataOption, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE()
         WHERE ID = @id";
 
         public static readonly string DeleteData = @"
@@ -112,7 +112,7 @@ namespace Repository.Query
         WHERE ID = @id";
 
         public static readonly string Import = @"
-        UPDATE DynamicFormConfiguration
+        Use CAR;UPDATE DynamicFormConfiguration
         SET 
             Plant = B.Plant,
             FormType = B.FormType,
