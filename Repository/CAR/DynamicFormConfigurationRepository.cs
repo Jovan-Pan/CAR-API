@@ -241,7 +241,7 @@ namespace Repository.CAR
         {
             string query = DynamicFormConfigurationQuery.UpdateData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { OptionDataResource = DynamicFormConfigurationDto.OptionDataResource, id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence, FormType = DynamicFormConfigurationDto.FormType, FieldElement = DynamicFormConfigurationDto.FieldElement ,DBResource = DynamicFormConfigurationDto.DBResource, Query = DynamicFormConfigurationDto.Query, DataOption = DynamicFormConfigurationDto.DataOption });
+            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { OptionDataResource = DynamicFormConfigurationDto.OptionDataResource, id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence, FormType = DynamicFormConfigurationDto.FormType, FieldElement = DynamicFormConfigurationDto.FieldElement ,DBResource = DynamicFormConfigurationDto.DBResource, Query = DynamicFormConfigurationDto.Query, DataOption = DynamicFormConfigurationDto.DataOption, plant = DynamicFormConfigurationDto.plant});
         }
 
         public async Task<IEnumerable<DynamicFormConfigurationDto>> DataDelete(DynamicFormConfigurationDto DynamicFormConfigurationDto)
@@ -262,7 +262,7 @@ namespace Repository.CAR
         {
             string query = DynamicFormConfigurationQuery.RecoverData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid });
+            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence });
         }
 
         public async Task<byte[]> Template()

@@ -28,7 +28,7 @@ namespace Repository.Query
                                                                     ORDER BY ORDINAL_POSITION";
 
         public static readonly string GetDynamicFormConfiguration = @"
-         select Distinct dfc.Id,dfc.plant,dfc.FormType,tbfn.UIDisplay as FieldName,dfc.FieldName as FieldNameForModel,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
+         select Distinct dfc.Id,dfc.plant,dfc.FormType,dfc.FieldName,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
          dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
          from DynamicFormConfiguration dfc
          INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
@@ -79,11 +79,11 @@ namespace Repository.Query
  
         SELECT @id1 = id
         FROM dynamicformconfiguration
-        WHERE sequence = @sequence;
+        WHERE sequence = @sequence and plant =@plant and formtype =@formtype;
 
         SELECT @sequence1 = Sequence
         FROM dynamicformconfiguration
-        WHERE id = @id ;
+        WHERE id = @id ; 
 
         UPDATE dynamicformconfiguration
         SET Sequence = @sequence
@@ -108,7 +108,7 @@ namespace Repository.Query
 
         public static readonly string RecoverData = @"
         UPDATE DynamicFormConfiguration 
-        SET DelFlag = 0, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE() 
+        SET Sequence= @Sequence,DelFlag = 0, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE() 
         WHERE ID = @id";
 
         public static readonly string Import = @"
