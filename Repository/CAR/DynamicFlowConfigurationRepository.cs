@@ -120,7 +120,7 @@ namespace Repository.CAR
             var row2Header = new object[] { "Mandatory", "Mandatory", "Mandatory" };
             var row3Header = new object[] { "int", "nvarchar(50)", "nvarchar(100)" };
             var row4Header = new object[] { "Plant", "FormType", "Flow" };
-            var row5Header = new object[] { "2100", "Test" , "Test" };
+            var row5Header = new object[] { "2100", "NCR" , "RAISE CAR, DISPOSITION, CAR ISSUED, RECEIVER, RECEIVER APPROVAL, ISSUER APPROVAL, VERIFICATION" };
 
             var data = new List<object[]>
                 {
@@ -179,14 +179,65 @@ namespace Repository.CAR
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL(Flow, '') = '' OR ISNULL(Plant, '') = '' OR ISNULL(FormType,'')");
-            condRemark.Add("Null Mandatory Data");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant is Mandatory");
+            conditions.Add("ISNULL(FormType,'') = ''");
+            condRemark.Add("FormType is Mandatory");
+            conditions.Add("ISNULL(Flow, '') = ''");
+            condRemark.Add("Flow is Mandatory");
+            conditions.Add("Plant <> '' AND TRY_CAST(Plant AS INT) IS NULL");
+            condRemark.Add("Plant Value Must Be a number");
             conditions.Add("LEN(FormType) > 50");
             condRemark.Add("Flow maximal 50 characters");
             conditions.Add("LEN(Flow) > 100");
             condRemark.Add("Flow maximal 100 characters");
 
-            string uniqueField = "FormType";
+            string uniqueField = "Plant,FormType";
+
+            await using var connMDM = dbContext.MDMConnection();
+
+            var validPlant = (await connMDM.QueryAsync<string>(
+              "select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"Plant is not Existing IN TPLANT");
+            }
+
+            var validFormType = (await connMDM.QueryAsync<string>(
+                "select IDValue from tGlobal where ID = 'CARDynamicFormTypeOption'")
+            ).ToList();
+
+            List<string> validFormTypeList = new List<string>();
+
+            // Fix: Check if validFormType has any data before splitting
+            if (validFormType.Count > 0 && !string.IsNullOrWhiteSpace(validFormType[0]))
+            {
+                validFormTypeList = validFormType[0]
+                    .Split(',')
+                    .Select(lang => lang.Trim().ToUpper())
+                    .ToList();
+            }
+
+            if (validFormTypeList.Count > 0)
+            {
+                string validFormTypeStr = string.Join("', '", validFormTypeList);
+
+                conditions.Add($"UPPER(LTRIM(RTRIM(FormType))) NOT IN ('{validFormTypeStr}')");
+                condRemark.Add($"FormType is not Existing in Setting");
+
+            }
+            conditions.Add(@"
+            EXISTS (
+                SELECT 1 FROM STRING_SPLIT(Flow, ',') AS f
+                WHERE UPPER(LTRIM(RTRIM(f.value))) NOT IN (
+                    'RAISE CAR','DISPOSITION','CAR ISSUED','RECEIVER',
+                    'RECEIVER APPROVAL','ISSUER APPROVAL','VERIFICATION'
+                )
+            )");
+            condRemark.Add($"Flow is not Existing in Setting");
 
             await using var conn = dbContext.CARConnection();
 
@@ -288,14 +339,12 @@ namespace Repository.CAR
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
                         SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                       WITH cte AS (
+                            SELECT *,
+                                   ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 

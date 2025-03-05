@@ -446,7 +446,7 @@ namespace Repository.CAR
             {
                 string validFormTypeStr = string.Join("', '", validFormTypeList);
 
-                conditions.Add($"UPPER(LTRIM(RTRIM(Language))) NOT IN ('{validFormTypeStr}')");
+                conditions.Add($"UPPER(LTRIM(RTRIM(FormType))) NOT IN ('{validFormTypeStr}')");
                 condRemark.Add($"FormType is not Existing in Setting");
             }
 
