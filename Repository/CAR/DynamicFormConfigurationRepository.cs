@@ -18,6 +18,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities.ParamRequest;
 using System.Text.RegularExpressions;
+using Microsoft.IdentityModel.Tokens;
+using System.Numerics;
 
 namespace Repository.CAR
 {
@@ -98,8 +100,28 @@ namespace Repository.CAR
         public async Task<IEnumerable<DynamicFormConfigurationDto>> InsertNewData(DynamicFormConfigurationDto DynamicFormConfigurationDto)
             {
             string query = DynamicFormConfigurationQuery.InsertNewData;
+            string CheckExistingFormType = DynamicFormConfigurationQuery.GetDynamicFlowConfiguration;
+            string queryInsertFlow = DynamicFlowConfigurationQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new 
+
+            var existingData = await conn.QueryFirstOrDefaultAsync<DynamicFormConfigurationDto>(CheckExistingFormType, new
+            {
+                FormType = DynamicFormConfigurationDto.FormType,
+                plant = DynamicFormConfigurationDto.plant
+            });
+
+            if(existingData == null)
+            {
+                await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
+                {
+                    plant = DynamicFormConfigurationDto.plant,
+                    FormType = DynamicFormConfigurationDto.FormType,
+                    Flow = "RECEIVER,ISSUER APPROVAL,VERIFICATION",
+                    userid = DynamicFormConfigurationDto.userid
+                });
+            }
+
+                return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new 
             {
                 plant = DynamicFormConfigurationDto.plant,
                 FormType = DynamicFormConfigurationDto.FormType,

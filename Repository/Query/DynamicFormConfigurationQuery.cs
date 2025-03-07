@@ -212,5 +212,10 @@ namespace Repository.Query
             END AS FieldNameManipulate
         FROM RankedData
         WHERE RowNum = 1;";
+
+        public static readonly string GetDynamicFlowConfiguration = @"
+       SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
+       FROM DynamicFlowConfiguration
+       WHERE Plant = @plant AND FormType = @FormType AND DelFlag = 0";
     } 
 }
