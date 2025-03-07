@@ -199,5 +199,7 @@ namespace Repository.Query
 
         select case when (select count(*) from @Validgrp where isexist = 1) > 0 then 1 else 0 end isSpAdmin
         ";
+
+        public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where DelFlag = 0";
     }
 }

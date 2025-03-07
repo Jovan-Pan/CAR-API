@@ -32,7 +32,7 @@ namespace Repository.Query
          dfc.DBResource,dfc.Query,dfc.DataOption,dfc.Sequence,dfc.CreatedBy,dfc.CreatedByName,dfc.CreatedDate,dfc.UpdatedBy,dfc.UpdatedByName,dfc.UpdatedDate,dfc.delflag
          from DynamicFormConfiguration dfc
          INNER JOIN TableMappingFieldName tbfn on dfc.FieldName =tbfn.FieldName and dfc.plant =tbfn.plant
-         Where dfc.Plant = @Plant and language = 'EN' and tbfn.DelFlag =0";
+         Where dfc.Plant = @Plant and tbfn.DelFlag =0";
 
 
         public static readonly string SearchADV = @"
@@ -212,5 +212,10 @@ namespace Repository.Query
             END AS FieldNameManipulate
         FROM RankedData
         WHERE RowNum = 1;";
+
+        public static readonly string GetDynamicFlowConfiguration = @"
+       SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
+       FROM DynamicFlowConfiguration
+       WHERE Plant = @plant AND FormType = @FormType AND DelFlag = 0";
     } 
 }

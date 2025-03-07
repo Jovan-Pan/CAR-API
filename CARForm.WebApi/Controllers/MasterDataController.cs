@@ -142,4 +142,13 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(GetUsr))]
+    public async Task<IActionResult> GetUsr()
+    {
+        var result = await business.MasterData.GetUsr();
+        return Ok(result);
+
+    }
 }
+
