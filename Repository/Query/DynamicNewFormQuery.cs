@@ -403,5 +403,10 @@ namespace Repository.Query
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";
+
+        public static readonly string InsertIssueFeedBackEmailRecipient = @"
+        insert into IssueFeedBackEmailRecipient(
+        FormNo,UseID,UseNam,UseEmail,UserLevel) Values(@FormNumber,@UseID,@UseNam,@UseEmail,@UserLevel)";
+
     }
 }

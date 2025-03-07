@@ -147,6 +147,30 @@ namespace Repository.CAR
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
+
+        public async Task<int> InsertIssueFeedBackEmailRecipient(DynamicFormParameterDTO mydata, SqlTransaction transaction)
+        {
+            string query = DynamicNewFormQuery.InsertIssueFeedBackEmailRecipient;
+            var conn = transaction.Connection;
+            if (mydata.IssueFeedBackEmailRecipients == null || !mydata.IssueFeedBackEmailRecipients.Any())
+                return 0;
+
+            var affectedRows = 0;
+            foreach (var recipient in mydata.IssueFeedBackEmailRecipients)
+            {
+                var dParams = new Dapper.DynamicParameters();
+                dParams.Add("@FormNumber", mydata.FormNumber);              // Add FormNumber parameter
+                dParams.Add("@UseID", recipient.UseID);
+                dParams.Add("@UseNam", recipient.UseNam);
+                dParams.Add("@UseEmail", recipient.UseEmail);
+                dParams.Add("@UserLevel", recipient.UserLevel);
+
+                // Execute query for each recipient
+                affectedRows += await conn.ExecuteAsync(query, dParams, transaction);
+            }
+
+            return affectedRows;
+        }
         public async Task<int> InsertDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
             //string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
@@ -183,7 +207,10 @@ namespace Repository.CAR
                 {
                     continue;
                 }
-
+                if (prop.Name == nameof(DynamicFormParameterDTO.IssueFeedBackEmailRecipients))
+                {
+                    continue;
+                }
                 if (value != null)
                 {
                     if (prop.Name.Equals("DynamicParameters", StringComparison.InvariantCultureIgnoreCase) &&

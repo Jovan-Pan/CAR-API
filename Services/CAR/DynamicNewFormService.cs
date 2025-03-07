@@ -42,7 +42,7 @@ namespace Services.CAR
 
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
-
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, transaction);
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
             string pwd = basepathconfig.First().password;

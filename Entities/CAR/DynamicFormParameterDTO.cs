@@ -41,11 +41,26 @@ namespace Entities.CAR
 
         public string? MainStatus { get; set; }
         public List<DynamicParameter>? DynamicParameters { get; set; }
+        public List<IssueFeedBackEmailRecipient>? IssueFeedBackEmailRecipients { get; set; }
+
+        //IssueFeedBackEmailRecipient
+        //public string? UseID { get; set; }
+        //public string? UseNam { get; set; }
+        //public string? UseEmail { get; set; }
+        //public string? UserLevel { get; set; }
     }
 
     public class DynamicParameter
     {
         public string FieldName { get; set; }
         public string FieldValue { get; set; }
+    }
+
+    public class IssueFeedBackEmailRecipient
+    {
+        public string? UseID { get; set; }
+        public string? UseNam { get; set; }
+        public string? UseEmail { get; set; }
+        public string? UserLevel { get; set; }
     }
 }
