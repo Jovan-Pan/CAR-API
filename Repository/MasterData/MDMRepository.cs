@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository.MasterData;
 using Dapper;
 using Entities.Account.Dto;
+using Entities.CAR;
 using Entities.MasterData;
 using Entities.ParamRequest;
 using Microsoft.AspNetCore.Http;
@@ -176,10 +177,22 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryFirstOrDefaultAsync<bool>(Processquery, new { plant, UseID });
     }
-    public async Task<IEnumerable<UsrDto>> GetUsr()
+    public async Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data)
     {
-        string Processquery = MDMQuery.GetUsr;
+        string Processquery;
+        if (string.IsNullOrEmpty(data.VendorCode) && string.IsNullOrEmpty(data.Dept))
+        {
+            Processquery = MDMQuery.GetUsr;
+        }
+        else if(!string.IsNullOrEmpty(data.VendorCode) && data.Dept == "Vend")
+        {
+            Processquery = MDMQuery.GetUsrForVndr;
+        }
+        else
+        {
+            Processquery = MDMQuery.GetUsrForDept;
+        }
         await using var conn = dbContext.MDMConnection();
-        return await conn.QueryAsync<UsrDto>(Processquery);
+        return await conn.QueryAsync<UsrDto>(Processquery, new {Vendor = data.VendorCode, Dept = data.Dept } );
     }
 }

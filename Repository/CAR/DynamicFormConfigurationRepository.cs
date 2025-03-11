@@ -110,13 +110,13 @@ namespace Repository.CAR
                 plant = DynamicFormConfigurationDto.plant
             });
 
-            if(existingData == null)
+            if(existingData == null && existingData.FormType != "NCR")
             {
                 await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
                 {
                     plant = DynamicFormConfigurationDto.plant,
                     FormType = DynamicFormConfigurationDto.FormType,
-                    Flow = "RECEIVER,ISSUER APPROVAL,VERIFICATION",
+                    Flow = "RAISE CAR,RECEIVER,ISSUER APPROVAL,VERIFICATION",
                     userid = DynamicFormConfigurationDto.userid
                 });
             }

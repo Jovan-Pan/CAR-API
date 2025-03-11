@@ -9,6 +9,7 @@ using System.Numerics;
 using System.Drawing;
 using Entities.ParamRequest;
 using Entities.Account.Dto;
+using Entities.CAR;
 
 namespace Services.MasterData;
 
@@ -128,9 +129,9 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         var result = await mdm.GetisSpAdmin(plant, UseID);
         return ApiResponse<bool>.SuccessResponse(result);
     }
-    public async Task<ApiResponse<IEnumerable<UsrDto>>> GetUsr()
+    public async Task<ApiResponse<IEnumerable<UsrDto>>> GetUsr(DynamicFormParameterDTO data)
     {
-        var result = await mdm.GetUsr();
+        var result = await mdm.GetUsr(data);
         return ApiResponse<IEnumerable<UsrDto>>.SuccessResponse(result);
     }
 

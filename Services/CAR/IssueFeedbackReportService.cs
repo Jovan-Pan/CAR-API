@@ -170,6 +170,7 @@ namespace Services.CAR
             var maindata = await data.IFR.GetMaindata(param, Cpr);
             var formNoList = maindata.Select(data => data.FormNo);
             var dataAtch = await data.IFR.GetDataAttchment(param.Plant, formNoList,null);
+            var EmailRecipientsList = await data.IFR.GetEmailRecipientsList(param.Plant, formNoList, null);
 
             var mdmMattype = await mdm.GetMatType(param.Plant);
             GetMaterialParam mparam = new GetMaterialParam();
@@ -296,6 +297,9 @@ namespace Services.CAR
                         string formnumber = maindataList[i].FormNo;
                         var atch = dataAtch.Where(dto => dto.FormNo == formnumber);
                         maindataList[i].dataAtch = atch;
+                        var IFBER = EmailRecipientsList.Where(dto => dto.FormNo == formnumber);
+                        maindataList[i].EmailRecipientsList = IFBER;
+
                     }
 
                     maindata = maindataList;

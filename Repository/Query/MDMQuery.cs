@@ -201,5 +201,13 @@ namespace Repository.Query
         ";
 
         public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where DelFlag = 0";
+
+        public static readonly string GetUsrForVndr = @"select A.UseID,A.UseNam,A.UseEmail from Usr A
+                                                        left join USERVSVENDOR B  on A.useID = B.useID
+                                                        where A.UseDep = @Dept and vendor = @Vendor and B.Delflag = 0";
+
+        public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr A
+                                                        left join Dept_Usr B on A.useID = B.useID
+                                                        where A.UseDep = @Dept and A.Delflag = 0";
     }
 }

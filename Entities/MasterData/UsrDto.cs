@@ -8,6 +8,7 @@ namespace Entities.MasterData
 {
     public class UsrDto
     {
+        public string? FormNo { get; set; }
         public string UseID { get; set; }
         public string UseNam { get; set; }
         public string? UseEmail { get; set; }

@@ -164,5 +164,22 @@ namespace Repository.CAR
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
+
+        public async Task<IEnumerable<UsrDto>> GetEmailRecipientsList(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction)
+        {
+            string query = IssueFeedbackReportQuery.GetEmailRecipientsList;
+            if (transaction is null)
+            {
+                await using var conn = dbContext.CARConnection();
+                return await conn.QueryAsync<UsrDto>(query, new { plant = plant, FormNoList = FormNoList });
+            }
+            else
+            {
+                var conn = transaction.Connection;
+                return await conn.QueryAsync<UsrDto>(query, new { plant = plant, FormNoList = FormNoList
+                }, transaction);
+            }
+
+        }
     }
 }
