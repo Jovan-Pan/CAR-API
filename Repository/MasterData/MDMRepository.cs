@@ -193,6 +193,6 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
             Processquery = MDMQuery.GetUsrForDept;
         }
         await using var conn = dbContext.MDMConnection();
-        return await conn.QueryAsync<UsrDto>(Processquery, new {Vendor = data.VendorCode, Dept = data.Dept } );
+        return await conn.QueryAsync<UsrDto>(Processquery, new {Vendor = data.VendorCode, Dept = data.Dept,plant =data.UserPlant } );
     }
 }
