@@ -200,14 +200,16 @@ namespace Repository.Query
         select case when (select count(*) from @Validgrp where isexist = 1) > 0 then 1 else 0 end isSpAdmin
         ";
 
-        public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where DelFlag = 0";
+        public static readonly string GetUsr = @"select distinct A.UseID,A.UseNam,A.useEmail from Usr A
+	                                            left join Dept_Usr B on  A.useID = B.useID 
+	                                            where A.DelFlag = 0 and B.isDeleted= 0 and B.System = 'CAR' and plant = @plant";
 
         public static readonly string GetUsrForVndr = @"select A.UseID,A.UseNam,A.UseEmail from Usr A
                                                         left join USERVSVENDOR B  on A.useID = B.useID
-                                                        where A.UseDep = @Dept and vendor = @Vendor and B.Delflag = 0";
+                                                        where A.UseDep = @Dept and vendor = @Vendor and A.DelFlag = 0 and B.Delflag = 0 and plant = @plant";
 
-        public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr A
-                                                        left join Dept_Usr B on A.useID = B.useID
-                                                        where A.UseDep = @Dept and A.Delflag = 0";
+        public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr 
+                                                        left join Dept_Usr B on A.useID = B.useID and A.UseDep = B.Dept 
+                                                        where A.UseDep = @Dept and A.Delflag = 0 and B.isDeleted= 0 and B.plant = @plant and B.System = 'CAR'";
     }
 }
