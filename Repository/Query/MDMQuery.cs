@@ -206,8 +206,8 @@ namespace Repository.Query
                                                         left join USERVSVENDOR B  on A.useID = B.useID
                                                         where A.UseDep = @Dept and vendor = @Vendor and B.Delflag = 0";
 
-        public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr A
-                                                        left join Dept_Usr B on A.useID = B.useID
-                                                        where A.UseDep = @Dept and A.Delflag = 0";
+        public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr 
+                                                        left join Dept_Usr B on A.useID = B.useID and A.UseDep = B.Dept 
+                                                        where A.UseDep = @Dept and A.Delflag = 0 ";
     }
 }
