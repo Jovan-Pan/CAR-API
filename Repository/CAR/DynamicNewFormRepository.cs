@@ -259,7 +259,7 @@ namespace Repository.CAR
             // List of parameters to exclude
             var excludedParameters = new HashSet<string>
             {
-                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles"
+                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@DetectionDate"
             };
 
             var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
@@ -270,7 +270,15 @@ namespace Repository.CAR
             }));
             var values = string.Join(", ", filteredParameters.Select(p => p.ParameterName));
 
-            return $"INSERT INTO {tableName} (Plant, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant, {values},@IssueStatus,@MainStatus,@UserId,@UserName,GETDATE())";
+            var detectionDateParam = parameters.FirstOrDefault(p => p.ParameterName == "@DetectionDate");
+
+            string detectionDateValue = detectionDateParam == null || detectionDateParam.Value == null ||
+                                        string.IsNullOrEmpty(detectionDateParam.Value.ToString())
+                                        ? "GETDATE()" // Use current date if missing or empty
+                                        : "@DetectionDate"; // Use provided value if exists
+
+            return $"INSERT INTO {tableName} (Plant,DetectionDate, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant,{detectionDateValue}, {values},@IssueStatus,@MainStatus,@UserId,@UserName,GETDATE())";
+
         }
 
         public static string BuildUpdateQuery(string tableName, List<SqlParameter> parameters)
