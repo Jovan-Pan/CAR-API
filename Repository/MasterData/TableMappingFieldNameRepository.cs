@@ -268,7 +268,7 @@ namespace Repository.MasterData
                 // Perbaiki kondisi SQL
                 conditions.Add($"UPPER(LTRIM(RTRIM(Language))) NOT IN ('{validLanguageStr}')");
                 //condRemark.Add($"Language value only {string.Join(" and ", validLanguageList)}");
-                condRemark.Add($"Language value only support {string.Join(" ,", validLanguageList)}");
+                condRemark.Add($"Language value only support ( {string.Join(", ", validLanguageList)} )");
             }
 
             //await using var conn = dbContext.CARConnection();

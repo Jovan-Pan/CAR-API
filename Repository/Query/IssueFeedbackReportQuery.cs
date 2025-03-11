@@ -123,5 +123,10 @@ namespace Repository.Query
         ,StatusOfFinding = @StatusOfFinding
         where FormNo = @FormNo and Plant = @UserPlant
         ";
+
+        public static readonly string GetEmailRecipientsList = @"
+        select B.FormNo,B.UseID,B.UseNam,B.UseEmail,B.UserLevel from IssueFeedback A
+        join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
+        where A.Plant = @plant and A.FormNo IN @FormNoList";
     }
 }

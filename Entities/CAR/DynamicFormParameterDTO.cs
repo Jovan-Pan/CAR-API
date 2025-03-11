@@ -10,8 +10,8 @@ namespace Entities.CAR
     public class DynamicFormParameterDTO : IssueSbmsAtchParam
     {
         public string? IssueStatus { get; set; }
-        public string UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserId { get; set; }
+        public string? UserName { get; set; }
         public int UserPlant { get; set; }
         public string? FormType { get; set; }
         public string? FormNumber { get; set; }
@@ -19,6 +19,7 @@ namespace Entities.CAR
         public string? Comment { get; set; }
         public string? IssueType { get; set; }
         public string? Dept { get; set; }
+        public string? VendorCode { get; set; }
 
         public string? rejectReason { get; set; }
         public string? PDAImmediteAct { get; set; }
