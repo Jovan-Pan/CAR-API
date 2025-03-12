@@ -20,6 +20,7 @@ namespace Entities.CAR
         public string? IssueType { get; set; }
         public string? Dept { get; set; }
         public string? VendorCode { get; set; }
+        public string? VendorDesc { get; set; }
 
         public string? rejectReason { get; set; }
         public string? PDAImmediteAct { get; set; }
