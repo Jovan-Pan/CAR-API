@@ -20,6 +20,7 @@ using Entities.ParamRequest;
 using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.Tokens;
 using System.Numerics;
+using Entities;
 
 namespace Repository.CAR
 {
@@ -70,32 +71,48 @@ namespace Repository.CAR
                 queryWithPlantReplaced = TestingQueryParam.query;
             }
             string executedQuery = "USE " + TestingQueryParam.DBResource + "; " + queryWithPlantReplaced;
-            var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
 
-            // Initialize the list if it is null
-            var result = new List<DynamicFormConfigurationDto>();
-
-            foreach (var row in executedQueryResult)
+            try
             {
-                var item = new DynamicFormConfigurationDto
-                {
-                    ExecutedQueryResult = new List<Dictionary<string, object>>()
-                };
 
-                var executedQueryResultDict = new Dictionary<string, object>();
+                var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
 
-                foreach (var kvp in (IDictionary<string, object>)row)
+                // Initialize the list if it is null
+                var result = new List<DynamicFormConfigurationDto>();
+
+                foreach (var row in executedQueryResult)
                 {
-                    if (kvp.Key != null)
+                    var item = new DynamicFormConfigurationDto
                     {
-                        executedQueryResultDict[kvp.Key] = kvp.Value;
-                    }
-                }
+                        ExecutedQueryResult = new List<Dictionary<string, object>>()
+                    };
 
-                item.ExecutedQueryResult.Add(executedQueryResultDict);
-                result.Add(item);
+                    var executedQueryResultDict = new Dictionary<string, object>();
+
+                    foreach (var kvp in (IDictionary<string, object>)row)
+                    {
+                        if (kvp.Key != null)
+                        {
+                            executedQueryResultDict[kvp.Key] = kvp.Value;
+                        }
+                    }
+
+                    item.ExecutedQueryResult.Add(executedQueryResultDict);
+                    result.Add(item);
+                }
+                return result;
             }
-            return result;
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                return null;
+             
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General Error: {ex.Message}");
+                return new List<DynamicFormConfigurationDto>();
+            }
         }
         public async Task<IEnumerable<DynamicFormConfigurationDto>> InsertNewData(DynamicFormConfigurationDto DynamicFormConfigurationDto)
             {
@@ -104,21 +121,81 @@ namespace Repository.CAR
             string queryInsertFlow = DynamicFlowConfigurationQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
 
+            string queryLowerCase = DynamicFormConfigurationDto.Query.ToLower();
+            string queryWithPlantReplaced;
+
+            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+            {
+                string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
+
+                HashSet<string> allowedParams = executedParameters
+                                      .Select(p => p.ToLower())
+                                      .ToHashSet();
+
+                var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                var foundParams = regex.Matches(DynamicFormConfigurationDto.Query)
+                                       .Select(match => match.Value.ToLower())
+                                       .ToHashSet();
+
+                var invalidParams = foundParams.Except(allowedParams);
+                if (invalidParams.Any())
+                {
+                    return null;
+                }
+
+                queryWithPlantReplaced = DynamicFormConfigurationDto.Query.ToLower()
+                                            .Replace("@plant", DynamicFormConfigurationDto.plant)
+                                            .Replace("@userid", $"'{DynamicFormConfigurationDto.userid}'");
+            }
+            else
+            {
+                queryWithPlantReplaced = DynamicFormConfigurationDto.Query;
+            }
+            string executedQuery = "USE " + DynamicFormConfigurationDto.DBResource + "; " + queryWithPlantReplaced;
+
+            try
+            {
+
+                var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                return null;
+
+            }
+
             var existingData = await conn.QueryFirstOrDefaultAsync<DynamicFormConfigurationDto>(CheckExistingFormType, new
             {
                 FormType = DynamicFormConfigurationDto.FormType,
                 plant = DynamicFormConfigurationDto.plant
             });
 
-            if(existingData == null && DynamicFormConfigurationDto.FormType != "NCR")
+            if (existingData == null)
             {
-                await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
+                if (DynamicFormConfigurationDto.FormType != "NCR")
                 {
-                    plant = DynamicFormConfigurationDto.plant,
-                    FormType = DynamicFormConfigurationDto.FormType,
-                    Flow = "RAISE CAR,RECEIVER,ISSUER APPROVAL,VERIFICATION",
-                    userid = DynamicFormConfigurationDto.userid
-                });
+                    await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
+                    {
+                        plant = DynamicFormConfigurationDto.plant,
+                        FormType = DynamicFormConfigurationDto.FormType,
+                        Flow = "RAISE CAR,RECEIVER,RECEIVER APPROVAL,ISSUER APPROVAL,VERIFICATION",
+                        userid = DynamicFormConfigurationDto.userid
+                    });
+                }
+                else
+                {
+                    await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
+                    {
+                        plant = DynamicFormConfigurationDto.plant,
+                        FormType = DynamicFormConfigurationDto.FormType,
+                        Flow = "RAISE CAR,DISPOSITION,CAR ISSUED,RECEIVER,RECEIVER APPROVAL,ISSUER APPROVAL,VERIFICATION",
+                        userid = DynamicFormConfigurationDto.userid
+                    });
+
+                }
             }
 
                 return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new 
@@ -263,6 +340,53 @@ namespace Repository.CAR
         {
             string query = DynamicFormConfigurationQuery.UpdateData;
             await using var conn = dbContext.CARConnection();
+
+            string queryLowerCase = DynamicFormConfigurationDto.Query.ToLower();
+            string queryWithPlantReplaced;
+
+            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+            {
+                string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
+
+                HashSet<string> allowedParams = executedParameters
+                                      .Select(p => p.ToLower())
+                                      .ToHashSet();
+
+                var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                var foundParams = regex.Matches(DynamicFormConfigurationDto.Query)
+                                       .Select(match => match.Value.ToLower())
+                                       .ToHashSet();
+
+                var invalidParams = foundParams.Except(allowedParams);
+                if (invalidParams.Any())
+                {
+                    return null;
+                }
+
+                queryWithPlantReplaced = DynamicFormConfigurationDto.Query.ToLower()
+                                            .Replace("@plant", DynamicFormConfigurationDto.plant)
+                                            .Replace("@userid", $"'{DynamicFormConfigurationDto.userid}'");
+            }
+            else
+            {
+                queryWithPlantReplaced = DynamicFormConfigurationDto.Query;
+            }
+            string executedQuery = "USE " + DynamicFormConfigurationDto.DBResource + "; " + queryWithPlantReplaced;
+
+            try
+            {
+
+                var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                return null;
+
+            }
+
             return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { OptionDataResource = DynamicFormConfigurationDto.OptionDataResource, id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence, FormType = DynamicFormConfigurationDto.FormType, FieldElement = DynamicFormConfigurationDto.FieldElement ,DBResource = DynamicFormConfigurationDto.DBResource, Query = DynamicFormConfigurationDto.Query, DataOption = DynamicFormConfigurationDto.DataOption, plant = DynamicFormConfigurationDto.plant});
         }
 

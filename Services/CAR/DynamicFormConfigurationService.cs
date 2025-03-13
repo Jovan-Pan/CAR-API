@@ -25,11 +25,29 @@ namespace Services.CAR
         public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetTestingQueryResult(TestingQueryParam TestingQueryParam)
         {
             var result = await data.DynamicFormConfiguration.GetTestingQueryResult(TestingQueryParam);
+            if(result == null)
+            {
+                return new ApiResponse<IEnumerable<DynamicFormConfigurationDto>>
+                {
+                    Success = false,
+                    Message = "Please Check The Query and Database Resource",
+                    Content = null
+                };
+            }
             return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> InsertNewData(DynamicFormConfigurationDto DynamicFormConfigurationDto)
         {
             var result = await data.DynamicFormConfiguration.InsertNewData(DynamicFormConfigurationDto);
+            if (result == null)
+            {
+                return new ApiResponse<IEnumerable<DynamicFormConfigurationDto>>
+                {
+                    Success = false,
+                    Message = "Please Check The Query and Database Resource",
+                    Content = null
+                };
+            }
             return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> GetDynamicFormConfiguration(string userid, string Language, string Plant, string? search, bool delflag, string? formTypeAdv, string? fieldNameAdv, string? fieldTypeAdv, string? fieldLengthAdv, string? mandatoryAdv, string? fieldElementAdv, string? optionDataResourceAdv, string? dbResourceAdv, string? queryAdv, string? dataOptionAdv, string? sequenceAdv)
@@ -40,6 +58,10 @@ namespace Services.CAR
         public async Task<ApiResponse<IEnumerable<DynamicFormConfigurationDto>>> UpdateData(DynamicFormConfigurationDto DynamicFormConfigurationDto)
         {
             var result = await data.DynamicFormConfiguration.UpdateData(DynamicFormConfigurationDto);
+            if (result == null)
+            {
+                return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.FailResponse("Please Check The Query and Database Resource");
+            }
             return ApiResponse<IEnumerable<DynamicFormConfigurationDto>>.SuccessResponse(result);
         }
 
