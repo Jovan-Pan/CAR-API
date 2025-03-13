@@ -9,7 +9,7 @@ namespace Entities.CAR
     public class DynamicFormConfigurationDto
     {
         public int? Id { get; set; }
-        public int? plant { get; set; }
+        public string? plant { get; set; }
         public string? FormType { get; set; }
         public string? FieldNameForModel { get; set; }
         public string? FieldName { get; set; }

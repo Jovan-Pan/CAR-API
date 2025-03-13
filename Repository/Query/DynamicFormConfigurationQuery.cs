@@ -8,24 +8,42 @@ namespace Repository.Query
 {
     public class DynamicFormConfigurationQuery
     {
-        public static readonly string GetIssueFeedbackcolumn = @"SELECT 
-                                                                    COLUMN_NAME AS ColumnName,
-                                                                    CASE
-																		WHEN DATA_TYPE IN ('nvarchar', 'varchar', 'char', 'nchar') THEN 'String'
-																		ELSE DATA_TYPE
-																	END AS DataType,
-	                                                                CASE
-                                                                    WHEN DATA_TYPE IN ('nvarchar', 'varchar', 'char', 'nchar') THEN CHARACTER_MAXIMUM_LENGTH
-                                                                    WHEN DATA_TYPE IN ('decimal', 'numeric') THEN NUMERIC_PRECISION
-                                                                    ELSE NULL
-                                                                    END AS Length,
-	                                                                CASE    
-                                                                        WHEN IS_NULLABLE = 'YES' THEN 1 
-                                                                        ELSE 0 
-                                                                    END AS AllowNull
-                                                                    FROM INFORMATION_SCHEMA.COLUMNS
-                                                                    WHERE TABLE_NAME = 'IssueFeedback'
-                                                                    ORDER BY ORDINAL_POSITION";
+        public static readonly string GetIssueFeedbackcolumn = @"
+        SELECT 
+            COLUMN_NAME AS ColumnName,
+            CASE
+                WHEN DATA_TYPE IN ('nvarchar', 'varchar', 'char', 'nchar') THEN 'String'
+                ELSE DATA_TYPE
+            END AS DataType,
+            CASE
+                WHEN DATA_TYPE IN ('nvarchar', 'varchar', 'char', 'nchar') THEN CHARACTER_MAXIMUM_LENGTH
+                WHEN DATA_TYPE IN ('decimal', 'numeric') THEN NUMERIC_PRECISION
+                ELSE NULL
+            END AS Length,
+            CASE    
+                WHEN IS_NULLABLE = 'YES' THEN 1 
+                ELSE 0 
+            END AS AllowNull
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = 'IssueFeedback'
+        AND COLUMN_NAME NOT IN (
+            'ID', 'Plant', 'FormType', 'FormNo',
+            'Status', 'IssueBy', 'IssueByName', 'IssueDate', 'IssueByComment',
+            'IssueUpdatedBy', 'IssueUpdatedByName', 'IssueUpdatedDate',
+            'AcknowledgeBy', 'AcknowledgeByName', 'AcknowledgeByDate', 'AcknowledgeByComment',
+            'PDAActionBy', 'PDAActionByName', 'PDAActionDate', 'PDAActionImmAct', 'PDAActionComment',
+            'PDAActionUpdatedBy', 'PDAActionUpdatedByName', 'PDAActionUpdatedDate',
+            'PDAAprovalBy', 'PDAAprovalByName', 'PDAAprovalDate',
+            'ImmActRecDetail', 'ActionResult', 'ReceiveActionRootCause', 'RootCauseDetail',
+            'procecessGrpCode', 'ReceiveCorrectiveAct', 'ReceiveActionComment',
+            'ReceiveActionRejectReason', 'ReceiveActionBy', 'ReceiveActionByName', 'ReceiveActionDate',
+            'ReviewDate', 'ReceiveActionUpdatedBy', 'ReceiveActionUpdatedByName', 'ReceiveActionUpdatedDate',
+            'ReceiveAprovalBy', 'ReceiveAprovalByName', 'ReceiveAprovalDate', 'PDAReviewBy',
+            'PDAReviewByName', 'PDAReviewDate', 'PDAReviewComment', 'isPDAReviewResultAprov',
+            'ReviewBy', 'ReviewByName', 'ReviewSubmitDate', 'ReviewComment', 'ReviewMethod',
+            'isReviewResultAprov', 'PDAAprovalComment', 'ReceiveAprovalComment', 'MainStatus','IssueType'
+        )
+        ORDER BY ORDINAL_POSITION;";
 
         public static readonly string GetDynamicFormConfiguration = @"
          select Distinct dfc.Id,dfc.plant,dfc.FormType,dfc.FieldName,dfc.FieldType,dfc.FieldLength,dfc.Mandatory,dfc.FieldElement,dfc.OptionDataResource,
