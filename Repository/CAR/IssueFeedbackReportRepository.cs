@@ -65,7 +65,15 @@ namespace Repository.CAR
 
         public async Task<IEnumerable<string>> getIssuerId(int plant, string FormNo)
         {
-            string query = string.Format(IssueFeedbackReportQuery.getIssuerId);
+            string query;
+            if (FormNo.StartsWith("NCR") || FormNo.StartsWith("QFR"))
+            {
+                query = string.Format(IssueFeedbackReportQuery.getIssuerIdForNCR);
+            }
+            else
+            {
+                query = string.Format(IssueFeedbackReportQuery.getIssuerId);
+            }
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<string>(query,new {plant ,FormNo});
         }

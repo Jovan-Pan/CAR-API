@@ -78,7 +78,7 @@ namespace Services.CAR
                             string Datadetails = MailBodyContentDetail.mailBodyContentDet;
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
-                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus);
+                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-", ""));
                             Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
                             Datadetails = Datadetails.Replace("@Product", mydata.Product);
                             //Datadetails = Datadetails.Replace("@Model", mydata.Model);
