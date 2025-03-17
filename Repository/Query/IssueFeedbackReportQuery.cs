@@ -11,7 +11,7 @@ namespace Repository.Query
         public static readonly string GetTotalRecord = @" select count (*) from IssueFeedback
         where Plant = @plant ";
 
-        public static readonly string getIssuerId = @" 
+        public static readonly string getIssuerIdForNCR = @" 
         SELECT distinct UserList
         FROM 
         (
@@ -37,7 +37,34 @@ namespace Repository.Query
         ) AS UnpivotedTable;
         ";
 
-        public static readonly string GetTotalRecordForEachStts = @" 
+        public static readonly string getIssuerId = @"
+        SELECT distinct UserList
+        FROM 
+        (
+            SELECT 
+                A.IssueBy, 
+                A.AcknowledgeBy, 
+                A.PDAActionBy, 
+                A.PDAAprovalBy, 
+                A.ReceiveActionBy, 
+                A.ReceiveAprovalBy, 
+                A.PDAReviewBy, 
+                A.ReviewBy,
+		        B.UseID
+            FROM 
+                IssueFeedback A inner join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
+
+            WHERE 
+                   Plant = @plant 
+                  AND A.FormNo = @FormNo AND B.FormNo = @FormNo 
+        ) AS SourceTable
+        UNPIVOT
+        (
+            UserList FOR UserType IN 
+            (IssueBy, AcknowledgeBy, PDAActionBy, PDAAprovalBy, ReceiveActionBy, ReceiveAprovalBy, PDAReviewBy, ReviewBy,UseID)
+        ) AS UnpivotedTable;"; 
+
+        public static readonly string GetTotalRecordForEachStts = @"
         SELECT 
             COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT' or status = 'SUBMITED-APPEAL' or status = 'RE-SUBMIT-APPEAL') THEN 1 END) AS Submitted,
             COUNT(CASE WHEN (status in ('OPEN','OPEN-REJECT','OPEN-APPEAL') ) THEN 1 END) AS [Open],

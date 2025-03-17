@@ -124,49 +124,51 @@ namespace Repository.CAR
             string queryLowerCase = DynamicFormConfigurationDto.Query.ToLower();
             string queryWithPlantReplaced;
 
-            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+            if (DynamicFormConfigurationDto.Query != "")
             {
-                string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
-                var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
-
-                HashSet<string> allowedParams = executedParameters
-                                      .Select(p => p.ToLower())
-                                      .ToHashSet();
-
-                var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
-                var foundParams = regex.Matches(DynamicFormConfigurationDto.Query)
-                                       .Select(match => match.Value.ToLower())
-                                       .ToHashSet();
-
-                var invalidParams = foundParams.Except(allowedParams);
-                if (invalidParams.Any())
+                if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
                 {
-                    return null;
+                    string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                    var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
+
+                    HashSet<string> allowedParams = executedParameters
+                                          .Select(p => p.ToLower())
+                                          .ToHashSet();
+
+                    var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                    var foundParams = regex.Matches(DynamicFormConfigurationDto.Query)
+                                           .Select(match => match.Value.ToLower())
+                                           .ToHashSet();
+
+                    var invalidParams = foundParams.Except(allowedParams);
+                    if (invalidParams.Any())
+                    {
+                        return null;
+                    }
+
+                    queryWithPlantReplaced = DynamicFormConfigurationDto.Query.ToLower()
+                                                .Replace("@plant", DynamicFormConfigurationDto.plant)
+                                                .Replace("@userid", $"'{DynamicFormConfigurationDto.userid}'");
+                }
+                else
+                {
+                    queryWithPlantReplaced = DynamicFormConfigurationDto.Query;
                 }
 
-                queryWithPlantReplaced = DynamicFormConfigurationDto.Query.ToLower()
-                                            .Replace("@plant", DynamicFormConfigurationDto.plant)
-                                            .Replace("@userid", $"'{DynamicFormConfigurationDto.userid}'");
+                string executedQuery = "USE " + DynamicFormConfigurationDto.DBResource + "; " + queryWithPlantReplaced;
+                try
+                {
+
+                    var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL Error: {ex.Message}");
+                    return Enumerable.Empty<DynamicFormConfigurationDto>();
+
+                }
             }
-            else
-            {
-                queryWithPlantReplaced = DynamicFormConfigurationDto.Query;
-            }
-            string executedQuery = "USE " + DynamicFormConfigurationDto.DBResource + "; " + queryWithPlantReplaced;
-
-            try
-            {
-
-                var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
-
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine($"SQL Error: {ex.Message}");
-                return null;
-
-            }
-
             var existingData = await conn.QueryFirstOrDefaultAsync<DynamicFormConfigurationDto>(CheckExistingFormType, new
             {
                 FormType = DynamicFormConfigurationDto.FormType,
@@ -344,49 +346,52 @@ namespace Repository.CAR
             string queryLowerCase = DynamicFormConfigurationDto.Query.ToLower();
             string queryWithPlantReplaced;
 
-            if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
+            if (DynamicFormConfigurationDto.Query != "")
             {
-                string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
-                var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
-
-                HashSet<string> allowedParams = executedParameters
-                                      .Select(p => p.ToLower())
-                                      .ToHashSet();
-
-                var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
-                var foundParams = regex.Matches(DynamicFormConfigurationDto.Query)
-                                       .Select(match => match.Value.ToLower())
-                                       .ToHashSet();
-
-                var invalidParams = foundParams.Except(allowedParams);
-                if (invalidParams.Any())
+                if (queryLowerCase.Contains("WHERE", StringComparison.OrdinalIgnoreCase))
                 {
-                    return null;
+                    string takeParameterDB = "SELECT AllowParameters FROM AllowParameters";
+                    var executedParameters = await conn.QueryAsync<string>(takeParameterDB);
+
+                    HashSet<string> allowedParams = executedParameters
+                                          .Select(p => p.ToLower())
+                                          .ToHashSet();
+
+                    var regex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+                    var foundParams = regex.Matches(DynamicFormConfigurationDto.Query)
+                                           .Select(match => match.Value.ToLower())
+                                           .ToHashSet();
+
+                    var invalidParams = foundParams.Except(allowedParams);
+                    if (invalidParams.Any())
+                    {
+                        return null;
+                    }
+
+                    queryWithPlantReplaced = DynamicFormConfigurationDto.Query.ToLower()
+                                                .Replace("@plant", DynamicFormConfigurationDto.plant)
+                                                .Replace("@userid", $"'{DynamicFormConfigurationDto.userid}'");
+                }
+                else
+                {
+                    queryWithPlantReplaced = DynamicFormConfigurationDto.Query;
+                }
+                string executedQuery = "USE " + DynamicFormConfigurationDto.DBResource + "; " + queryWithPlantReplaced;
+
+                try
+                {
+
+                    var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
+
                 }
 
-                queryWithPlantReplaced = DynamicFormConfigurationDto.Query.ToLower()
-                                            .Replace("@plant", DynamicFormConfigurationDto.plant)
-                                            .Replace("@userid", $"'{DynamicFormConfigurationDto.userid}'");
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL Error: {ex.Message}");
+                    return null;
+
+                }
             }
-            else
-            {
-                queryWithPlantReplaced = DynamicFormConfigurationDto.Query;
-            }
-            string executedQuery = "USE " + DynamicFormConfigurationDto.DBResource + "; " + queryWithPlantReplaced;
-
-            try
-            {
-
-                var executedQueryResult = await conn.QueryAsync<dynamic>(executedQuery);
-
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine($"SQL Error: {ex.Message}");
-                return null;
-
-            }
-
             return await conn.QueryAsync<DynamicFormConfigurationDto>(query, new { OptionDataResource = DynamicFormConfigurationDto.OptionDataResource, id = DynamicFormConfigurationDto.Id, userId = DynamicFormConfigurationDto.userid, sequence = DynamicFormConfigurationDto.Sequence, FormType = DynamicFormConfigurationDto.FormType, FieldElement = DynamicFormConfigurationDto.FieldElement ,DBResource = DynamicFormConfigurationDto.DBResource, Query = DynamicFormConfigurationDto.Query, DataOption = DynamicFormConfigurationDto.DataOption, plant = DynamicFormConfigurationDto.plant});
         }
 
