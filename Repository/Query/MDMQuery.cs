@@ -207,7 +207,7 @@ namespace Repository.Query
                                                         where A.UseDep = @Dept and vendor = @Vendor and A.DelFlag = 0 and B.Delflag = 0 and plant = @plant";
 
         public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr A
-                                                        left join Dept_Usr B on A.useID = B.useID and A.UseDep = B.Dept 
-                                                        where A.UseDep = @Dept and A.Delflag = 0 and B.isDeleted= 0 and B.plant = @plant and B.System = 'CAR'";
+                                                        left join Dept_Usr B on A.useID = B.useID
+                                                        where B.UseDep = @Dept and A.Delflag = 0 and B.isDeleted= 0 and B.plant = @plant and B.System = 'CAR'";
     }
 }
