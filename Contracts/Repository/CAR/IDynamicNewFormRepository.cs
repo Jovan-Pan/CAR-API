@@ -1,4 +1,5 @@
 ﻿using Entities.CAR;
+using Entities.MasterData;
 using Entities.ParamRequest;
 using Microsoft.Data.SqlClient;
 using System;
@@ -19,7 +20,7 @@ namespace Contracts.Repository.CAR
         Task<int> CreateNewIssueFeedBcakWithVers(string OldFormNumber, string NewFormNumber, string UserId, string UserName, SqlTransaction transaction);
 
         Task<int> InsertDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction);
-        Task<int> InsertIssueFeedBackEmailRecipient(DynamicFormParameterDTO mydata, SqlTransaction transaction);
+        Task<int> InsertIssueFeedBackEmailRecipient(DynamicFormParameterDTO mydata, IEnumerable<UsrDto> userList, SqlTransaction transaction);
         Task<int> InsertDataAtchIssuer(DynamicFormParameterDTO mydata, SqlTransaction transaction);
         Task<int> issuerVoid(DynamicFormParameterDTO mydata, SqlTransaction transaction);
         Task<int> issuerUpdateDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction);

@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository.CAR;
 using Dapper;
 using Entities.CAR;
+using Entities.MasterData;
 using Entities.ParamRequest;
 using Microsoft.Data.SqlClient;
 using Repository.Query;
@@ -148,7 +149,7 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
-        public async Task<int> InsertIssueFeedBackEmailRecipient(DynamicFormParameterDTO mydata, SqlTransaction transaction)
+        public async Task<int> InsertIssueFeedBackEmailRecipient(DynamicFormParameterDTO mydata, IEnumerable<UsrDto> userList, SqlTransaction transaction)
         {
             string query = DynamicNewFormQuery.InsertIssueFeedBackEmailRecipient;
             var conn = transaction.Connection;
@@ -169,8 +170,25 @@ namespace Repository.CAR
                 affectedRows += await conn.ExecuteAsync(query, dParams, transaction);
             }
 
+            if(!string.IsNullOrEmpty(mydata.VendorCode))
+            {
+                foreach (var user in userList)
+                {
+                    var dParams = new Dapper.DynamicParameters();
+                    dParams.Add("@FormNumber", mydata.FormNumber);              // Add FormNumber parameter
+                    dParams.Add("@UseID", user.UseID);
+                    dParams.Add("@UseNam", user.UseNam);
+                    dParams.Add("@UseEmail", user.UseEmail);
+                    dParams.Add("@UserLevel", "IssueUserVendor");
+
+                    // Execute query for each recipient
+                    affectedRows += await conn.ExecuteAsync(query, dParams, transaction);
+                }
+            }
+
             return affectedRows;
         }
+
         public async Task<int> InsertDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
             //string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
