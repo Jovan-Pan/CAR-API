@@ -45,12 +45,12 @@ namespace Repository.Query
 
         public static readonly string GenerateNewFormNo = @"
       --declare @FormType nvarchar(20) = 'CAR', @plant int = 2100
-         declare @lastformno nvarchar(20) =  (select MAX(REPLACE(FormNo,@FormType,'')) 
+         declare @lastformno nvarchar(30) =  (select MAX(REPLACE(FormNo,@FormType,'')) 
 								         from IssueFeedback 
 								         where Plant=@plant and FormType=@FormType 
 								         and left(replace(FormNo,(@FormType+CONVERT(nvarchar(max),@plant)),''),8) = (format(getdate(),'yyyyMMdd')) )
         set @lastformno = (SELECT LEFT(@lastformno, (LEN(@lastformno) - CHARINDEX('-', REVERSE(@lastformno)) + 1) - 1))
-        declare @newformno nvarchar(20)
+        declare @newformno nvarchar(30)
         if(@lastformno is null)
         begin
             set @newformno = (select concat(@FormType,@plant,format(getdate(),'yyyyMMdd'),'0001'))

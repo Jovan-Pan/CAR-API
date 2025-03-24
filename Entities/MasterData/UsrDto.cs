@@ -12,6 +12,6 @@ namespace Entities.MasterData
         public string UseID { get; set; }
         public string UseNam { get; set; }
         public string? UseEmail { get; set; }
-        public string UserLevel {get; set;}
+        public string? UserLevel {get; set;}
     }
 }

@@ -195,4 +195,11 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<UsrDto>(Processquery, new {Vendor = data.VendorCode, Dept = data.Dept,plant =data.UserPlant } );
     }
+    public async Task<IEnumerable<UsrDto>> CheckUserVSVend(DynamicFormParameterDTO data)
+    { 
+        string query = MDMQuery.CheckUserVSVend;
+        await using var conn = dbContext.MDMConnection();
+        var result = await conn.QueryAsync<UsrDto>(query, data);
+        return result ?? Enumerable.Empty<UsrDto>();
+    }
 }

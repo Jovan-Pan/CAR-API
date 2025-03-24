@@ -14,6 +14,8 @@ using Microsoft.Data.SqlClient;
 using Services.Helper;
 using Services.Resources;
 using Contracts.Repository.MasterData;
+using Microsoft.IdentityModel.Tokens;
+using Entities.MasterData;
 
 namespace Services.CAR
 {
@@ -37,12 +39,24 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
+            IEnumerable<UsrDto> userList = Enumerable.Empty<UsrDto>();
+
+            if (!string.IsNullOrEmpty(mydata.VendorCode))
+            {
+                userList = await data.MDM.CheckUserVSVend(mydata) ?? Enumerable.Empty<UsrDto>();
+                if (!userList.Any())
+                {
+                    return ApiResponse<string>.FailResponse("Please Maintain Vendor data in MDM USERS Form");
+                }
+
+            }
+
             string newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
             mydata.FormNumber = newformno;
 
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
-            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, transaction);
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata,userList, transaction);
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
             string pwd = basepathconfig.First().password;

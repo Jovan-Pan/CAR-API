@@ -31,4 +31,5 @@ public interface IMDMRepository
     Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID);
     Task<bool> GetisSpAdmin(int plant, string UseID);
     Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data);
+    Task<IEnumerable<UsrDto>> CheckUserVSVend(DynamicFormParameterDTO data);
 }
