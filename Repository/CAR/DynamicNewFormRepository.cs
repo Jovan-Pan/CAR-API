@@ -151,38 +151,91 @@ namespace Repository.CAR
 
         public async Task<int> InsertIssueFeedBackEmailRecipient(DynamicFormParameterDTO mydata, IEnumerable<UsrDto> userList, SqlTransaction transaction)
         {
-            string query = DynamicNewFormQuery.InsertIssueFeedBackEmailRecipient;
+            string insertQuery = DynamicNewFormQuery.InsertIssueFeedBackEmailRecipient;
+            string deleteQueryAll = "DELETE FROM IssueFeedBackEmailRecipient WHERE FormNo = @FormNumber";
+            string deleteQueryByUserLevel = "DELETE FROM IssueFeedBackEmailRecipient WHERE FormNo = @FormNumber AND UserLevel = @UserLevel";
+            string deleteQueryPartial = "DELETE FROM IssueFeedBackEmailRecipient WHERE FormNo = @FormNumber AND UserLevel = @UserLevel AND UseID NOT IN @ExistingUserIDs";
+            string selectQuery = "SELECT UseID, UserLevel FROM IssueFeedBackEmailRecipient WHERE FormNo = @FormNumber";
+
             var conn = transaction.Connection;
-            if (mydata.IssueFeedBackEmailRecipients == null || !mydata.IssueFeedBackEmailRecipients.Any())
+
+            if (mydata.IssueFeedBackEmailRecipients == null)
+            {
+                await conn.ExecuteAsync(deleteQueryAll, new { FormNumber = mydata.FormNumber }, transaction);
                 return 0;
+            }
+
+            var existingUsers = (await conn.QueryAsync<(string UseID, string UserLevel)>(
+                selectQuery, new { FormNumber = mydata.FormNumber }, transaction
+            )).ToList();
+
+            var existingUserDict = existingUsers.ToDictionary(u => $"{u.UseID}-{u.UserLevel}");
+
+            var newUsersByLevel = mydata.IssueFeedBackEmailRecipients
+                .Where(r => !string.IsNullOrEmpty(r.UseID))
+                .GroupBy(r => r.UserLevel)
+                .ToDictionary(g => g.Key, g => g.Select(u => u.UseID).ToList());
+
+
+            var existingUserLevels = existingUsers.Select(u => u.UserLevel).Distinct().ToList();
+
+
+            foreach (var userLevel in existingUserLevels)
+            {
+                if (!newUsersByLevel.ContainsKey(userLevel))
+                {
+                    await conn.ExecuteAsync(deleteQueryByUserLevel, new { FormNumber = mydata.FormNumber, UserLevel = userLevel }, transaction);
+                }
+            }
+
+            foreach (var kvp in newUsersByLevel)
+            {
+                var userLevel = kvp.Key;
+                var userIds = kvp.Value;
+
+                await conn.ExecuteAsync(deleteQueryPartial, new
+                {
+                    FormNumber = mydata.FormNumber,
+                    UserLevel = userLevel,
+                    ExistingUserIDs = userIds.Any() ? userIds : new List<string> { "-1" }
+                }, transaction);
+            }
 
             var affectedRows = 0;
             foreach (var recipient in mydata.IssueFeedBackEmailRecipients)
             {
-                var dParams = new Dapper.DynamicParameters();
-                dParams.Add("@FormNumber", mydata.FormNumber);              // Add FormNumber parameter
-                dParams.Add("@UseID", recipient.UseID);
-                dParams.Add("@UseNam", recipient.UseNam);
-                dParams.Add("@UseEmail", recipient.UseEmail);
-                dParams.Add("@UserLevel", recipient.UserLevel);
+                string key = $"{recipient.UseID}-{recipient.UserLevel}";
 
-                // Execute query for each recipient
-                affectedRows += await conn.ExecuteAsync(query, dParams, transaction);
+                if (!existingUserDict.ContainsKey(key))
+                {
+                    var dParams = new Dapper.DynamicParameters();
+                    dParams.Add("@FormNumber", mydata.FormNumber);
+                    dParams.Add("@UseID", recipient.UseID);
+                    dParams.Add("@UseNam", recipient.UseNam);
+                    dParams.Add("@UseEmail", recipient.UseEmail);
+                    dParams.Add("@UserLevel", recipient.UserLevel);
+
+                    affectedRows += await conn.ExecuteAsync(insertQuery, dParams, transaction);
+                }
             }
 
-            if(!string.IsNullOrEmpty(mydata.VendorCode))
+            if (!string.IsNullOrEmpty(mydata.VendorCode))
             {
                 foreach (var user in userList)
                 {
-                    var dParams = new Dapper.DynamicParameters();
-                    dParams.Add("@FormNumber", mydata.FormNumber);              // Add FormNumber parameter
-                    dParams.Add("@UseID", user.UseID);
-                    dParams.Add("@UseNam", user.UseNam);
-                    dParams.Add("@UseEmail", user.UseEmail);
-                    dParams.Add("@UserLevel", "IssueUserVendor");
+                    string key = $"{user.UseID}-IssueUserVendor";
 
-                    // Execute query for each recipient
-                    affectedRows += await conn.ExecuteAsync(query, dParams, transaction);
+                    if (!existingUserDict.ContainsKey(key))
+                    {
+                        var dParams = new Dapper.DynamicParameters();
+                        dParams.Add("@FormNumber", mydata.FormNumber);
+                        dParams.Add("@UseID", user.UseID);
+                        dParams.Add("@UseNam", user.UseNam);
+                        dParams.Add("@UseEmail", user.UseEmail);
+                        dParams.Add("@UserLevel", "IssueUserVendor");
+
+                        affectedRows += await conn.ExecuteAsync(insertQuery, dParams, transaction);
+                    }
                 }
             }
 
@@ -191,12 +244,11 @@ namespace Repository.CAR
 
         public async Task<int> InsertDataIssueFeedback(DynamicFormParameterDTO mydata, SqlTransaction transaction)
         {
-            //string queryMappingColumnList = "SELECT DISTINCT FieldName, UIDisplay From TableMappingFieldName Where Delflag = 0";
+            string checkExistDataQuery = "SELECT FormNo From ISSUEFEEDBACK Where FORMNO =@FormNo";
             var conn = transaction.Connection;
-            //var columnMappings = (await conn.QueryAsync<(string FieldName, string UIDisplay)>(queryMappingColumnList, transaction: transaction))
-            //            //.ToDictionary(x => x.FieldName, x => x.UIDisplay);
+            string? existingCount = await conn.ExecuteScalarAsync<string>(checkExistDataQuery, new { FormNo = mydata.FormNumber }, transaction);
             var parameters = GetSqlParametersFromEntity(mydata);
-            var query = BuildInsertQuery("IssueFeedback", parameters);
+            var query = BuildInsertQuery("IssueFeedback", parameters, existingCount);
             var dParams = new Dapper.DynamicParameters();
             foreach (var param in parameters)
             {
@@ -265,7 +317,7 @@ namespace Repository.CAR
 
             return sqlParameters;
         }
-        public static string BuildInsertQuery(string tableName, List<SqlParameter> parameters)
+        public static string BuildInsertQuery(string tableName, List<SqlParameter> parameters, string existingCount)
         {
             var columnReplacements = new Dictionary<string, string>
             {
@@ -279,24 +331,46 @@ namespace Repository.CAR
             {
                 "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@DetectionDate"
             };
-
-            var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
-            var columns = string.Join(", ", filteredParameters.Select(p =>
+            var excludedParametersForUpdate = new HashSet<string>
             {
-                var paramName = p.ParameterName.Substring(1);  // Remove '@' from parameter names
-                return columnReplacements.ContainsKey(paramName) ? columnReplacements[paramName] : paramName;
-            }));
-            var values = string.Join(", ", filteredParameters.Select(p => p.ParameterName));
+                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@DetectionDate","@FormNumber","@FormType"
+            };
+
+            //var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
 
             var detectionDateParam = parameters.FirstOrDefault(p => p.ParameterName == "@DetectionDate");
-
             string detectionDateValue = detectionDateParam == null || detectionDateParam.Value == null ||
                                         string.IsNullOrEmpty(detectionDateParam.Value.ToString())
                                         ? "GETDATE()" // Use current date if missing or empty
                                         : "@DetectionDate"; // Use provided value if exists
 
-            return $"INSERT INTO {tableName} (Plant,DetectionDate, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant,{detectionDateValue}, {values},@IssueStatus,@MainStatus,@UserId,@UserName,GETDATE())";
+            if (existingCount == null)
+            {
+                var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
 
+                var columns = string.Join(", ", filteredParameters.Select(p =>
+                {
+                    var paramName = p.ParameterName.Substring(1);  // Remove '@' from parameter names
+                    return columnReplacements.ContainsKey(paramName) ? columnReplacements[paramName] : paramName;
+                }));
+                var values = string.Join(", ", filteredParameters.Select(p => p.ParameterName));
+
+                return $"INSERT INTO {tableName} (Plant,DetectionDate, {columns}, Status, MainStatus, IssueBy, IssueByName, IssueDate) VALUES (@UserPlant,{detectionDateValue}, {values},@IssueStatus,@MainStatus,@UserId,@UserName,GETDATE())";
+            }
+            else
+            {
+                var filteredParameters = parameters.Where(p => !excludedParametersForUpdate.Contains(p.ParameterName)).ToList();
+
+                var setClause = string.Join(", ", filteredParameters.Select(p =>
+                {
+                    var paramName = p.ParameterName.Substring(1); // Hilangkan '@'
+                    var columnName = columnReplacements.ContainsKey(paramName) ? columnReplacements[paramName] : paramName;
+                    return $"{columnName} = {p.ParameterName}";
+                }));
+
+                return $"Update {tableName} set {setClause}, Status = @IssueStatus, MainStatus =@MainStatus, IssueBy =@UserId, IssueByName =@UserName, IssueDate = GETDATE() WHERE FORMNO =@FormNumber";
+
+            }
         }
 
         public static string BuildUpdateQuery(string tableName, List<SqlParameter> parameters)

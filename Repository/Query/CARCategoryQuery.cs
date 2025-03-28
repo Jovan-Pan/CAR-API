@@ -11,17 +11,17 @@ namespace Repository.Query
         public static readonly string GetCARCategory = @"
         SELECT DISTINCT ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM CARCategory
-        WHERE 1=1";
+        WHERE Plant =@Plant";
 
         public static readonly string SearchCARCategory = @"
         SELECT DISTINCT ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM CARCategory
-        WHERE CARCategory LIKE '%' + @SearchADV + '%'";
+        WHERE Plant =@Plant and CARCategory LIKE '%' + @SearchADV + '%'";
 
         public static readonly string SearchCARCategoryInDB = @"
         SELECT DISTINCT ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM CARCategory
-        WHERE CARCategory LIKE '%' + @search + '%'";
+        WHERE Plant =@Plant and CARCategory LIKE '%' + @search + '%'";
 
         public static readonly string InsertNewCARCategory = @"
         INSERT INTO CARCategory (CARCategory, Plant, CreatedBy, CreatedByName, CreatedDate) 

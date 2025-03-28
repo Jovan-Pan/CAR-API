@@ -50,10 +50,12 @@ namespace Services.CAR
                 }
 
             }
-
-            string newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
-            mydata.FormNumber = newformno;
-
+            string newformno= mydata.FormNumber;
+            if (string.IsNullOrEmpty(mydata.FormNumber))
+            {
+                newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
+                mydata.FormNumber = newformno;
+            }
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata,userList, transaction);

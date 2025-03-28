@@ -19,15 +19,15 @@ namespace Repository.MasterData
 {
         internal sealed class CARCategoryRepository(DbContext dbContext) : ICARCategoryRepository
         {
-            public async Task<IEnumerable<CARCategoryDto>> GetCARCategory(string search, string SearchADV, bool delflag)
+            public async Task<IEnumerable<CARCategoryDto>> GetCARCategory(GETCARCategory GETCARCategory)
             {
                 string query;
 
-                if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+                if (string.IsNullOrEmpty(GETCARCategory.search) && string.IsNullOrEmpty(GETCARCategory.SearchADV))
                 {
                     query = CARCategoryQuery.GetCARCategory;
                 }
-                else if (!string.IsNullOrEmpty(SearchADV))
+                else if (!string.IsNullOrEmpty(GETCARCategory.SearchADV))
                 {
                     query = CARCategoryQuery.SearchCARCategory;
                 }
@@ -36,12 +36,12 @@ namespace Repository.MasterData
                     query = CARCategoryQuery.SearchCARCategoryInDB;
                 }
 
-                if (!delflag)
+                if (!GETCARCategory.delflag)
                 {
                     query += " and DelFlag = 0";
                 }
                 await using var conn = dbContext.CARConnection();
-                return await conn.QueryAsync<CARCategoryDto>(query, new { search = search, SearchADV = SearchADV });
+                return await conn.QueryAsync<CARCategoryDto>(query, new { search = GETCARCategory.search, SearchADV = GETCARCategory.SearchADV, plant = GETCARCategory.plant });
             }
 
             public async Task<IEnumerable<CARCategoryDto>> InsertCARCategory(CRUDCARCategoryDto CRUDCARCategoryDto)
