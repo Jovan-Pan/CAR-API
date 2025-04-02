@@ -184,10 +184,10 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         {
             Processquery = MDMQuery.GetUsr;
         }
-        else if(!string.IsNullOrEmpty(data.VendorCode) && data.Dept == "VEND")
-        {
-            Processquery = MDMQuery.GetUsrForVndr;
-        }
+        //else if(!string.IsNullOrEmpty(data.VendorCode) && data.Dept == "VEND")
+        //{
+        //    Processquery = MDMQuery.GetUsrForVndr;
+        //}
         else
         {
             Processquery = MDMQuery.GetUsrForDept;
