@@ -11,9 +11,9 @@ namespace WebApi.Controllers
     public class TypeofcontraventionController(IServiceManager business) : Controller
     {
         [HttpGet(nameof(GetTypeofcontravention))]
-        public async Task<IActionResult> GetTypeofcontravention(string? search, string? SearchADV, bool delflag)
+        public async Task<IActionResult> GetTypeofcontravention([FromQuery] GETTypeofcontravention GETTypeofcontravention)
         {
-            var result = await business.Typeofcontravention.GetTypeofcontravention(search, SearchADV, delflag);
+            var result = await business.Typeofcontravention.GetTypeofcontravention(GETTypeofcontravention);
             return Ok(result);
 
         }

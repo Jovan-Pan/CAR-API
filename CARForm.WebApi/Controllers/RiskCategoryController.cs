@@ -11,9 +11,9 @@ namespace WebApi.Controllers
     public class RiskCategoryController(IServiceManager business) : Controller
     {
         [HttpGet(nameof(GetRiskCategory))]
-        public async Task<IActionResult> GetRiskCategory(string? search, string? SearchADV, bool delflag)
+        public async Task<IActionResult> GetRiskCategory([FromQuery] GETRiskCategory GETRiskCategory)
         {
-            var result = await business.RiskCategory.GetRiskCategory(search, SearchADV, delflag);
+            var result = await business.RiskCategory.GetRiskCategory(GETRiskCategory);
             return Ok(result);
 
         }

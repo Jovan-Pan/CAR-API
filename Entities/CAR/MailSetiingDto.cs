@@ -21,4 +21,12 @@ namespace Entities.CAR
         public string? updatedByName { get; set; }
         public DateTime? updatedDate { get; set; }
     }
+    public class GETMailSettings
+    {
+        public string? search { get; set; }
+        public string? ATsearchADV { get; set; }
+        public string? ATDsearchADV { get; set; }
+        public bool delflag { get; set; }
+        public string? plant { get; set; }
+    }
 }

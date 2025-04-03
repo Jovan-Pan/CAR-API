@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Entities.CAR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 
@@ -18,13 +19,13 @@ namespace WebApi.Controllers
         }
 
         [HttpGet(nameof(GetImmidateAction))]
-        public async Task<IActionResult> GetImmidateAction(string? search,string? SearchADV,bool delflag)
+        public async Task<IActionResult> GetImmidateAction([FromQuery] GETImmidateAction GETImmidateAction)
         {
-            var result = await business.ImmAct.GetImmidateAction(search, SearchADV, delflag);
+            var result = await business.ImmAct.GetImmidateAction(GETImmidateAction);
             return Ok(result);
         }
         [HttpPost(nameof(InsertNewImmidateAction))]
-        public async Task<IActionResult> InsertNewImmidateAction([FromForm] string ImmidateName, [FromForm] int plant, [FromForm] string userId)
+        public async Task<IActionResult> InsertNewImmidateAction([FromForm] string ImmidateName, [FromForm] int plant, [FromForm] string? userId)
         {
             var result = await business.ImmAct.InsertNewImmidateAction(ImmidateName, plant, userId);
             return Ok(result);

@@ -116,9 +116,9 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, (mailmsg.Length == 0 ? "" : " Send Mail Fail : " + mailmsg));
         }
 
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(GETMailSettings GETMailSettings)
         {
-            var result = await data.SMS.GetSendMailSetting(search, ATsearchADV, ATDsearchADV, delflag);
+            var result = await data.SMS.GetSendMailSetting(GETMailSettings);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
 

@@ -9,7 +9,7 @@ namespace Contracts.Repository.MasterData
 {
     public interface IPossibleHazardsRepository
     {
-        Task<IEnumerable<PossibleHazardsDto>> GetPossibleHazards(string search, string SearchADV, bool delflag);
+        Task<IEnumerable<PossibleHazardsDto>> GetPossibleHazards(GETPossibleHazards GETPossibleHazards);
         Task<IEnumerable<PossibleHazardsDto>> InsertNewData(CRUDPossibleHazardsDto CRUDPossibleHazardsDto);
         Task<IEnumerable<PossibleHazardsDto>> UpdateData(CRUDPossibleHazardsDto CRUDPossibleHazardsDto);
         Task<IEnumerable<PossibleHazardsDto>> DataDelete(CRUDPossibleHazardsDto CRUDPossibleHazardsDto);

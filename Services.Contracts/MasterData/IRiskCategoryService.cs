@@ -11,7 +11,7 @@ namespace Services.Contracts.MasterData
 {
     public interface IRiskCategoryService
     {
-        Task<ApiResponse<IEnumerable<RiskCategoryDto>>> GetRiskCategory(string? search, string? SearchADV, bool delflag);
+        Task<ApiResponse<IEnumerable<RiskCategoryDto>>> GetRiskCategory(GETRiskCategory GETRiskCategory);
         Task<ApiResponse<IEnumerable<RiskCategoryDto>>> InsertNewData(CRUDRiskCategoryDto CRUDRiskCategoryDto);
         Task<ApiResponse<IEnumerable<RiskCategoryDto>>> UpdateData(CRUDRiskCategoryDto CRUDRiskCategoryDto);
         Task<ApiResponse<IEnumerable<RiskCategoryDto>>> DataDelete(CRUDRiskCategoryDto CRUDRiskCategoryDto);

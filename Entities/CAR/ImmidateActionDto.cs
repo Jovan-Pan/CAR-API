@@ -17,4 +17,11 @@ namespace Entities.CAR
         public DateTime? UpdatedDate { get; set; }
         public bool DelFlag { get; set; }
     }
+    public class GETImmidateAction
+    {
+        public string? search { get; set; }
+        public string? SearchADV { get; set; }
+        public bool delflag { get; set; }
+        public string? plant { get; set; }
+    }
 }

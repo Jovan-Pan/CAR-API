@@ -11,7 +11,7 @@ namespace Services.Contracts.MasterData
 {
     public interface IPossibleHazardsService
     {
-        Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> GetPossibleHazards(string? search, string? SearchADV, bool delflag);
+        Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> GetPossibleHazards(GETPossibleHazards GETPossibleHazards);
         Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> InsertNewData(CRUDPossibleHazardsDto CRUDPossibleHazardsDto);
         Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> UpdateData(CRUDPossibleHazardsDto CRUDPossibleHazardsDto);
         Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> DataDelete(CRUDPossibleHazardsDto CRUDPossibleHazardsDto);

@@ -23,9 +23,9 @@ namespace Services.MasterData
             var result = await data.ImmAct.getImmidateActionList(plant);
             return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> GetImmidateAction(string? search, string? SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> GetImmidateAction(GETImmidateAction GETImmidateAction)
         {
-            var result = await data.ImmAct.GetImmidateAction(search, SearchADV,delflag);
+            var result = await data.ImmAct.GetImmidateAction(GETImmidateAction);
             return ApiResponse<IEnumerable<ImmidateActionDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<ImmidateActionDto>>> InsertNewImmidateAction(string ImmidateName, int plant, string userId)

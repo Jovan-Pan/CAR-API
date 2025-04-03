@@ -26,9 +26,9 @@ namespace WebApi.Controllers
         }
         
         [HttpGet(nameof(GetSendMailSetting))]
-        public async Task<IActionResult> GetSendMailSetting(string? search, string? ATsearchADV,  string? ATDsearchADV, bool delflag)
+        public async Task<IActionResult> GetSendMailSetting([FromQuery] GETMailSettings GETMailSettings)
         {
-            var result = await business.sendmailsetting.GetSendMailSetting(search, ATsearchADV, ATDsearchADV, delflag);
+            var result = await business.sendmailsetting.GetSendMailSetting(GETMailSettings);
             return Ok(result);
         }
         
