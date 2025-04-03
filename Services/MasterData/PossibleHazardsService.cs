@@ -15,9 +15,9 @@ namespace Services.MasterData
 {
     internal sealed class PossibleHazardsService(IDataManager data, ICacheManager memCache, ILocalizationService localization) : IPossibleHazardsService
     {
-        public async Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> GetPossibleHazards(string? search, string? SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<PossibleHazardsDto>>> GetPossibleHazards(GETPossibleHazards GETPossibleHazards)
         {
-            var result = await data.PossibleHazards.GetPossibleHazards(search, SearchADV, delflag);
+            var result = await data.PossibleHazards.GetPossibleHazards(GETPossibleHazards);
             return ApiResponse<IEnumerable<PossibleHazardsDto>>.SuccessResponse(result);
         }
 

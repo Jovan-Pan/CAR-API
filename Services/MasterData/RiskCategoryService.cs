@@ -15,9 +15,9 @@ namespace Services.MasterData
 {
     internal sealed class RiskCategoryService(IDataManager data, ICacheManager memCache, ILocalizationService localization) : IRiskCategoryService
     {
-        public async Task<ApiResponse<IEnumerable<RiskCategoryDto>>> GetRiskCategory(string? search, string? SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<RiskCategoryDto>>> GetRiskCategory(GETRiskCategory GETRiskCategory)
         {
-            var result = await data.RiskCategory.GetRiskCategory(search, SearchADV, delflag);
+            var result = await data.RiskCategory.GetRiskCategory(GETRiskCategory);
             return ApiResponse<IEnumerable<RiskCategoryDto>>.SuccessResponse(result);
         }
 

@@ -11,7 +11,7 @@ namespace Services.Contracts.MasterData
 {
     public interface ITypeofcontraventionService
     {
-        Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> GetTypeofcontravention(string? search, string? SearchADV, bool delflag);
+        Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> GetTypeofcontravention(GETTypeofcontravention GETTypeofcontravention);
         Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> InsertNewData(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto);
         Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> UpdateData(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto);
         Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> DataDelete(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto);

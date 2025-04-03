@@ -14,20 +14,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts.Repository.MasterData;
 using Dapper;
+using System.Numerics;
 
 namespace Repository.MasterData
 {
     internal sealed class RiskCategoryRepository(DbContext dbContext) :IRiskCategoryRepository
     {
-        public async Task<IEnumerable<RiskCategoryDto>> GetRiskCategory(string search, string SearchADV, bool delflag)
+        public async Task<IEnumerable<RiskCategoryDto>> GetRiskCategory(GETRiskCategory GETRiskCategory)
         {
             string query;
 
-            if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+            if (string.IsNullOrEmpty(GETRiskCategory.search) && string.IsNullOrEmpty(GETRiskCategory.SearchADV))
             {
                 query = RiskCategoryQuery.GetRiskCategory;
             }
-            else if (!string.IsNullOrEmpty(SearchADV))
+            else if (!string.IsNullOrEmpty(GETRiskCategory.SearchADV))
             {
                 query = RiskCategoryQuery.SearchRiskCategory;
             }
@@ -36,12 +37,12 @@ namespace Repository.MasterData
                 query = RiskCategoryQuery.SearchRiskCategoryInDB;
             }
 
-            if (!delflag)
+            if (!GETRiskCategory.delflag)
             {
                 query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<RiskCategoryDto>(query, new { search = search, SearchADV = SearchADV });
+            return await conn.QueryAsync<RiskCategoryDto>(query, new { search = GETRiskCategory.search, SearchADV = GETRiskCategory.SearchADV, plant = GETRiskCategory.plant });
         }
 
         public async Task<IEnumerable<RiskCategoryDto>> InsertNewData(CRUDRiskCategoryDto CRUDRiskCategoryDto)
@@ -171,12 +172,24 @@ namespace Repository.MasterData
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL(RiskCategory, '') = '' OR ISNULL(Plant, '') = ''");
-            condRemark.Add("Null Mandatory Data");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Is required");
+            conditions.Add("ISNULL(RiskCategory, '') = ''");
+            condRemark.Add("RiskCategory Is required");
             conditions.Add("LEN(RiskCategory) > 100");
             condRemark.Add("RiskCategory maximal 100 characters");
 
-            string uniqueField = "RiskCategory";
+            string uniqueField = "Plant,RiskCategory";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 
@@ -276,16 +289,14 @@ namespace Repository.MasterData
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                        WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 
@@ -307,6 +318,7 @@ namespace Repository.MasterData
                     List<Dictionary<string, object>> dataListInValid = invalidData
                      .Select(row => new Dictionary<string, object>(row))
                      .ToList();
+
 
                     // Count valid data
                     var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp", transaction: transaction);

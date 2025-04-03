@@ -11,7 +11,7 @@ namespace Contracts.Repository.MasterData
     public interface IImmidateActionRepository
     {
         Task<IEnumerable<string>> getImmidateActionList(int plant);
-        Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(string search, string SearchADV,bool delflag);
+        Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(GETImmidateAction GETImmidateAction);
         Task<IEnumerable<ImmidateActionDto>> InsertNewImmidateAction(string ImmidateName, int plant, string userId);
         Task<IEnumerable<ImmidateActionDto>> UpdateImmidateAction(string ImmidateName, int id, string userId);
         Task<IEnumerable<ImmidateActionDto>> DataDelete(int id, string userId);

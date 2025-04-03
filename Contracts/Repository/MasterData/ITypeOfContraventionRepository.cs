@@ -9,7 +9,7 @@ namespace Contracts.Repository.MasterData
 {
     public interface ITypeOfContraventionRepository
     {
-        Task<IEnumerable<TypeofcontraventionDto>> GetTypeofcontravention(string search, string SearchADV, bool delflag);
+        Task<IEnumerable<TypeofcontraventionDto>> GetTypeofcontravention(GETTypeofcontravention GETTypeofcontravention);
         Task<IEnumerable<TypeofcontraventionDto>> InsertNewData(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto);
         Task<IEnumerable<TypeofcontraventionDto>> UpdateData(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto);
         Task<IEnumerable<TypeofcontraventionDto>> DataDelete(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto);

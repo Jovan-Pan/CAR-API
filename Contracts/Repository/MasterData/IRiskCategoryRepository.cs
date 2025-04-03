@@ -9,7 +9,7 @@ namespace Contracts.Repository.MasterData
 {
     public interface IRiskCategoryRepository
     {
-        Task<IEnumerable<RiskCategoryDto>> GetRiskCategory(string search, string SearchADV, bool delflag);
+        Task<IEnumerable<RiskCategoryDto>> GetRiskCategory(GETRiskCategory GETRiskCategory);
         Task<IEnumerable<RiskCategoryDto>> InsertNewData(CRUDRiskCategoryDto CRUDRiskCategoryDto);
         Task<IEnumerable<RiskCategoryDto>> UpdateData(CRUDRiskCategoryDto CRUDRiskCategoryDto);
         Task<IEnumerable<RiskCategoryDto>> DataDelete(CRUDRiskCategoryDto CRUDRiskCategoryDto);

@@ -11,17 +11,17 @@ namespace Repository.Query
         public static readonly string GetTypeofcontravention = @"
         SELECT DISTINCT ID, Plant, TypeOfContravention, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM TypeOfContravention
-        WHERE 1=1";
+        WHERE plant = @plant ";
 
         public static readonly string SearchDataADV = @"
         SELECT DISTINCT ID, Plant, TypeOfContravention, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM TypeOfContravention
-        WHERE TypeOfContravention LIKE '%' + @SearchADV + '%'";
+        WHERE plant = @plant and TypeOfContravention LIKE '%' + @SearchADV + '%' ";
 
         public static readonly string SearchDataInDB = @"
         SELECT DISTINCT ID, Plant, TypeOfContravention, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM TypeOfContravention
-        WHERE TypeOfContravention LIKE '%' + @search + '%'";
+        WHERE plant = @plant and TypeOfContravention LIKE '%' + @search + '%' ";
 
         public static readonly string InsertNewData = @"
         INSERT INTO TypeOfContravention (Plant,TypeOfContravention, CreatedBy, CreatedByName, CreatedDate) 

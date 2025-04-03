@@ -11,17 +11,17 @@ namespace Repository.Query
         public static readonly string GetRiskCategory = @"
         SELECT DISTINCT ID, Plant, RiskCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM RiskCategory
-        WHERE 1=1";
+        WHERE plant = @plant ";
 
         public static readonly string SearchRiskCategory = @"
         SELECT DISTINCT ID, Plant, RiskCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM RiskCategory
-        WHERE RiskCategory LIKE '%' + @SearchADV + '%'";
+        WHERE plant = @plant and RiskCategory LIKE '%' + @SearchADV + '%'";
 
         public static readonly string SearchRiskCategoryInDB = @"
         SELECT DISTINCT ID, Plant, RiskCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM RiskCategory
-        WHERE RiskCategory LIKE '%' + @search + '%'";
+        WHERE plant = @plant and RiskCategory LIKE '%' + @search + '%'";
 
         public static readonly string InsertNewData = @"
         INSERT INTO RiskCategory (Plant,RiskCategory, CreatedBy, CreatedByName, CreatedDate) 
@@ -70,7 +70,7 @@ namespace Repository.Query
         WHERE NOT EXISTS (
             SELECT A.RiskCategory
             FROM RiskCategory A 
-            WHERE A.RiskCategory = B.RiskCategory
+            WHERE A.RiskCategory = B.RiskCategory AND A.Plant = B.Plant
         )";
 
     }

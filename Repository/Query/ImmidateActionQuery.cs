@@ -14,17 +14,17 @@ namespace Repository.Query
 
         public static readonly string GetImmidateAction = @"
         select distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag
-        from ImmidateAction where 1=1";
+        from ImmidateAction WHERE plant =@plant ";
 
         public static readonly string SearchadvData = @"
         SELECT distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag
         FROM ImmidateAction 
-        WHERE ImmidateName LIKE '%' + @SearchADV + '%'";
+        WHERE plant =@plant and ImmidateName LIKE '%' + @SearchADV + '%'";
 
         public static readonly string SearchDatainDB = @"
         SELECT distinct id,plant,ImmidateName,createdby,createdDate,UpdatedBy,UpdatedDate,DelFlag
         FROM ImmidateAction 
-        WHERE ImmidateName LIKE '%' + @search + '%'";   
+        WHERE plant =@plant and ImmidateName LIKE '%' + @search + '%'";   
 
         public static readonly string InsertNewImmidateAction = @"
         INSERT INTO ImmidateAction ( plant,ImmidateName,CreatedBy,CreatedDate) 
