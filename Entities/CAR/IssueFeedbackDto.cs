@@ -102,6 +102,9 @@ namespace Entities.CAR
         public string ReviewByName { get; set; }
         public DateTime? ReviewSubmitDate { get; set; }
 
+        public string? PossibleHazards { get; set; }
+        public string? Typeofcontravention { get; set; }
+        public string? RiskCategory { get; set; }
 
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
        

@@ -131,6 +131,7 @@ namespace Repository.Query
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
 
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
+        ,PossibleHazards,Typeofcontravention,RiskCategory 
         from IssueFeedback
         where Plant = @plant
         and (Dept IS NULL OR Dept IN @deptAuthList) and ((Product IN @productAuthList or 'ALL' IN @productAuthList) OR (Product IS NULL OR Product = ''))
