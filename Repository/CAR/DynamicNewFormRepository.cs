@@ -399,7 +399,12 @@ namespace Repository.CAR
             var excludedParameters = new HashSet<string>
             {
                  "@UserPlant", "@IssueStatus", "@MainStatus", "@UserId", "@UserName",
-                 "@mailWStatus", "@mailactionType", "@sendmailUserAction", "@NCCategoryImgFiles", "@NCCategoryFiles","@FormType","@FormNumber","@IssueType"
+                 "@mailWStatus", "@mailactionType", "@sendmailUserAction", "@NCCategoryImgFiles", "@NCCategoryFiles","@FormType","@FormNumber","@IssueType",
+                 "@rejectReason", "@PDAImmediteAct", "@rootcause", "@correctiveAct",
+    "@immediteActReceiverImgFiles", "@immediteActReceiverFiles",
+    "@rootCauseReceiverImgFiles", "@rootCauseReceiverFiles",
+    "@correctiveActReceiverImgFiles", "@correctiveActReceiverFiles",
+    "@reviewerImgFiles", "@reviewerFiles"
             };
 
             // Buat list parameter yang akan diupdate
@@ -410,7 +415,12 @@ namespace Repository.CAR
             {
                 var paramName = p.ParameterName.Substring(1); // Hilangkan '@'
                 var columnName = columnReplacements.ContainsKey(paramName) ? columnReplacements[paramName] : paramName;
-                return $"{columnName} = {p.ParameterName}";
+
+                var value = p.Value == DBNull.Value || p.Value == null
+                    ? "NULL"
+                    : p.ParameterName;
+
+                return $"{columnName} = {value}";
             }));
 
             // Asumsikan primary key adalah FormNo
