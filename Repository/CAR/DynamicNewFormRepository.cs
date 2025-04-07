@@ -281,8 +281,8 @@ namespace Repository.CAR
                 {
                     continue;
                 }
-                if (value != null)
-                {
+                //if (value != null)
+                //{
                     if (prop.Name.Equals("DynamicParameters", StringComparison.InvariantCultureIgnoreCase) &&
                         value is IEnumerable<DynamicParameter> dynamicParams)
                     {
@@ -312,7 +312,7 @@ namespace Repository.CAR
                     {
                         sqlParameters.Add(new SqlParameter($"@{prop.Name}", value));
                     }
-                }
+                //}
             }
 
             return sqlParameters;
@@ -329,11 +329,19 @@ namespace Repository.CAR
             // List of parameters to exclude
             var excludedParameters = new HashSet<string>
             {
-                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@DetectionDate"
+                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@DetectionDate","@rejectReason", "@PDAImmediteAct", "@rootcause", "@correctiveAct",
+    "@immediteActReceiverImgFiles", "@immediteActReceiverFiles",
+    "@rootCauseReceiverImgFiles", "@rootCauseReceiverFiles",
+    "@correctiveActReceiverImgFiles", "@correctiveActReceiverFiles",
+    "@reviewerImgFiles", "@reviewerFiles"
             };
             var excludedParametersForUpdate = new HashSet<string>
             {
-                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@DetectionDate","@FormNumber","@FormType"
+                "@IssueStatus", "@UserId", "@UserName", "@mailWStatus", "@mailactionType", "@sendmailUserAction","@UserPlant","@MainStatus","@NCCategoryImgFiles","@NCCategoryFiles","@FormNumber","@FormType","@rejectReason", "@PDAImmediteAct", "@rootcause", "@correctiveAct",
+    "@immediteActReceiverImgFiles", "@immediteActReceiverFiles",
+    "@rootCauseReceiverImgFiles", "@rootCauseReceiverFiles",
+    "@correctiveActReceiverImgFiles", "@correctiveActReceiverFiles",
+    "@reviewerImgFiles", "@reviewerFiles"
             };
 
             //var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
@@ -365,7 +373,13 @@ namespace Repository.CAR
                 {
                     var paramName = p.ParameterName.Substring(1); // Hilangkan '@'
                     var columnName = columnReplacements.ContainsKey(paramName) ? columnReplacements[paramName] : paramName;
-                    return $"{columnName} = {p.ParameterName}";
+                    //return $"{columnName} = {p.ParameterName}";
+
+                    var value = p.Value == DBNull.Value || p.Value == null
+                    ? "NULL"
+                    : p.ParameterName;
+
+                    return $"{columnName} = {value}";
                 }));
 
                 return $"Update {tableName} set {setClause}, Status = @IssueStatus, MainStatus =@MainStatus, IssueBy =@UserId, IssueByName =@UserName, IssueDate = GETDATE() WHERE FORMNO =@FormNumber";
