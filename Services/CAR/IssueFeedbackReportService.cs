@@ -281,6 +281,10 @@ namespace Services.CAR
                                  ReviewSubmitDate = main.ReviewSubmitDate,
                                  ReviewComment = main.ReviewComment,
                                  ReviewMethod = main.ReviewMethod,
+
+                                 PossibleHazards = main.PossibleHazards,
+                                 Typeofcontravention = main.Typeofcontravention,
+                                 RiskCategory = main.RiskCategory,
                              };
             maindata = joinedData;
             
