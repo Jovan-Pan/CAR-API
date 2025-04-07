@@ -175,7 +175,20 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
+            IEnumerable<UsrDto> userList = Enumerable.Empty<UsrDto>();
+
+            if (!string.IsNullOrEmpty(mydata.VendorCode))
+            {
+                userList = await data.MDM.CheckUserVSVend(mydata) ?? Enumerable.Empty<UsrDto>();
+                if (!userList.Any())
+                {
+                    return ApiResponse<string>.FailResponse("Please Maintain Vendor data in MDM USERS Form");
+                }
+
+            }
+
             await data.DynamicNewForm.issuerUpdateDataIssueFeedback(mydata, transaction);
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userList, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
