@@ -159,6 +159,29 @@ namespace Repository.Query
         join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
         where a.IsDeleted = 0 and B.IsDeleted = 0
         and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
+        And B.UserID NOT IN(select UseID from uservsvendor)
+        ";
+
+        public static readonly string GetSystemvsUservsEmailSubscribeFormVendor = @"
+        SELECT DISTINCT 
+            A.Plant,
+            A.SystemCode,
+            A.Dept,
+            B.UserID,
+            A.[Group],
+            NULL AS CategoryName,
+            U.UseEmail,
+            U.UseNam
+        FROM SystemvsUservsEmailSubscribeForm A
+        JOIN SystemvsUservsEmailSubscribeFormDetail B ON A.ID = B.ID
+        JOIN Usr U ON B.UserID = U.UseID
+        JOIN uservsvendor UV ON B.UserID = UV.UseID
+        WHERE A.IsDeleted = 0 
+          AND B.IsDeleted = 0
+          AND A.SystemCode = 'CAR'
+          AND A.Plant = @plant
+          AND A.[Group] = @group
+          AND UV.Vendor = @VendorCode ;
         ";
 
         public static readonly string GetissuerEmail = @"
