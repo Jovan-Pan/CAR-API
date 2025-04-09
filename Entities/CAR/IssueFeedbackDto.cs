@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Entities.MasterData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Entities.CAR
@@ -100,7 +102,13 @@ namespace Entities.CAR
         public string ReviewByName { get; set; }
         public DateTime? ReviewSubmitDate { get; set; }
 
+        public string? PossibleHazards { get; set; }
+        public string? Typeofcontravention { get; set; }
+        public string? RiskCategory { get; set; }
 
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
+       
+        public IEnumerable<UsrDto>? EmailRecipientsList { get; set; }
+
     }
 }

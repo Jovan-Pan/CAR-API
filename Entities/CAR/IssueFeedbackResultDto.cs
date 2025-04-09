@@ -1,8 +1,10 @@
-﻿using Entities.ParamRequest;
+﻿using Entities.MasterData;
+using Entities.ParamRequest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Entities.CAR
@@ -13,5 +15,7 @@ namespace Entities.CAR
         public IEnumerable<IssueFeedbackAtchmentDto> dataAtch { get; set; }
         public IssueSbmsAtchParam formFiles { get; set; }
         public int totrecord { get; set; }
+      
+        public IEnumerable<UsrDto>? EmailRecipientsList { get; set; }
     }
 }

@@ -1,7 +1,9 @@
-﻿using Entities.ParamRequest;
+﻿using Entities.CAR;
+using Entities.ParamRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
+using System.Drawing;
 
 namespace WebApi.Controllers;
 
@@ -142,4 +144,13 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(GetUsr))]
+    public async Task<IActionResult> GetUsr(DynamicFormParameterDTO data)
+    {
+        var result = await business.MasterData.GetUsr(data);
+        return Ok(result);
+
+    }
 }
+

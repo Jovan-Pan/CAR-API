@@ -79,8 +79,7 @@ namespace Repository.Query
         and (matgrp = @matgroup or @matgroup is null)
         and (MaterialType = @mattype or @mattype is null)
         and (Material like '%'+ @searchTerm +'%' or MaterialDesc like '%'+ @searchTerm +'%' or @searchTerm is null) 
-        and Material in @MaterialList
-        order by Material asc
+        and (Material IS NULL OR Material in @MaterialList)
         ";
 
         public static readonly string GetNCCategory = @"
@@ -200,5 +199,21 @@ namespace Repository.Query
 
         select case when (select count(*) from @Validgrp where isexist = 1) > 0 then 1 else 0 end isSpAdmin
         ";
+
+        public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where DelFlag = 0";
+
+        public static readonly string GetUsrForVndr = @"select A.UseID,A.UseNam,A.UseEmail from Usr A
+                                                        left join USERVSVENDOR B  on A.useID = B.useID
+                                                        where B.Dept = @Dept and vendor = @Vendor and A.DelFlag = 0 and B.Delflag = 0 and plant = @plant";
+
+        //public static readonly string GetUsrForDept = @"select A.UseID,A.UseNam,A.UseEmail From Usr A
+        //                                                left join Dept_Usr B on A.useID = B.useID
+        //                                                where B.Dept = @Dept and A.Delflag = 0 and B.isDeleted= 0 and B.plant = @plant and B.System = 'CAR'";
+
+        public static readonly string GetUsrForDept = @"select UseID,UseNam,UseEmail From Usr
+                                                        where UseDep = @Dept and Delflag = 0";
+
+        public static readonly string CheckUserVSVend = @"
+        select UseID,UseNam,UseEmail from USERVSVENDOR where Vendor= @VendorCode";
     }
 }

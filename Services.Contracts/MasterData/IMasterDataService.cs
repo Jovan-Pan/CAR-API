@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Account.Dto;
+using Entities.CAR;
 using Entities.MasterData;
 using Entities.ParamRequest;
 
@@ -25,4 +26,5 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<ProcessGroupDto>>> getProcessGrp(int plant);
     Task<ApiResponse<IEnumerable<string>>> getReason(int plant, string reasontype);
     Task<ApiResponse<bool>> GetisSpAdmin(int plant, string UseID);
+    Task<ApiResponse<IEnumerable<UsrDto>>> GetUsr(DynamicFormParameterDTO data);
 }

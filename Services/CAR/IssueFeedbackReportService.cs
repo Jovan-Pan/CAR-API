@@ -170,10 +170,11 @@ namespace Services.CAR
             var maindata = await data.IFR.GetMaindata(param, Cpr);
             var formNoList = maindata.Select(data => data.FormNo);
             var dataAtch = await data.IFR.GetDataAttchment(param.Plant, formNoList,null);
+            var EmailRecipientsList = await data.IFR.GetEmailRecipientsList(param.Plant, formNoList, null);
 
             var mdmMattype = await mdm.GetMatType(param.Plant);
             GetMaterialParam mparam = new GetMaterialParam();
-            IEnumerable<string> materialCodes = maindata.Select(data => data.MaterialCode);
+            IEnumerable<string> materialCodes = maindata.Select(data => data.MaterialCode).Where(code => !string.IsNullOrEmpty(code));
             mparam.plant = param.Plant;
             mparam.MaterialList = materialCodes;
             var mdmMaterial = await mdm.GetMaterialWoProdAut(mparam);
@@ -280,6 +281,10 @@ namespace Services.CAR
                                  ReviewSubmitDate = main.ReviewSubmitDate,
                                  ReviewComment = main.ReviewComment,
                                  ReviewMethod = main.ReviewMethod,
+
+                                 PossibleHazards = main.PossibleHazards,
+                                 Typeofcontravention = main.Typeofcontravention,
+                                 RiskCategory = main.RiskCategory,
                              };
             maindata = joinedData;
             
@@ -296,6 +301,9 @@ namespace Services.CAR
                         string formnumber = maindataList[i].FormNo;
                         var atch = dataAtch.Where(dto => dto.FormNo == formnumber);
                         maindataList[i].dataAtch = atch;
+                        var IFBER = EmailRecipientsList.Where(dto => dto.FormNo == formnumber);
+                        maindataList[i].EmailRecipientsList = IFBER;
+
                     }
 
                     maindata = maindataList;
@@ -308,7 +316,7 @@ namespace Services.CAR
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
         {
-            string condition = " AND Dept IN @DeptList AND Product IN @ProductList ";
+            string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
             if (param.vendorcode != null)
             {
                 condition = " AND vendorcode = @vendorcode ";

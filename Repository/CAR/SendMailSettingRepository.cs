@@ -32,16 +32,16 @@ namespace Repository.CAR
 
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV, bool delflag)
+        public async Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(GETMailSettings GETMailSettings)
         {
 
             string query;
 
-            if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(ATsearchADV) && string.IsNullOrEmpty(ATDsearchADV))
+            if (string.IsNullOrEmpty(GETMailSettings.search) && string.IsNullOrEmpty(GETMailSettings.ATsearchADV) && string.IsNullOrEmpty(GETMailSettings.ATDsearchADV))
             {
                 query = SendMailSettingQuery.GetSendMailSetting;
             }
-            else if(!string.IsNullOrEmpty(ATsearchADV) || !string.IsNullOrEmpty(ATDsearchADV))
+            else if(!string.IsNullOrEmpty(GETMailSettings.ATsearchADV) || !string.IsNullOrEmpty(GETMailSettings.ATDsearchADV))
             {
                 query = SendMailSettingQuery.SearchadvData;
             }
@@ -50,13 +50,13 @@ namespace Repository.CAR
                 query = SendMailSettingQuery.SearchDatainDB;
             }
 
-            if (!delflag)
+            if (!GETMailSettings.delflag)
             {
                 query += " and isDeleted = 0";
             }
 
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { search = search, ATsearchADV = ATsearchADV, ATDsearchADV = ATDsearchADV });
+            return await conn.QueryAsync<MailSetiingDto>(query, new { search = GETMailSettings.search, ATsearchADV = GETMailSettings.ATsearchADV, ATDsearchADV = GETMailSettings.ATDsearchADV, plant = GETMailSettings.plant });
 
         }
         public async Task<IEnumerable<MailSetiingDto>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail, string userId)
@@ -210,6 +210,16 @@ namespace Repository.CAR
             condRemark.Add("isSendEmail value is Y or N");
 
             string uniqueField = "[Action Type]";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 

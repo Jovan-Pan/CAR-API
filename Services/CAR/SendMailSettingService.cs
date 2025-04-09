@@ -78,7 +78,7 @@ namespace Services.CAR
                             string Datadetails = MailBodyContentDetail.mailBodyContentDet;
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
-                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus);
+                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-", ""));
                             Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
                             Datadetails = Datadetails.Replace("@Product", mydata.Product);
                             //Datadetails = Datadetails.Replace("@Model", mydata.Model);
@@ -116,9 +116,9 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, (mailmsg.Length == 0 ? "" : " Send Mail Fail : " + mailmsg));
         }
 
-        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(GETMailSettings GETMailSettings)
         {
-            var result = await data.SMS.GetSendMailSetting(search, ATsearchADV, ATDsearchADV, delflag);
+            var result = await data.SMS.GetSendMailSetting(GETMailSettings);
             return ApiResponse<IEnumerable<MailSetiingDto>>.SuccessResponse(result);
         }
 

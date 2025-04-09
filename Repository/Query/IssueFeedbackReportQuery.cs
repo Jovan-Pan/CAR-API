@@ -11,7 +11,7 @@ namespace Repository.Query
         public static readonly string GetTotalRecord = @" select count (*) from IssueFeedback
         where Plant = @plant ";
 
-        public static readonly string getIssuerId = @" 
+        public static readonly string getIssuerIdForNCR = @" 
         SELECT distinct UserList
         FROM 
         (
@@ -37,9 +37,36 @@ namespace Repository.Query
         ) AS UnpivotedTable;
         ";
 
-        public static readonly string GetTotalRecordForEachStts = @" 
+        public static readonly string getIssuerId = @"
+        SELECT distinct UserList
+        FROM 
+        (
+            SELECT 
+                A.IssueBy, 
+                A.AcknowledgeBy, 
+                A.PDAActionBy, 
+                A.PDAAprovalBy, 
+                A.ReceiveActionBy, 
+                A.ReceiveAprovalBy, 
+                A.PDAReviewBy, 
+                A.ReviewBy,
+		        B.UseID
+            FROM 
+                IssueFeedback A inner join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
+
+            WHERE 
+                   Plant = @plant 
+                  AND A.FormNo = @FormNo AND B.FormNo = @FormNo 
+        ) AS SourceTable
+        UNPIVOT
+        (
+            UserList FOR UserType IN 
+            (IssueBy, AcknowledgeBy, PDAActionBy, PDAAprovalBy, ReceiveActionBy, ReceiveAprovalBy, PDAReviewBy, ReviewBy,UseID)
+        ) AS UnpivotedTable;"; 
+
+        public static readonly string GetTotalRecordForEachStts = @"
         SELECT 
-            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT' or status = 'SUBMITED-APPEAL' or status = 'RE-SUBMIT-APPEAL') THEN 1 END) AS Submitted,
+            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT' or status = 'SUBMITED-APPEAL' or status = 'RE-SUBMIT-APPEAL' or status = 'DRAFT-SUBMIT') THEN 1 END) AS Submitted,
             COUNT(CASE WHEN (status in ('OPEN','OPEN-REJECT','OPEN-APPEAL') ) THEN 1 END) AS [Open],
             COUNT(CASE WHEN status in ('PDA-DECISION','PDA-DECISION-APPEAL') THEN 1 END) AS PdaDecision,
 	        COUNT(CASE WHEN (status in ('ISSUED','ISSUED-REJECT','ISSUED-APPEAL') ) THEN 1 END) AS issued,
@@ -86,7 +113,7 @@ namespace Repository.Query
 
         public static readonly string GetMainData = @"
         select  
-        Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
+        Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,MaterialDesc,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
         ,VendorDesc,TttlQty,TttlQtyUOM,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,mainStatus
         ,IssueBy,IssueByName,IssueDate,IssueByComment
         ,IssueUpdatedBy,IssueUpdatedByName,IssueUpdatedDate
@@ -104,9 +131,10 @@ namespace Repository.Query
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
 
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
+        ,PossibleHazards,Typeofcontravention,RiskCategory 
         from IssueFeedback
         where Plant = @plant
-        and Dept IN @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
+        and (Dept IS NULL OR Dept IN @deptAuthList) and ((Product IN @productAuthList or 'ALL' IN @productAuthList) OR (Product IS NULL OR Product = ''))
         ";
 
         public static readonly string GetDataAttchment = @"
@@ -123,5 +151,10 @@ namespace Repository.Query
         ,StatusOfFinding = @StatusOfFinding
         where FormNo = @FormNo and Plant = @UserPlant
         ";
+
+        public static readonly string GetEmailRecipientsList = @"
+        select B.FormNo,B.UseID,B.UseNam,B.UseEmail,B.UserLevel from IssueFeedback A
+        join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
+        where A.Plant = @plant and A.FormNo IN @FormNoList";
     }
 }

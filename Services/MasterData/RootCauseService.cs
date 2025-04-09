@@ -23,9 +23,9 @@ namespace Services.MasterData
             var result = await data.RootCause.getRootCauseList(plant);
             return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
         }
-        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> GetRootCauseCategory(string search,string SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> GetRootCauseCategory(GETRootCauseCategory GETRootCauseCategory)
         {
-            var result = await data.RootCause.GetRootCauseCategory(search, SearchADV, delflag);
+            var result = await data.RootCause.GetRootCauseCategory(GETRootCauseCategory);
             return ApiResponse<IEnumerable<RootCauseCategoryDto>>.SuccessResponse(result);
         }
         public async Task<ApiResponse<IEnumerable<RootCauseCategoryDto>>> InsertNewRootCauseCategory(string RootCauseName, string userId, int plant)

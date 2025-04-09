@@ -1,4 +1,5 @@
 ﻿using Entities.Account.Dto;
+using Entities.CAR;
 using Entities.MasterData;
 using Entities.ParamRequest;
 using System.Threading.Tasks;
@@ -29,4 +30,6 @@ public interface IMDMRepository
     Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeForm(int plant, string group, string dept);
     Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID);
     Task<bool> GetisSpAdmin(int plant, string UseID);
+    Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data);
+    Task<IEnumerable<UsrDto>> CheckUserVSVend(DynamicFormParameterDTO data);
 }

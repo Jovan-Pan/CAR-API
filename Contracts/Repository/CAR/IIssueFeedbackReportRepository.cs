@@ -16,6 +16,7 @@ namespace Contracts.Repository.CAR
         Task<IEnumerable<string>> getIssuerId(int plant, string FormNo);
         Task<IEnumerable<IssueFeedbackDto>> GetMaindata(GlobalParam param, ConditionParams ConditionParams);
         Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction);
+        Task<IEnumerable<UsrDto>> GetEmailRecipientsList(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction);
         Task<TotalRecordForEachSttsDto> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param, string condition);
         Task<IEnumerable<string>> GetFormNumberListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<IEnumerable<string>> GetDeptListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);

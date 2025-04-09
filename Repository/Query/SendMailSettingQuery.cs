@@ -22,17 +22,17 @@ namespace Repository.Query
 
         public static readonly string GetSendMailSetting = @" 
         select distinct id,plant,actionType,actionTypeDesc,isSendEmail,isDeleted,createdBy,createdByName,createdDate,updatedBy,updatedByName,updatedDate
-        from SendEmailSetting where 1=1";
+        from SendEmailSetting where plant =@plant ";
 
         public static readonly string SearchDatainDB = @"
         SELECT distinct id,plant,actionType,actionTypeDesc,isSendEmail,isDeleted,createdBy,createdByName,createdDate,updatedBy,updatedByName,updatedDate
         FROM SendEmailSetting
-        WHERE (actionType LIKE '%' + @search + '%' OR actionTypeDesc LIKE '%' + @search + '%')";
+        WHERE plant =@plant and (actionType LIKE '%' + @search + '%' OR actionTypeDesc LIKE '%' + @search + '%')";
 
         public static readonly string SearchadvData = @"
         SELECT distinct id,plant,actionType,actionTypeDesc,isSendEmail,isDeleted,createdBy,createdByName,createdDate,updatedBy,updatedByName,updatedDate
         FROM SendEmailSetting
-        WHERE (actionType LIKE '%' + @ATsearchADV + '%' OR actionTypeDesc LIKE '%' + @ATDsearchADV + '%')";
+        WHERE plant =@plant and (actionType LIKE '%' + @ATsearchADV + '%' OR actionTypeDesc LIKE '%' + @ATDsearchADV + '%')";
 
         public static readonly string InsertNewSendMailSetting = @"
         INSERT INTO SendEmailSetting ( plant,ActionType,ActionTypeDesc,isSendEmail,CreatedBy,CreatedByName,CreatedDate)
@@ -77,7 +77,7 @@ namespace Repository.Query
                                                     B.[Action Type Desc],
                                                     B.isSendEmail,
                                                     UPPER(@UserId),
-                                                    UPPER(@UserId),,
+                                                    UPPER(@UserId),
                                                     GETDATE(),
                                                     0 
                                                 FROM ##temp B
