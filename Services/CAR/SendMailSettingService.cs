@@ -46,10 +46,21 @@ namespace Services.CAR
                         SendEmailParam mailparam = new SendEmailParam();
                         var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
                         var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
-                        
+                        List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+
+                        if (mydata.Dept == "VEND")
+                        {
+                           var userSubsFormMasterVendor = await mdm.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                           recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
+                        }
+
                         var IssuerIds = await data.IFR.getIssuerId(mydata.UserPlant, mydata.FormNumber);
                         var GetissuerEmail = await mdm.GetissuerEmail(mydata.UserPlant, IssuerIds);
-                        List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+                        //List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+                        //if (mydata.Dept == "VEND")
+                        //{
+                        //    recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
+                        //}
                         recipentList.AddRange(GetissuerEmail);
                         recipentList = recipentList.Distinct().ToList();
 

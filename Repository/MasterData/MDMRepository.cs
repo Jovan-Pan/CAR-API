@@ -163,6 +163,12 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<SystemvsUservsEmailSubscribeForm>(Processquery, new { plant, group, dept });
     }
+    public async Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeFormVendor(string VendorCode, int plant, string group, string dept)
+    {
+        string Processquery = MDMQuery.GetSystemvsUservsEmailSubscribeFormVendor;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<SystemvsUservsEmailSubscribeForm>(Processquery, new { VendorCode, plant, group, dept });
+    }
 
     public async Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID)
     {
