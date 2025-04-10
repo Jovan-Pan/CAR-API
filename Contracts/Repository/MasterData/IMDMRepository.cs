@@ -28,6 +28,7 @@ public interface IMDMRepository
     Task<IEnumerable<string>> getReason(int plant, string reasontype);
     Task<IEnumerable<TGlobalEmailSettingModel>> GetTGlobalEmailSetting(int plant, string wStatus);
     Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeForm(int plant, string group, string dept);
+    Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeFormVendor(string VendorCode, int plant, string group, string dept);
     Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID);
     Task<bool> GetisSpAdmin(int plant, string UseID);
     Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data);

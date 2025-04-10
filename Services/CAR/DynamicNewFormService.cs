@@ -50,7 +50,22 @@ namespace Services.CAR
                 }
 
             }
-            string newformno= mydata.FormNumber;
+
+            IEnumerable<UsrDto> userListvend = Enumerable.Empty<UsrDto>();
+            if (mydata.Dept == "VEND")
+            {
+                var vendorUsers = await data.MDM.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept) ?? Enumerable.Empty<SystemvsUservsEmailSubscribeForm>();
+                userListvend = vendorUsers.Select(x => new UsrDto
+                {
+                    UseID = x.UserID,
+                    UseNam = x.UseNam,
+                    UseEmail = x.UseEmail
+                });
+                //List<string> recipentList = userSubsFormMasterVendor.Select(form => form.UseEmail).ToList();
+            }
+
+
+            string newformno = mydata.FormNumber;
             if (string.IsNullOrEmpty(mydata.FormNumber))
             {
                 newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
@@ -58,7 +73,7 @@ namespace Services.CAR
             }
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
-            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata,userList, transaction);
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
             string pwd = basepathconfig.First().password;
@@ -186,9 +201,20 @@ namespace Services.CAR
                 }
 
             }
+            IEnumerable<UsrDto> userListvend = Enumerable.Empty<UsrDto>();
+            if (mydata.Dept == "VEND")
+            {
+                var vendorUsers = await data.MDM.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept) ?? Enumerable.Empty<SystemvsUservsEmailSubscribeForm>();
+                userListvend = vendorUsers.Select(x => new UsrDto
+                {
+                    UseID = x.UserID,
+                    UseEmail = x.UseEmail
+                });
+                //List<string> recipentList = userSubsFormMasterVendor.Select(form => form.UseEmail).ToList();
+            }
 
             await data.DynamicNewForm.issuerUpdateDataIssueFeedback(mydata, transaction);
-            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userList, transaction);
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
