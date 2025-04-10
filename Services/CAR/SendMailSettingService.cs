@@ -87,6 +87,7 @@ namespace Services.CAR
                             body = body.Replace("@UserAction", mydata.sendmailUserAction);
 
                             string Datadetails = MailBodyContentDetail.mailBodyContentDet;
+                            Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
                             Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-", ""));

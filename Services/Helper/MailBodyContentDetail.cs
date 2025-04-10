@@ -13,6 +13,12 @@ namespace Services.Helper
         public static readonly string mailBodyContentDet = @"
         <table style=""border-collapse: collapse; width: 100%; border: 1px solid black;"">
         <tr>
+            <td style=""border: 1px solid black; padding: 8px;"">Plant</td>
+            <td style=""border: 1px solid black; padding: 8px;"">@Plant</td>
+            <td style=""border: 1px solid black; padding: 8px;""></td>
+            <td style=""border: 1px solid black; padding: 8px;""></td>
+        </tr>
+        <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Form Type</td>
             <td style=""border: 1px solid black; padding: 8px;"">@FormType</td>
             <td style=""border: 1px solid black; padding: 8px;"">NC % (Sampling Check)</td>
