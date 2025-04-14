@@ -28,5 +28,8 @@ namespace Entities.ParamRequest
         public DateTime? fromdate { get; set; }
         public DateTime? todate { get; set; }
 
+        public string? UserDept { get; set; }
+        public string? UserVendor { get; set; }
+
     }
 }
