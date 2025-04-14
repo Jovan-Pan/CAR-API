@@ -145,6 +145,14 @@ namespace Services.CAR
                     Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
                 }
             }
+            if (param.UserDept == "VEND")
+            {
+                if (param.UserVendor != null)
+                {
+                    Condquery += Environment.NewLine;
+                    Condquery += " AND (ISNULL(VendorCode, 'NA') = ISNULL(@UserVendor, 'NA')) ";
+                }
+            }
             if (param.datetype != null)
             {
                 if (param.fromdate != null && param.todate != null) {
@@ -216,6 +224,7 @@ namespace Services.CAR
                                  TttlQty = main.TttlQty,
                                  TttlQtyUOM = main.TttlQtyUOM,
                                  AffectedCavity = main.AffectedCavity,
+                                 AffectedCavityNO = main.AffectedCavityNO,
                                  IssueType = main.IssueType,
                                  NCCode = main.NCCode,
                                  NCCategory = main.NCCategory,
@@ -315,7 +324,7 @@ namespace Services.CAR
         }
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
-        {
+          {
             string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
             if (param.vendorcode != null)
             {

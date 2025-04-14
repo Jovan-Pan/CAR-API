@@ -31,6 +31,7 @@ namespace Entities.CAR
         public decimal TttlQty { get; set; }
         public string TttlQtyUOM { get; set; }
         public int AffectedCavity { get; set; }
+        public string? AffectedCavityNO { get; set; }
         public string IssueType { get; set; }
         public string NCCode { get; set; }
         public string NCCategory { get; set; }

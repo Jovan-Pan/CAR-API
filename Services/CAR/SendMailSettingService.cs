@@ -90,7 +90,7 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
-                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-", ""));
+                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                             Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
                             Datadetails = Datadetails.Replace("@Product", mydata.Product);
                             //Datadetails = Datadetails.Replace("@Model", mydata.Model);
