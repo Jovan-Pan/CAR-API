@@ -56,6 +56,7 @@ namespace Repository.CAR
                     mattype = param.mattype,
                     material = param.material,
                     vendor = param.vendor,
+                    UserVendor = param.UserVendor,
                     fromdate = param.fromdate?.ToString("yyyy-MM-dd"),
                     todate = param.todate?.ToString("yyyy-MM-dd"),
                     skip = ConditionParams.skip, 
