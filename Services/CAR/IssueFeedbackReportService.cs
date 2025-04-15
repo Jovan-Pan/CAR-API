@@ -294,6 +294,8 @@ namespace Services.CAR
                                  PossibleHazards = main.PossibleHazards,
                                  Typeofcontravention = main.Typeofcontravention,
                                  RiskCategory = main.RiskCategory,
+
+                                 Detectedby = main.Detectedby
                              };
             maindata = joinedData;
             

@@ -43,11 +43,11 @@ namespace Repository.Query
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment)
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,Detectedby)
         values
         (
         @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
-        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment
+        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby
         )
         ";
 
@@ -76,6 +76,8 @@ namespace Repository.Query
         ,Dept = @Dept
         ,VendorCode = @VendorCode
         ,VendorDesc = @VendorDesc
+        ,AffectedCavityNO = @AffectedCavityNO
+        ,Detectedby = @Detectedby
         where FormNo = @FormNumber
         ";
 
