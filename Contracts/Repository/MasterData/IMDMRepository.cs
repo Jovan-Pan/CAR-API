@@ -8,6 +8,7 @@ namespace Contracts.Repository.MasterData;
 
 public interface IMDMRepository
 {
+    Task<bool> AllowAllDataToAcc(string Userid);
     Task<UserVendorInfoDto> GetUserVendorInfo(int plant, string userid);
     Task<IEnumerable<string>> GetPlantListForCRCUSystemByUserId(string userId);
     Task<FormAuthorizeInfoDto> GetFormAuthorize(FormAuthorizeParam param);

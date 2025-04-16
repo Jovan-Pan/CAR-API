@@ -8,6 +8,16 @@ namespace Repository.Query
 {
     public class MDMQuery
     {
+        public static readonly string AllowAllDataToAcc = @"    
+        SELECT 
+            CASE 
+                WHEN  UsePass = '' THEN CAST(1 AS BIT) 
+                ELSE CAST(0 AS BIT) 
+            END AS IsUserAllowed
+        FROM usr 
+        WHERE useid = @userId
+        ";
+
         public static readonly string GetUserVendorInfo = @" 
         select A.Vendor as vendorcode,B.Description as vendorname
         from USERVSVENDOR A 

@@ -13,7 +13,14 @@ namespace Repository.MasterData;
 
 internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
 {
+    public async Task<bool> AllowAllDataToAcc(string userId)
+    {
+        string query = MDMQuery.AllowAllDataToAcc;
 
+        await using var conn = dbContext.MDMConnection();
+        var result = await conn.ExecuteScalarAsync<bool>(query, new { userId });
+        return result;
+    }
     public async Task<IEnumerable<string>> GetPlantListForCRCUSystemByUserId(string userId)
     {
         string query = MDMQuery.GetPlantList;
