@@ -334,8 +334,9 @@ namespace Services.CAR
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
           {
+            var AllowAllData = await mdm.AllowAllDataToAcc(param.UserId);
             string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
-            if (param.vendorcode != null)
+            if (param.vendorcode != null && !AllowAllData)
             {
                 condition = " AND vendorcode = @vendorcode ";
             }

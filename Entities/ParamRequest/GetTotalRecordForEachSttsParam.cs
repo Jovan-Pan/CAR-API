@@ -8,6 +8,7 @@ namespace Entities.ParamRequest
 {
     public class GetTotalRecordForEachSttsParam
     {
+        public string? UserId { get; set; }
         public int plant { get; set; }
         public string? vendorcode { get; set; }
         public IEnumerable<string>? DeptList { get; set; }
