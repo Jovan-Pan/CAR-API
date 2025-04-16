@@ -30,6 +30,7 @@ namespace Entities.ParamRequest
 
         public string? UserDept { get; set; }
         public string? UserVendor { get; set; }
+        public string? UserID { get; set; }
 
     }
 }
