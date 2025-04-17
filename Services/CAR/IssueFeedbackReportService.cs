@@ -139,7 +139,7 @@ namespace Services.CAR
                         Condquery += " AND MaterialCode IN @material ";
                     }
                 }
-                if (AllowAllData)
+                if (!AllowAllData)
                 {
                     if (param.vendor != null)
                     {
