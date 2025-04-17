@@ -47,134 +47,141 @@ namespace Services.CAR
 
             var totrecord = await data.IFR.GetTotalRecord(param, Cpr);
 
+            var AllowAllData = await mdm.AllowAllDataToAcc(param.UserID);
+     
             #region generate condition query for advance filter
-            string Condquery = @"";
-            if (param.formType != null)
-            {
-                if(param.formType.Count() > 0)
+                string Condquery = @"";
+                if (param.formType != null)
                 {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND FormType IN @formType ";
-                }
-            }
-            if (param.formNumber != null)
-            {
-                if (param.formNumber.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND FormNo IN @formNumber ";
-                }
-            }
-            if (param.status != null)
-            {
-                if (param.status.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += @" AND status IN @status ";
-                }
-            }
-            if (param.mainStatus != null)
-            {
-                if (param.mainStatus.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += @" AND mainStatus IN @mainStatus ";
-                }
-            }
-            if (param.dept != null)
-            {
-                if (param.dept.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND Dept IN @dept ";
-                }
-            }
-            if (param.statusOfFinding != null)
-            {
-                if (param.statusOfFinding.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND StatusOfFinding IN @statusOfFinding ";
-                }
-            }
-            if (param.processGrp != null)
-            {
-                if (param.processGrp.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND procecessGrpCode IN @processGrp ";
-                }
-            }
-            if (param.product != null)
-            {
-                if (param.product.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND Product IN @product ";
-                }
-            }
-            if (param.model != null)
-            {
-                if (param.model.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND Model IN @model ";
-                }
-            }
-            if (param.mattype != null)
-            {
-                if (param.mattype.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND MaterialType IN @mattype ";
-                }
-            }
-            if (param.material != null)
-            {
-                if (param.material.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND MaterialCode IN @material ";
-                }
-            }
-            if (param.vendor != null)
-            {
-                if (param.vendor.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
-                }
-            }
-            if (param.UserDept == "VEND")
-            {
-                if (param.UserVendor != null)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND (ISNULL(VendorCode, 'NA') = ISNULL(@UserVendor, 'NA')) ";
-                }
-            }
-            if (param.datetype != null)
-            {
-                if (param.fromdate != null && param.todate != null) {
-                    if (param.datetype == "DetectionDate")
+                    if (param.formType.Count() > 0)
                     {
                         Condquery += Environment.NewLine;
-                        Condquery += " AND format(DetectionDate,'yyyy-MM-dd') between @fromdate and @todate ";
-                    }
-                    else if (param.datetype == "EffectiveDate")
-                    {
-                        Condquery += Environment.NewLine;
-                        Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        Condquery += " AND FormType IN @formType ";
                     }
                 }
-            }
+                if (param.formNumber != null)
+                {
+                    if (param.formNumber.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND FormNo IN @formNumber ";
+                    }
+                }
+                if (param.status != null)
+                {
+                    if (param.status.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += @" AND status IN @status ";
+                    }
+                }
+                if (param.mainStatus != null)
+                {
+                    if (param.mainStatus.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += @" AND mainStatus IN @mainStatus ";
+                    }
+                }
+                if (param.dept != null)
+                {
+                    if (param.dept.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND Dept IN @dept ";
+                    }
+                }
+                if (param.statusOfFinding != null)
+                {
+                    if (param.statusOfFinding.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND StatusOfFinding IN @statusOfFinding ";
+                    }
+                }
+                if (param.processGrp != null)
+                {
+                    if (param.processGrp.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND procecessGrpCode IN @processGrp ";
+                    }
+                }
+                if (param.product != null)
+                {
+                    if (param.product.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND Product IN @product ";
+                    }
+                }
+                if (param.model != null)
+                {
+                    if (param.model.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND Model IN @model ";
+                    }
+                }
+                if (param.mattype != null)
+                {
+                    if (param.mattype.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND MaterialType IN @mattype ";
+                    }
+                }
+                if (param.material != null)
+                {
+                    if (param.material.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND MaterialCode IN @material ";
+                    }
+                }
+                if (!AllowAllData)
+                {
+                    if (param.vendor != null)
+                    {
+                        if (param.vendor.Count() > 0)
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
+                        }
+                    }
+                    if (param.UserDept == "VEND")
+                    {
+                        if (param.UserVendor != null)
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND (ISNULL(VendorCode, 'NA') = ISNULL(@UserVendor, 'NA')) ";
+                        }
+                    }
+                }
+                if (param.datetype != null)
+                {
+                    if (param.fromdate != null && param.todate != null)
+                    {
+                        if (param.datetype == "DetectionDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(DetectionDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "EffectiveDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                    }
+                }
 
-            if (Condquery.Length > 0) {
-                Cpr.ExtraWhereCondition += Environment.NewLine;
-                Cpr.ExtraWhereCondition += Condquery;
-            }
-            #endregion
-
+                if (Condquery.Length > 0)
+                {
+                    Cpr.ExtraWhereCondition += Environment.NewLine;
+                    Cpr.ExtraWhereCondition += Condquery;
+                }
+                #endregion
+ 
             var maindata = await data.IFR.GetMaindata(param, Cpr);
             var formNoList = maindata.Select(data => data.FormNo);
             var dataAtch = await data.IFR.GetDataAttchment(param.Plant, formNoList,null);
@@ -294,6 +301,8 @@ namespace Services.CAR
                                  PossibleHazards = main.PossibleHazards,
                                  Typeofcontravention = main.Typeofcontravention,
                                  RiskCategory = main.RiskCategory,
+
+                                 Detectedby = main.Detectedby
                              };
             maindata = joinedData;
             
@@ -325,8 +334,9 @@ namespace Services.CAR
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
           {
+            var AllowAllData = await mdm.AllowAllDataToAcc(param.UserId);
             string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
-            if (param.vendorcode != null)
+            if (param.vendorcode != null && !AllowAllData)
             {
                 condition = " AND vendorcode = @vendorcode ";
             }

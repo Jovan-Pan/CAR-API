@@ -8,6 +8,16 @@ namespace Repository.Query
 {
     public class MDMQuery
     {
+        public static readonly string AllowAllDataToAcc = @"    
+        SELECT 
+            CASE 
+                WHEN  UsePass = '' THEN CAST(1 AS BIT) 
+                ELSE CAST(0 AS BIT) 
+            END AS IsUserAllowed
+        FROM usr 
+        WHERE useid = @userId
+        ";
+
         public static readonly string GetUserVendorInfo = @" 
         select A.Vendor as vendorcode,B.Description as vendorname
         from USERVSVENDOR A 
@@ -98,11 +108,10 @@ namespace Repository.Query
         ";
 
         public static readonly string GetVendor = @"
-        select distinct V.Vendor as vendorCode,V.Description as vendDesc 
-        from tVendor_New V
-        join tVendorPOrg P on V.POrg = P.POrg and P.Vendor = V.Vendor and P.DelFlag = 0
-        where V.DelFlag = 0 and P.Plant = @plant
-        order by V.Description asc
+        select DISTINCT Vendor as vendorCode,Description AS vendDesc from USERVSVENDOR A 
+        join TUSER_AUTHORIZE B on A.UseID = b.UserID 
+        JOIN TGROUPACCESS c ON b.GroupID = c.GroupID AND b.System = b.System AND b.FormName = c.FormName
+        where A.Plant = @plant and b.System = 'CAR'
         ";
 
         public static readonly string getBasePathConfig = @"

@@ -40,6 +40,7 @@ namespace Entities.ParamRequest
         public string? Comment { get; set; }
         public string? rejectReason { get; set; }
         public string? PDAImmediteAct { get; set; }
+        public string? Detectedby { get; set; }
 
         public string? ImmActRecDetail { get; set; }
         public decimal? CostPC { get; set; }

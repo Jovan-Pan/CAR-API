@@ -107,6 +107,8 @@ namespace Entities.CAR
         public string? Typeofcontravention { get; set; }
         public string? RiskCategory { get; set; }
 
+        public string? Detectedby { get; set; }
+
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
        
         public IEnumerable<UsrDto>? EmailRecipientsList { get; set; }
