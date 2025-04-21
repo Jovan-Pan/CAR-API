@@ -78,8 +78,13 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<string>(query,new {plant ,FormNo});
         }
-        
 
+        public async Task<IEnumerable<string>> GetMailtocc(string formno)
+        {
+            string Processquery = IssueFeedbackReportQuery.GetMailtocc;
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(Processquery, new { formno });
+        }
         public async Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction)
         {
             string query = string.Format(IssueFeedbackReportQuery.GetDataAttchment);
