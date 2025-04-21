@@ -18,6 +18,7 @@ using Services.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.SqlServer.Server;
 using Entities.MasterData;
+using System.Collections;
 
 namespace Services.CAR
 {
@@ -47,6 +48,9 @@ namespace Services.CAR
                         var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
                         var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                         List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+
+                        var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
+                        List<string> MailtoccList = MailToCC.ToList();
 
                         if (mydata.Dept == "VEND")
                         {
@@ -78,6 +82,11 @@ namespace Services.CAR
                             mailparam.FromAddress = globalmailMaster.FirstOrDefault().FromMailaddress;
 
                             string recipent = string.Join(";", recipentList);
+                            if (!string.IsNullOrEmpty(globalmailMaster.FirstOrDefault()?.ReplyMailid))
+                            {
+                                MailtoccList.Add(globalmailMaster.FirstOrDefault().ReplyMailid);
+                            }
+
 
                             mailparam.Recipient = recipent;
 
@@ -111,7 +120,7 @@ namespace Services.CAR
                             body = body.Replace("@Emaillink", globalmailMaster.FirstOrDefault().Emaillink);
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
-                            mailparam.CopyRecipient = globalmailMaster.FirstOrDefault().ReplyMailid;
+                            mailparam.CopyRecipient = string.Join(";", MailtoccList);
                             await mdmP.SendEmail(mailparam);
                         }
                     }

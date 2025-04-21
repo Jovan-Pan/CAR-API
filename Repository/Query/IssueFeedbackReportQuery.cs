@@ -156,5 +156,9 @@ namespace Repository.Query
         select B.FormNo,B.UseID,B.UseNam,B.UseEmail,B.UserLevel from IssueFeedback A
         join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
         where A.Plant = @plant and A.FormNo IN @FormNoList";
+
+        public static readonly string GetMailtocc = @"
+        select distinct UseEmail from IssueFeedBackEmailRecipient where formno = @formno and UserLevel ='MailToCC'";
+
     }
 }
