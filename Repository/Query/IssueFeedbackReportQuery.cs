@@ -52,7 +52,7 @@ namespace Repository.Query
                 A.ReviewBy,
 		        B.UseID
             FROM 
-                IssueFeedback A inner join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
+                IssueFeedback A inner join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo and B.UserLevel !='MailToCC'
 
             WHERE 
                    Plant = @plant 
