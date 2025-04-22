@@ -340,7 +340,7 @@ namespace Services.CAR
             string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
             if (param.vendorcode != null && !AllowAllData)
             {
-                condition = " AND vendorcode = @vendorcode ";
+                condition = " AND vendorcode = @vendorcode AND status NOT IN ('DRAFT-SUBMIT', 'SUBMITED', 'SUBMITED-APPEAL', 'RE-SUBMIT', 'SUBMITED-REJECT', 'RE-SUBMIT-APPEAL', 'OPEN', 'OPEN-REJECT', 'OPEN-APPEAL', 'PDA-DESICION','PDA-DESICION-APPEAL')";
             }
             if (param.formType != null)
             {
