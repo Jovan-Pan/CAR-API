@@ -57,5 +57,8 @@ namespace Entities.ParamRequest
         public string? mailWStatus { get; set; }
         public string? mailactionType { get; set; }
         public string? sendmailUserAction { get; set; }
+
+        public string? FlowStatus { get; set; }
+        public string? buttonText { get; set; }
     }
 }

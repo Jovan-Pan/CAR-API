@@ -25,6 +25,7 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     private readonly Lazy<IDynamicNewFormRepository> _DynamicNewForm = new(() => new DynamicNewFormRepository(dbContext));
     private readonly Lazy<IDynamicFlowConfigurationRepository> _DynamicFlowConfiguration = new(() => new DynamicFlowConfigurationRepository(dbContext));
     private readonly Lazy<ITableMappingFieldNameRepository> _TableMappingFieldName = new(() => new TableMappingFieldNameRepository(dbContext));
+    private readonly Lazy<IWorkFlowHistoryRepository> _WorkFlowHistory = new(() => new WorkFlowHistoryRepository(dbContext));
     public IMDMRepository MDM => _mdmRepo.Value;
     public IImmidateActionRepository ImmAct => _immediteActrepo.Value;
     public IRootCauseRepository RootCause => _rootcauserepo.Value;
@@ -41,4 +42,5 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     public IDynamicNewFormRepository DynamicNewForm => _DynamicNewForm.Value;
     public IDynamicFlowConfigurationRepository DynamicFlowConfiguration => _DynamicFlowConfiguration.Value;
     public ITableMappingFieldNameRepository TableMappingFieldName => _TableMappingFieldName.Value;
+    public IWorkFlowHistoryRepository WorkFlowHistory => _WorkFlowHistory.Value;
 }

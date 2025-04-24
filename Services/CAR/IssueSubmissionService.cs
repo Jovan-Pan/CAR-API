@@ -43,6 +43,7 @@ namespace Services.CAR
             mydata.FormNumber = newformno;
 
             await data.ISM.InsertDataIssueFeedback(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
@@ -160,7 +161,7 @@ namespace Services.CAR
             }
 
             await data.ISM.issuerUpdateDataIssueFeedback(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
             #region get old data attachment
             List<string> formNoList = new List<string>();
             formNoList.Add(mydata.FormNumber);
@@ -304,7 +305,7 @@ namespace Services.CAR
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
             await data.ISM.issuerVoid(mydata, transaction);
 
 
@@ -349,7 +350,7 @@ namespace Services.CAR
 
 
             await data.ISM.issuerMgrVoid(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
@@ -362,7 +363,7 @@ namespace Services.CAR
 
 
             await data.ISM.issuerMgrReject(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -375,7 +376,7 @@ namespace Services.CAR
 
 
             await data.ISM.issuerMngUpdate(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
@@ -388,7 +389,7 @@ namespace Services.CAR
 
 
             await data.ISM.pdaDecision(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
@@ -401,7 +402,7 @@ namespace Services.CAR
 
 
             await data.ISM.pdaDecisionUpdate(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
@@ -414,7 +415,7 @@ namespace Services.CAR
 
 
             await data.ISM.pdaApproval(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
@@ -427,6 +428,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.pdaActionReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -446,7 +448,7 @@ namespace Services.CAR
             }
 
             await data.ISM.ReceiverAction(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
             #region get old data attachment
             List<string> formNoList = new List<string>();
             formNoList.Add(mydata.FormNumber);
@@ -807,7 +809,7 @@ namespace Services.CAR
             }
 
             await data.ISM.ReceiverActionUpdate(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
             #region get old data attachment
             List<string> formNoList = new List<string>();
             formNoList.Add(mydata.FormNumber);
@@ -1167,6 +1169,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.ReceiverActionAppeal(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Appeal Succesfully");
@@ -1179,6 +1182,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.ReceiverIssueReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -1191,6 +1195,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.ReceiverApproval(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
@@ -1203,6 +1208,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.ReceiverMngReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -1215,6 +1221,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.ReceiverApprovalToReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve to Reject Succesfully");
@@ -1227,6 +1234,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.PDAReviewerVoid(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Void Succesfully");
@@ -1239,6 +1247,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.PDAReviewerReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
             //string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
             //await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
 
@@ -1253,6 +1262,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.PDAReviewerAprove(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
@@ -1272,6 +1282,7 @@ namespace Services.CAR
             }
 
             await data.ISM.ReviewerSubmit(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
@@ -1384,6 +1395,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.ISM.ReviewerReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
             await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
