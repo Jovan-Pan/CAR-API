@@ -23,4 +23,5 @@ public interface IServiceManager
     IDynamicFlowConfigurationService DynamicFlowConfiguration { get; }
     ITableMappingFieldNameService TableMappingFieldName { get; }
     IDynamicNewFormService DynamicNewForm { get; }
+    IWorkFlowHistoryService WorkFlowHistory { get; }
 }

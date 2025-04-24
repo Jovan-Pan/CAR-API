@@ -32,6 +32,7 @@ public sealed class ServiceManager : IServiceManager
     private readonly Lazy<IDynamicFlowConfigurationService> _DynamicFlowConfigurationService;
     private readonly Lazy<ITableMappingFieldNameService> _TableMappingFieldNameService;
     private readonly Lazy<IDynamicNewFormService> _DynamicNewFormService;
+    private readonly Lazy<IWorkFlowHistoryService> _WorkFlowHistoryService;
 
     public ServiceManager(IDataManager data,
         IMasterDataApi masterDataApi,
@@ -59,6 +60,7 @@ public sealed class ServiceManager : IServiceManager
         _IssueFeedbackReportService = new Lazy<IIssueFeedbackReportService>(() => new IssueFeedbackReportService(data, this,data.MDM, cacheManager, localization));
         _SendMailSettingService = new Lazy<ISendMailSettingService>(() => new SendMailSettingService(data, data.MDM, masterDataApi, cacheManager, localization));
         _DynamicNewFormService = new Lazy<IDynamicNewFormService>(() => new DynamicNewFormService(data, data.MDM, masterDataApi, cacheManager, localization));
+        _WorkFlowHistoryService = new Lazy<IWorkFlowHistoryService>(() => new WorkFlowHistoryService(data, data.MDM, masterDataApi, cacheManager, localization));
 
     }
     public IAccountService Account => _accountBusiness.Value;
@@ -78,5 +80,5 @@ public sealed class ServiceManager : IServiceManager
     public IDynamicFlowConfigurationService DynamicFlowConfiguration => _DynamicFlowConfigurationService.Value;
     public ITableMappingFieldNameService TableMappingFieldName => _TableMappingFieldNameService.Value;
     public IDynamicNewFormService DynamicNewForm => _DynamicNewFormService.Value;
-
+    public IWorkFlowHistoryService WorkFlowHistory => _WorkFlowHistoryService.Value;
 }
