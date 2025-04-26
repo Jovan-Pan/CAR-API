@@ -31,7 +31,14 @@ namespace Repository.CAR
         {
             string query = WorkFlowHistoryQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync< IssueSubmissionParameters> (query, new {plant = mydata.UserPlant, role = mydata.mailactionType, status = mydata.FlowStatus, formno = mydata.FormNumber, performedBy = mydata.UserName, decision = mydata.buttonText, comment = mydata.Comment });
+            if (mydata.buttonText == "Approve")
+            {
+                return await conn.QueryAsync<IssueSubmissionParameters>(query, new { plant = mydata.UserPlant, role = mydata.mailactionType, status = mydata.FlowStatus, formno = mydata.FormNumber, performedBy = mydata.UserName, decision = mydata.buttonText, comment = mydata.Comment });
+            }
+            else
+            {
+                return await conn.QueryAsync<IssueSubmissionParameters>(query, new { plant = mydata.UserPlant, role = mydata.mailactionType, status = mydata.FlowStatus, formno = mydata.FormNumber, performedBy = mydata.UserName, decision = mydata.buttonText, comment = mydata.rejectReason });
+            }
         }
     }
 }
