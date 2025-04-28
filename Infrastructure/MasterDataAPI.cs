@@ -104,7 +104,7 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
                     var content = new ByteArrayContent(fileBytes);
 
                     // Penting: set header Content-ID
-                    content.Headers.Add("Content-ID", $"<{linkedFile.ContentId}>");
+                    content.Headers.Add("Content-ID", linkedFile.ContentId);
 
                     formData.Add(content, "LinkedFiles", file.Name);
                 }
