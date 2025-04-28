@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.SqlServer.Server;
 using Entities.MasterData;
 using System.Collections;
+using System.Net.Mail;
 
 namespace Services.CAR
 {
@@ -124,6 +125,7 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
 
                             var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
+                            var linkedFiles = new List<LinkedFile>();
                             if (attachments != null && attachments.Any())
                             {
                                 string imagesHtml = "";
@@ -131,29 +133,20 @@ namespace Services.CAR
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
-                                        imagesHtml += $"<img src='{attachment.FilePath}' alt='NCPicture' width='100' height='100' style='margin-right: 10px;' /><br/>";
+                                        var resource = new LinkedResource(attachment.FilePath);
+                                        string contentId = Guid.NewGuid().ToString();
+                                        linkedFiles.Add(new LinkedFile
+                                        {
+                                            FilePath = attachment.FilePath,
+                                            ContentId = contentId
+                                        });
+
+                                        imagesHtml += $"<img src='cid:{contentId}' width='100' height='100' style='margin-right:10px;' />";
                                     }
                                 }
-
-                                // Ganti placeholder dengan gambar-gambar yang sudah digabungkan
-                                if (!string.IsNullOrEmpty(imagesHtml))
-                                {
-                                    Datadetails = Datadetails.Replace("@NCPicture", imagesHtml);
-                                }
-                                else
-                                {
-                                    // Jika tidak ada gambar, bisa di-handle jika diperlukan
-                                    Datadetails = Datadetails.Replace("@NCPicture", "No images available.");
-                                }
+                                Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
                             }
-                            else
-                            {
-                                // Jika tidak ada attachment, bisa di-handle jika diperlukan
-                                Datadetails = Datadetails.Replace("@NCPicture", "No images available.");
-                            }
-
-
-                            //Datadetails = Datadetails.Replace("@NCPicture", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
+                                
                             body = body.Replace("@Data", Datadetails);
                             body = body.Replace("@UserId", mydata.UserName);
 
@@ -162,6 +155,7 @@ namespace Services.CAR
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                            mailparam.LinkedFiles = linkedFiles;
                             await mdmP.SendEmail(mailparam);
                         }
                     }

@@ -25,6 +25,7 @@ public class SendEmailParam
     public string CreateUser { get; set; } = string.Empty;
 
     public List<string> AttachmentsPath { get; set; } = [];
+    public List<LinkedFile> LinkedFiles { get; set; } = new();
 }
 
 public enum ImportanceEnum
@@ -37,4 +38,11 @@ public enum SensitivityEnum
 {
     NORMAL,
     CONFIDENTIAL
+}
+
+
+public class LinkedFile
+{
+    public string FilePath { get; set; }
+    public string ContentId { get; set; }
 }
