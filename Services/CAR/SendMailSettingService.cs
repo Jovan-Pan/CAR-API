@@ -103,7 +103,7 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
                             {
-                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&amp;ampuseraction={mydata.userAction}");
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
                             else
                             {
@@ -141,7 +141,7 @@ namespace Services.CAR
                                             ContentId = contentId
                                         });
 
-                                        imagesHtml += $"<img src='cid:{contentId}' width='100' height='100' style='margin-right:10px;' />";
+                                        imagesHtml += $"<img src=\"cid:{contentId}\" width=\"100\" height=\"100\" style=\"margin-right:10px;\" />";
                                     }
                                 }
                                 Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
