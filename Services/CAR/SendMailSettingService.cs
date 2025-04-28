@@ -141,7 +141,7 @@ namespace Services.CAR
                                             ContentId = contentId
                                         });
 
-                                        imagesHtml += $"<img src=\"cid:{contentId}\" width=\"100\" height=\"100\" style=\"margin-right:10px;\" />";
+                                        imagesHtml += $"<img src='cid:<{contentId}>' width='100' height='100' style='margin-right:10px;' />";
                                     }
                                 }
                                 Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
