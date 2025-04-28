@@ -218,5 +218,14 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryFirstOrDefaultAsync<string>(query, param);
         }
+
+        public async Task<List<IssueFeedbackAtchmentDto>> GetAttachmentsByFormNo(string formNo)
+        {
+            string query = IssueSubmissionQuery.GetAttachmentsByFormNo;
+            await using var conn = dbContext.CARConnection();
+            var param = new { FormNo = formNo };
+            var result = await conn.QueryAsync<IssueFeedbackAtchmentDto>(query, param);
+            return result.ToList();
+        }
     }
 }

@@ -88,6 +88,7 @@ namespace Services.CAR
                             }
 
 
+
                             mailparam.Recipient = recipent;
 
                             mailparam.Subject = globalmailMaster.FirstOrDefault().EmailSubject;
@@ -101,11 +102,11 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
                             {
-                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&useraction={mydata.userAction}");
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&amp;ampuseraction={mydata.userAction}");
                             }
                             else
                             {
-                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&useraction={mydata.userAction}");
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
                             Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                             Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
@@ -121,6 +122,38 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "" : mydata.AffectedCavity.ToString());
                             Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "" : mydata.NCCategory.ToString());
                             Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
+
+                            var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
+                            if (attachments != null && attachments.Any())
+                            {
+                                string imagesHtml = "";
+                                foreach (var attachment in attachments)
+                                {
+                                    if (!string.IsNullOrEmpty(attachment.FilePath))
+                                    {
+                                        imagesHtml += $"<img src='{attachment.FilePath}' alt='NCPicture' width='100' height='100' style='margin-right: 10px;' /><br/>";
+                                    }
+                                }
+
+                                // Ganti placeholder dengan gambar-gambar yang sudah digabungkan
+                                if (!string.IsNullOrEmpty(imagesHtml))
+                                {
+                                    Datadetails = Datadetails.Replace("@NCPicture", imagesHtml);
+                                }
+                                else
+                                {
+                                    // Jika tidak ada gambar, bisa di-handle jika diperlukan
+                                    Datadetails = Datadetails.Replace("@NCPicture", "No images available.");
+                                }
+                            }
+                            else
+                            {
+                                // Jika tidak ada attachment, bisa di-handle jika diperlukan
+                                Datadetails = Datadetails.Replace("@NCPicture", "No images available.");
+                            }
+
+
+                            //Datadetails = Datadetails.Replace("@NCPicture", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
                             body = body.Replace("@Data", Datadetails);
                             body = body.Replace("@UserId", mydata.UserName);
 

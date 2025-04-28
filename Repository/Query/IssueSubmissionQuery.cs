@@ -377,5 +377,7 @@ namespace Repository.Query
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";
+
+        public static readonly string GetAttachmentsByFormNo = @"SELECT FilePath FROM IssueFeedbackAtchment WHERE FormNo = @FormNo";
     }
 }
