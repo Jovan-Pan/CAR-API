@@ -14,9 +14,7 @@ namespace Services.Helper
          <table style=""border-collapse: collapse; width: 100%; border: 1px solid black;"">
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Plant</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@Plant</td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
+            <td colspan='3' style=""border: 1px solid black; padding: 8px;"">@Plant</td>
         </tr>
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Form Type</td>
@@ -61,10 +59,8 @@ namespace Services.Helper
             <td style=""border: 1px solid black; padding: 8px;""><b>@NCDescription</b></td>
         </tr>
         <tr>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
-            <td style=""border: 1px solid black; padding: 8px;""></td>
             <td style=""border: 1px solid black; padding: 8px;"">NC Picture</td>
-            <td style=""border: 1px solid black; padding: 8px;"">
+            <td colspan='3' style=""border: 1px solid black; padding: 8px;"">
                 <div style='display: flex; flex-wrap: wrap;'>
                     @NCPicture
                 </div>

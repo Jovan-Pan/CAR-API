@@ -115,14 +115,14 @@ namespace Services.CAR
                             //Datadetails = Datadetails.Replace("@Model", mydata.Model);
                             //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
                             Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode);
-                            Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "" : mydata.MaterialDesc.ToString());
-                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "" : mydata.NcRatio.ToString());
-                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept);
-                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null ? "" : (mydata.VendorCode.ToString() + "-" + mydata.VendorDesc));
-                            Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "" : mydata.TttlQty.ToString());
-                            Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "" : mydata.AffectedCavity.ToString());
-                            Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "" : mydata.NCCategory.ToString());
-                            Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
+                            Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
+                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
+                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null ? "N.A." : mydata.Dept);
+                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null ? "N.A." : (mydata.VendorCode.ToString() + "-" + mydata.VendorDesc));
+                            Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "0" : mydata.TttlQty.ToString());
+                            Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
+                            Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
+                            Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
 
                             var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
                             var linkedFiles = new List<LinkedFile>();
