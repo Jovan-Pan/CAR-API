@@ -42,6 +42,7 @@ namespace Contracts.Repository.CAR
         Task<int> ReviewerSubmit(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> ReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
+        Task<List<IssueFeedbackAtchmentDto>> GetAttachmentsByFormNo(string formNo);
 
 
     }

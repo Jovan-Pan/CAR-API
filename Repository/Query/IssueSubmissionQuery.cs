@@ -217,7 +217,7 @@ namespace Repository.Query
         set 
         Status = @IssueStatus,
         IssueType = @IssueType,
-        MainStatus = case when @IssueStatus = 'ISSUED' then 'CAR RAISE' else 'OPEN' end,
+        MainStatus = case when @IssueStatus = 'ISSUED' OR @IssueStatus = 'ISSUED-REJECT'  then 'CAR RAISE' else 'OPEN' end,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -377,5 +377,7 @@ namespace Repository.Query
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";
+
+        public static readonly string GetAttachmentsByFormNo = @"SELECT FilePath FROM IssueFeedbackAtchment WHERE FormNo = @FormNo";
     }
 }

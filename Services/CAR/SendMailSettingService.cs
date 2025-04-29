@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.SqlServer.Server;
 using Entities.MasterData;
 using System.Collections;
+using System.Net.Mail;
 
 namespace Services.CAR
 {
@@ -88,6 +89,7 @@ namespace Services.CAR
                             }
 
 
+
                             mailparam.Recipient = recipent;
 
                             mailparam.Subject = globalmailMaster.FirstOrDefault().EmailSubject;
@@ -99,20 +101,54 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            {
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
+                            }
+                            else
+                            {
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
+                            }
                             Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                             Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
                             Datadetails = Datadetails.Replace("@Product", mydata.Product);
                             //Datadetails = Datadetails.Replace("@Model", mydata.Model);
                             //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
                             Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode);
-                            Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "" : mydata.MaterialDesc.ToString());
-                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "" : mydata.NcRatio.ToString());
-                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept);
-                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null ? "" : (mydata.VendorCode.ToString() + "-" + mydata.VendorDesc));
-                            Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "" : mydata.TttlQty.ToString());
-                            Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "" : mydata.AffectedCavity.ToString());
-                            Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "" : mydata.NCCategory.ToString());
-                            Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" : mydata.NCDescription.ToString());
+                            Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
+                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
+                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null ? "N.A." : mydata.Dept);
+                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null ? "N.A." : (mydata.VendorCode.ToString() + "-" + mydata.VendorDesc));
+                            Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "0" : mydata.TttlQty.ToString());
+                            Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
+                            Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
+                            Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
+
+                            var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
+                            var linkedFiles = new List<LinkedFile>();
+                            if (attachments != null && attachments.Any())
+                            {
+                                string imagesHtml = "";
+                                foreach (var attachment in attachments)
+                                {
+                                    if (!string.IsNullOrEmpty(attachment.FilePath))
+                                    {
+                                        var fileBytes = await File.ReadAllBytesAsync(attachment.FilePath);
+                                        string base64String = Convert.ToBase64String(fileBytes);
+                                        string fileExtension = Path.GetExtension(attachment.FilePath).ToLower();
+
+                                        string mimeType = "image/jpeg"; // default
+                                        if (fileExtension == ".png") mimeType = "image/png";
+                                        else if (fileExtension == ".jpg" || fileExtension == ".jpeg") mimeType = "image/jpeg";
+                                        else if (fileExtension == ".gif") mimeType = "image/gif";
+
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='100' height='100' style='margin-right:10px;' />";
+
+                                    }
+                                }
+                                Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
+                            }
+                                
                             body = body.Replace("@Data", Datadetails);
                             body = body.Replace("@UserId", mydata.UserName);
 
@@ -121,6 +157,7 @@ namespace Services.CAR
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                            mailparam.LinkedFiles = linkedFiles;
                             await mdmP.SendEmail(mailparam);
                         }
                     }

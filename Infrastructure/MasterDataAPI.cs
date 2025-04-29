@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using Entities.Infrastructure;
 using Entities.Account.Dto;
+using System.Net.Mail;
 
 namespace Infrastructure;
 
@@ -71,13 +72,47 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
             { new StringContent(param.CopyRecipient), "CopyRecipient" }
         };
 
-        foreach(var filePath in param.AttachmentsPath)
-        {
-            var fileBytes = await File.ReadAllBytesAsync(filePath);
-            var file = new FileInfo(filePath);
+        //foreach(var filePath in param.AttachmentsPath)
+        //{
+        //    var fileBytes = await File.ReadAllBytesAsync(filePath);
+        //    var file = new FileInfo(filePath);
 
-            formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
+        //    formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
+        //}
+        AlternateView htmlView = AlternateView.CreateAlternateViewFromString(param.Body, null, "text/html");
+
+        if (param.AttachmentsPath != null)
+        {
+            foreach (var filePath in param.AttachmentsPath)
+            {
+                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(filePath);
+                    var file = new FileInfo(filePath);
+                    formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
+                }
+            }
         }
+
+        // Linked files untuk embedded images
+        if (param.LinkedFiles != null)
+        {
+            foreach (var linkedFile in param.LinkedFiles)
+            {
+                if (!string.IsNullOrEmpty(linkedFile.FilePath) && File.Exists(linkedFile.FilePath))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(linkedFile.FilePath);
+                    var file = new FileInfo(linkedFile.FilePath);
+
+                    // Upload file gambar
+                    formData.Add(new ByteArrayContent(fileBytes), "LinkedFiles", file.Name);
+
+                    // Upload ContentId-nya
+                    formData.Add(new StringContent(linkedFile.ContentId), "LinkedFileContentIds");
+                }
+            }
+        }
+
 
         //await _httpClient.PostAsync(url, formData);
 

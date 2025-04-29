@@ -139,22 +139,24 @@ namespace Services.CAR
                         Condquery += " AND MaterialCode IN @material ";
                     }
                 }
+                if (param.vendor != null)
+                {
+                    if (param.vendor.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
+                    }
+                }
                 if (!AllowAllData)
                 {
-                    if (param.vendor != null)
-                    {
-                        if (param.vendor.Count() > 0)
-                        {
-                            Condquery += Environment.NewLine;
-                            Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
-                        }
-                    }
                     if (param.UserDept == "VEND")
                     {
                         if (param.UserVendor != null)
                         {
                             Condquery += Environment.NewLine;
                             Condquery += " AND (ISNULL(VendorCode, 'NA') = ISNULL(@UserVendor, 'NA')) ";
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND status NOT IN ('DRAFT-SUBMIT', 'SUBMITED', 'SUBMITED-APPEAL', 'RE-SUBMIT', 'SUBMITED-REJECT', 'RE-SUBMIT-APPEAL', 'OPEN', 'OPEN-REJECT', 'OPEN-APPEAL', 'PDA-DESICION','PDA-DESICION-APPEAL')";
                         }
                     }
                 }
@@ -338,7 +340,7 @@ namespace Services.CAR
             string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
             if (param.vendorcode != null && !AllowAllData)
             {
-                condition = " AND vendorcode = @vendorcode ";
+                condition = " AND vendorcode = @vendorcode AND status NOT IN ('DRAFT-SUBMIT', 'SUBMITED', 'SUBMITED-APPEAL', 'RE-SUBMIT', 'SUBMITED-REJECT', 'RE-SUBMIT-APPEAL', 'OPEN', 'OPEN-REJECT', 'OPEN-APPEAL', 'PDA-DESICION','PDA-DESICION-APPEAL')";
             }
             if (param.formType != null)
             {
