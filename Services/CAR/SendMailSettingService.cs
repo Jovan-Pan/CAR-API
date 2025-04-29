@@ -133,15 +133,17 @@ namespace Services.CAR
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
-                                        var resource = new LinkedResource(attachment.FilePath);
-                                        string contentId = Guid.NewGuid().ToString();
-                                        linkedFiles.Add(new LinkedFile
-                                        {
-                                            FilePath = attachment.FilePath,
-                                            ContentId = contentId
-                                        });
+                                        var fileBytes = await File.ReadAllBytesAsync(attachment.FilePath);
+                                        string base64String = Convert.ToBase64String(fileBytes);
+                                        string fileExtension = Path.GetExtension(attachment.FilePath).ToLower();
 
-                                        imagesHtml += $"<img src='cid:{contentId}' width='100' height='100' style='margin-right:10px;' />";
+                                        string mimeType = "image/jpeg"; // default
+                                        if (fileExtension == ".png") mimeType = "image/png";
+                                        else if (fileExtension == ".jpg" || fileExtension == ".jpeg") mimeType = "image/jpeg";
+                                        else if (fileExtension == ".gif") mimeType = "image/gif";
+
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='100' height='100' style='margin-right:10px;' />";
+
                                     }
                                 }
                                 Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
