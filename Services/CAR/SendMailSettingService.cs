@@ -117,8 +117,14 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode);
                             Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
                             Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
-                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null ? "N.A." : mydata.Dept);
-                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null ? "N.A." : (mydata.VendorCode.ToString() + "-" + mydata.VendorDesc));
+                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null 
+                            ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td ><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>" 
+                            : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                            + mydata.Dept + "</b></td>");
+                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null
+                            ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                            : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                            + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>");
                             Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "0" : mydata.TttlQty.ToString());
                             Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
                             Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
@@ -142,7 +148,7 @@ namespace Services.CAR
                                         else if (fileExtension == ".jpg" || fileExtension == ".jpeg") mimeType = "image/jpeg";
                                         else if (fileExtension == ".gif") mimeType = "image/gif";
 
-                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='200' height='200' style='margin-right:10px;' />";
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='300' height='200' style='margin-right:10px;' />";
 
                                     }
                                 }
