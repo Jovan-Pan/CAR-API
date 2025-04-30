@@ -16,6 +16,11 @@ namespace Services.MasterData;
 internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMRepository mdm
     , ICacheManager memCache, ILocalizationService localization) : IMasterDataService
 {
+    public async Task<ApiResponse<bool>> AllowAllDataToAcc(string userId)
+    {
+        var result = await mdm.AllowAllDataToAcc(userId);
+        return ApiResponse<bool>.SuccessResponse(result);
+    }
     public async Task<ApiResponse<IEnumerable<MenuItem>>> GetMenuSetting(string userId)
     {
         var menuList = await mesMasterApi.GetMenuSetting(userId);
