@@ -18,13 +18,13 @@ public class MasterDataController(IServiceManager business) : Controller
         var result = await business.MasterData.AllowAllDataToAcc(userId);
         return Ok(result);
     }
-    [AllowAnonymous]
     [HttpGet("GetMenuSetting/{userId}")]
     public async Task<IActionResult> GetMenuSetting(string userId)
     {
         var result = await business.MasterData.GetMenuSetting(userId);
         return Ok(result);
     }
+    [AllowAnonymous]
     [HttpGet(nameof(GetPlantListForCRCUSystemByUserId))]
     public async Task<IActionResult> GetPlantListForCRCUSystemByUserId(string userId)
     {
