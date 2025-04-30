@@ -148,7 +148,8 @@ namespace Services.CAR
                                         else if (fileExtension == ".jpg" || fileExtension == ".jpeg") mimeType = "image/jpeg";
                                         else if (fileExtension == ".gif") mimeType = "image/gif";
 
-                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='300' height='200' style='margin-right:10px;' />";
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' style='height:200px; width:auto; margin-right:10px;' />";
+
 
                                     }
                                 }
