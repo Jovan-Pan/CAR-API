@@ -121,6 +121,7 @@ namespace Repository.Query
         ,PDAActionBy,PDAActionByName,PDAActionDate,PDAActionImmAct,PDAActionComment
         ,PDAActionUpdatedBy,PDAActionUpdatedByName,PDAActionUpdatedDate
         ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate,PDAAprovalComment as pdaAprovalComment
+        ,PDAVoidBy,PDAVoidByName,PDAVoidDate,PDAVoidComment
         ,ImmActRecDetail,CostPC,Curency,ActionResult
         ,ReceiveActionRootCause,RootCauseDetail,procecessGrpCode
         ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason

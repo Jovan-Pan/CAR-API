@@ -219,6 +219,12 @@ namespace Repository.CAR
             return await conn.QueryFirstOrDefaultAsync<string>(query, param);
         }
 
+        public async Task<int> pdaActionVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.pdaActionVoid;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
         public async Task<List<IssueFeedbackAtchmentDto>> GetAttachmentsByFormNo(string formNo)
         {
             string query = IssueSubmissionQuery.GetAttachmentsByFormNo;
