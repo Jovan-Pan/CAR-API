@@ -167,6 +167,12 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(pdaActionVoid))]
+        public async Task<IActionResult> pdaActionVoid([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.pdaActionVoid(data);
+            return Ok(result);
+        }
         [HttpPost(nameof(cekAvailableCompletePastIssue))]
         public async Task<IActionResult> cekAvailableCompletePastIssue([FromForm] cekAvailableCompletePastIssueParam param)
         {

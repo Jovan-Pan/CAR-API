@@ -64,8 +64,13 @@ namespace Entities.CAR
         public string PDAAprovalByName { get; set; }
         public DateTime? PDAAprovalDate { get; set; }
         public string pdaAprovalComment { get; set; }
-        
-        
+        public string PDAVoidBy { get; set; }
+        public string PDAVoidByName { get; set; }
+        public DateTime? PDAVoidDate { get; set; }
+        public string PDAVoidComment { get; set; }
+
+
+
         public string ImmActRecDetail { get; set; }
         public decimal? CostPC { get; set; }
         public string Curency { get; set; }

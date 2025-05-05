@@ -378,6 +378,18 @@ namespace Repository.Query
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";
 
+        public static readonly string pdaActionVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        PDAVoidBy = @UserId,
+        PDAVoidByName = @UserName,
+        PDAVoidDate = GETDATE(),
+        PDAVoidComment = @rejectReason
+        where FormNo = @FormNumber
+        ";
+
         public static readonly string GetAttachmentsByFormNo = @"SELECT FilePath FROM IssueFeedbackAtchment WHERE FormNo = @FormNo";
     }
 }
