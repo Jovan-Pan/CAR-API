@@ -128,7 +128,7 @@ namespace Repository.Query
         ,ReceiveActionBy,ReceiveActionByName,ReceiveActionDate
         ,ReceiveActionUpdatedBy,ReceiveActionUpdatedByName,ReceiveActionUpdatedDate
         ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment
-        ,Detectedby
+        ,Detectedby,[Plating Line No/Name] as PlatingLineNoName,checkingMethod
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
 
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod

@@ -308,7 +308,9 @@ namespace Services.CAR
                                  Typeofcontravention = main.Typeofcontravention,
                                  RiskCategory = main.RiskCategory,
 
-                                 Detectedby = main.Detectedby
+                                 Detectedby = main.Detectedby,
+                                 PlatingLineNoName = main.PlatingLineNoName,
+                                 CheckingMethod = main.CheckingMethod
                              };
             maindata = joinedData;
             
