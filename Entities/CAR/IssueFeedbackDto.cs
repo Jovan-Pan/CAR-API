@@ -113,6 +113,8 @@ namespace Entities.CAR
         public string? RiskCategory { get; set; }
 
         public string? Detectedby { get; set; }
+        public string? PlatingLineNoName { get; set; }
+        public bool? CheckingMethod { get; set; }
 
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
        
