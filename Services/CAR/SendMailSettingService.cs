@@ -170,7 +170,7 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' style='height:200px; width:200px; margin-right:10px;' />";
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='200' height='200' style='display: inline-block; margin-right:10px;' />";
                                     }
                                 }
 
@@ -263,26 +263,6 @@ namespace Services.CAR
             var resultList = new List<ImportResult> { ImportResult };
             return resultList;
             //return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
-        }
-
-        public string CompressImageToBase64(string imagePath, long quality = 50L)
-        {
-            using (var bitmap = new Bitmap(imagePath))
-            {
-                var jpegEncoder = ImageCodecInfo.GetImageDecoders()
-                                    .First(c => c.FormatID == ImageFormat.Jpeg.Guid);
-
-                var encoderParams = new EncoderParameters(1);
-                encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-
-                using (var ms = new MemoryStream())
-                {
-                    bitmap.Save(ms, jpegEncoder, encoderParams);
-                    byte[] imageBytes = ms.ToArray();
-                    string base64 = Convert.ToBase64String(imageBytes);
-                    return base64;
-                }
-            }
         }
     }
 }
