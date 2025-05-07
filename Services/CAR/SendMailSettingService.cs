@@ -20,6 +20,8 @@ using Microsoft.SqlServer.Server;
 using Entities.MasterData;
 using System.Collections;
 using System.Net.Mail;
+using System.Drawing.Imaging;
+using System.Drawing;
 
 namespace Services.CAR
 {
@@ -139,23 +141,42 @@ namespace Services.CAR
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
-                                        var fileBytes = await File.ReadAllBytesAsync(attachment.FilePath);
-                                        string base64String = Convert.ToBase64String(fileBytes);
+                                        using var originalImage = Image.FromFile(attachment.FilePath);
+                                        using var ms = new MemoryStream();
+
+                                        var encoderParameters = new EncoderParameters(1);
+                                        encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L); // 50% quality
+
+                                        ImageCodecInfo jpegCodec = ImageCodecInfo.GetImageDecoders()
+                                            .FirstOrDefault(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+
+                                        if (jpegCodec != null)
+                                        {
+                                            originalImage.Save(ms, jpegCodec, encoderParameters);
+                                        }
+                                        else
+                                        {
+                                            originalImage.Save(ms, ImageFormat.Jpeg); // fallback
+                                        }
+
+                                        string base64String = Convert.ToBase64String(ms.ToArray());
+
                                         string fileExtension = Path.GetExtension(attachment.FilePath).ToLower();
+                                        string mimeType = fileExtension switch
+                                        {
+                                            ".png" => "image/png",
+                                            ".gif" => "image/gif",
+                                            ".jpg" or ".jpeg" => "image/jpeg",
+                                            _ => "application/octet-stream"
+                                        };
 
-                                        string mimeType = "image/jpeg"; // default
-                                        if (fileExtension == ".png") mimeType = "image/png";
-                                        else if (fileExtension == ".jpg" || fileExtension == ".jpeg") mimeType = "image/jpeg";
-                                        else if (fileExtension == ".gif") mimeType = "image/gif";
-
-                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' style='height:200px; width:auto; margin-right:10px;' />";
-
-
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' style='height:200px; width:200px; margin-right:10px;' />";
                                     }
                                 }
+
                                 Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
                             }
-                                
+
                             body = body.Replace("@Data", Datadetails);
                             body = body.Replace("@UserId", mydata.UserName);
 
@@ -242,6 +263,26 @@ namespace Services.CAR
             var resultList = new List<ImportResult> { ImportResult };
             return resultList;
             //return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
+
+        public string CompressImageToBase64(string imagePath, long quality = 50L)
+        {
+            using (var bitmap = new Bitmap(imagePath))
+            {
+                var jpegEncoder = ImageCodecInfo.GetImageDecoders()
+                                    .First(c => c.FormatID == ImageFormat.Jpeg.Guid);
+
+                var encoderParams = new EncoderParameters(1);
+                encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+
+                using (var ms = new MemoryStream())
+                {
+                    bitmap.Save(ms, jpegEncoder, encoderParams);
+                    byte[] imageBytes = ms.ToArray();
+                    string base64 = Convert.ToBase64String(imageBytes);
+                    return base64;
+                }
+            }
         }
     }
 }
