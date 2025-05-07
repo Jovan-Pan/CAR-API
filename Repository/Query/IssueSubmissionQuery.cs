@@ -43,11 +43,11 @@ namespace Repository.Query
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,Detectedby)
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,Detectedby,[Plating Line No/Name],CheckingMethod)
         values
         (
         @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
-        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby
+        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby,@PlatingLineNoName,@CheckingMethod
         )
         ";
 
@@ -78,6 +78,8 @@ namespace Repository.Query
         ,VendorDesc = @VendorDesc
         ,AffectedCavityNO = @AffectedCavityNO
         ,Detectedby = @Detectedby
+        ,[Plating Line No/Name] = @PlatingLineNoName
+        ,CheckingMethod = @CheckingMethod
         where FormNo = @FormNumber
         ";
 
@@ -376,6 +378,18 @@ namespace Repository.Query
         and Dept=@dept 
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
+        ";
+
+        public static readonly string pdaActionVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        PDAVoidBy = @UserId,
+        PDAVoidByName = @UserName,
+        PDAVoidDate = GETDATE(),
+        PDAVoidComment = @rejectReason
+        where FormNo = @FormNumber
         ";
 
         public static readonly string GetAttachmentsByFormNo = @"SELECT FilePath FROM IssueFeedbackAtchment WHERE FormNo = @FormNo";

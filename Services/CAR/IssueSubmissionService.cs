@@ -1403,7 +1403,20 @@ namespace Services.CAR
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully, New Form No Created : " + newformno);
         }
+        public async Task<ApiResponse<string>> pdaActionVoid(IssueSubmissionParameters mydata)
+        {
 
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.pdaActionVoid(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
+            //string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
+            //await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Void Succesfully");
+        }
         public async Task<ApiResponse<string>> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param)
         {
             var result = await data.ISM.cekAvailableCompletePastIssue(param);

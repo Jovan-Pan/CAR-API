@@ -446,10 +446,10 @@ namespace Repository.CAR
         private static void WriteTemplateContent(ExcelWorksheet sheet)
         {
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
-            var row2Header = new object[] { "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory" };
-            var row3Header = new object[] { "int", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(50)", "INT", "Bit(Y/N)", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(max)", "NVARCHAR(max)", "NVARCHAR(100)" };
-            var row4Header = new object[] { "Plant","FormType","FieldName","FieldType","FieldLength","Mandatory","FieldElement","OptionDataResource","DBResource","Query","DataOption","Sequence" };
-            var row5Header = new object[] { "2100", "Test", "Test","string","100",1,"Dropdown","Input Manual","","","test1,test2,test3",1};
+            var row2Header = new object[] { "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Optional", "Optional", "Optional", "Mandatory"};
+            var row3Header = new object[] { "int", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(50)", "NVARCHAR(max)", "NVARCHAR(max)", "NVARCHAR(100)" };
+            var row4Header = new object[] { "Plant","FormType","FieldName","FieldElement","OptionDataResource","DBResource","Query","DataOption","Sequence" };
+            var row5Header = new object[] { "2100", "Test", "Test","Dropdown","Input Manual","","","A,BC",1};
 
             var data = new List<object[]>
                 {
@@ -472,7 +472,7 @@ namespace Repository.CAR
             {
                 range.Style.Font.Color.SetColor(Color.Red); // Set the font color to red
             }
-            using (var range = sheet.Cells[1, 1, 3, 12])
+            using (var range = sheet.Cells[1, 1, 3, 9])
             {
                 range.Style.Fill.PatternType = ExcelFillStyle.Solid; // Set the fill pattern
                 range.Style.Fill.BackgroundColor.SetColor(Color.LightBlue); // Set the background color
@@ -500,7 +500,7 @@ namespace Repository.CAR
 
         public async Task<ImportResult> Import(string filePath, string userId)
         {
-            string excelCol = "Plant,FormType,FieldName,FieldType,FieldLength,Mandatory,FieldElement,OptionDataResource,DBResource,Query,DataOption,Sequence";
+            string excelCol = "Plant,FormType,FieldName,FieldElement,OptionDataResource,DBResource,Query,DataOption,Sequence";
             string excelRange = "A4:E5000";
             string query = DynamicFormConfigurationQuery.Import;
 
@@ -509,13 +509,14 @@ namespace Repository.CAR
             ArrayList specialCond = new ArrayList();
 
             await using var conn = dbContext.CARConnection();
+            await using var connMDM = dbContext.MDMConnection();
 
             if (conn.State == ConnectionState.Closed)
             {
                 await conn.OpenAsync();
             }
 
-            specialCond.Add("UPDATE ##temp set Mandatory = (CASE Mandatory WHEN 'Y' then 'true' when 'N' then 'false' else Mandatory end); ");
+            //specialCond.Add("UPDATE ##temp set Mandatory = (CASE Mandatory WHEN 'Y' then 'true' when 'N' then 'false' else Mandatory end); ");
 
             conditions.Add("ISNULL(Plant, '') = ''");
             condRemark.Add("Plant is mandatory");
@@ -526,20 +527,20 @@ namespace Repository.CAR
             conditions.Add("ISNULL(FieldName, '') = ''");
             condRemark.Add("FieldName is mandatory");
 
-            conditions.Add("ISNULL(FieldType, '') = ''");
-            condRemark.Add("FieldType is mandatory");
+            //conditions.Add("ISNULL(FieldType, '') = ''");
+            //condRemark.Add("FieldType is mandatory");
 
-            conditions.Add("FieldLength IS NOT NULL AND FieldLength < 0");
-            condRemark.Add("FieldLength cannot be negative");
+            //conditions.Add("FieldLength IS NOT NULL AND FieldLength < 0");
+            //condRemark.Add("FieldLength cannot be negative");
 
             conditions.Add("ISNULL(FieldElement, '') = ''");
             condRemark.Add("FieldElement is mandatory");
 
-            conditions.Add("ISNULL(OptionDataResource, '') = ''");
-            condRemark.Add("OptionDataResource is mandatory");
+            //conditions.Add("ISNULL(OptionDataResource, '') = ''");
+            //condRemark.Add("OptionDataResource is mandatory");
 
-            conditions.Add(" Mandatory not in ('Y','N') ");
-            condRemark.Add("Mandatory value is Y or N");
+            //conditions.Add(" Mandatory not in ('Y','N') ");
+            //condRemark.Add("Mandatory value is Y or N");
 
             conditions.Add("LEN(FormType) > 50");
             condRemark.Add("FormType maximum length is 50 characters");
@@ -547,8 +548,8 @@ namespace Repository.CAR
             conditions.Add("LEN(FieldName) > 50");
             condRemark.Add("FieldName maximum length is 50 characters");
 
-            conditions.Add("LEN(FieldType) > 50");
-            condRemark.Add("FieldType maximum length is 50 characters");
+            //conditions.Add("LEN(FieldType) > 50");
+            //condRemark.Add("FieldType maximum length is 50 characters");
 
             conditions.Add("LEN(FieldElement) > 50");
             condRemark.Add("FieldElement maximum length is 50 characters");
@@ -570,11 +571,13 @@ namespace Repository.CAR
 
             string uniqueField = "Plant,FormType,FieldName";
 
-            var validFieldName = (await conn.QueryAsync<string>(
-                "USE CAR;Select COLUMN_NAME AS ColumnName FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'IssueFeedback' ORDER BY ORDINAL_POSITION")).ToList();
+            string uniqueSequence = "Plant,FormType,Sequence";
 
-            var validFormType = (await conn.QueryAsync<string>(
-                "use MDM;select IDValue from tGlobal where ID = 'CARDynamicFormTypeOption'")).ToList();
+            var validFieldName = (await conn.QueryAsync<string>(
+                "Select COLUMN_NAME AS ColumnName FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'IssueFeedback' ORDER BY ORDINAL_POSITION")).ToList();
+
+            var validFormType = (await connMDM.QueryAsync<string>(
+                "select IDValue from tGlobal where ID = 'CARDynamicFormTypeOption'")).ToList();
 
             if (validFieldName.Count > 0)
             {
@@ -582,6 +585,7 @@ namespace Repository.CAR
                 conditions.Add($"UPPER(LTRIM(RTRIM(FieldName))) NOT IN ('{validFieldNameStr}')");
                 condRemark.Add($"Field Name is not Existing in IssueFeedBack");
             }
+
 
             List<string> validFormTypeList = new List<string>();
 
@@ -601,8 +605,8 @@ namespace Repository.CAR
                 condRemark.Add($"FormType is not Existing in Setting");
             }
 
-            var validPlant = (await conn.QueryAsync<string>(
-               "USE MDM;select plant from tplant")).ToList();
+            var validPlant = (await connMDM.QueryAsync<string>(
+               "select plant from tplant")).ToList();
 
             if (validPlant.Count > 0)
             {
@@ -611,9 +615,112 @@ namespace Repository.CAR
                 condRemark.Add($"Plant is not Existing IN TPLANT");
             }
 
-
             // Read Excel or TXT file
             ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "DynamicFormConfiguration", "DynamicFormConfiguration", conditions, condRemark, excelRange, uniqueField);
+
+            var enrichDataList = await conn.QueryAsync(
+             $@"{DynamicFormConfigurationQuery.GetIssueFeedbackcolumn}");
+
+            var enrichData = enrichDataList
+            .ToDictionary(x => ((string)x.ColumnName).Trim().ToUpper());
+
+            //var validSequenceList = await conn.QueryAsync<string>(
+            //$@"{DynamicFormConfigurationQuery.CheckValidSequence}");
+
+            //// HashSet for fast lookup
+            //var validSequenceSet = new HashSet<string>(
+            //    validSequenceList.Select(seq => seq.Trim().ToUpper())
+            //);
+
+            var sequenceList = (await conn.QueryAsync(
+            $@"{DynamicFormConfigurationQuery.CheckValidSequence}"))    
+            .Select(x => new {
+                Sequence = (int)x.Sequence,
+                FormType = ((string)x.FormType).Trim(),
+                Plant = ((int)x.Plant).ToString(),
+                FieldName = ((string)x.FieldName).Trim()
+            }).ToList();
+
+
+            if (!excelData.DataTable.Columns.Contains("FieldType"))
+                excelData.DataTable.Columns.Add("FieldType");
+
+            if (!excelData.DataTable.Columns.Contains("FieldLength"))
+                excelData.DataTable.Columns.Add("FieldLength");
+
+            if (!excelData.DataTable.Columns.Contains("Mandatory"))
+                excelData.DataTable.Columns.Add("Mandatory");
+
+            foreach (DataRow row in excelData.DataTable.Rows)
+            {
+                if (row["FieldName"] == DBNull.Value || row["FormType"] == DBNull.Value || row["Plant"] == DBNull.Value)
+                    continue;
+
+                var fieldName = row["FieldName"].ToString().Trim();
+                var fieldNameKey = fieldName.ToUpper();
+                var formType = row["FormType"].ToString().Trim();
+                var plant = row["Plant"].ToString().Trim();
+
+                if (enrichData.TryGetValue(fieldNameKey, out var enrich))
+                {
+                    row["FieldType"] = enrich.DataType ?? DBNull.Value;
+                    row["FieldLength"] = enrich.Length ?? DBNull.Value;
+                    row["Mandatory"] = enrich.AllowNull != null ? (int.Parse(enrich.AllowNull.ToString()) == 1 ? 0 : 1) : DBNull.Value;
+                }
+
+                var SequenceList = (await conn.QueryAsync<string>(
+                     @"SELECT Sequence 
+                      FROM DynamicFormConfiguration 
+                      WHERE plant = @plant AND FormType = @formType",
+                     new { plant, formType }
+                 )).ToList();
+
+                if (SequenceList.Count > 0)
+                {
+                    string SequenceListstr = string.Join("', '", SequenceList);
+                    conditions.Add($"UPPER(LTRIM(RTRIM(Sequence))) IN ('{SequenceListstr}')");
+                    condRemark.Add($"Sequence is Already Existing IN these FormType");
+                }
+
+
+                // Cek apakah kombinasi sudah ada di DB
+                //bool alreadyExists = sequenceList.Any(s =>
+                //    s.FieldName.Equals(fieldName, StringComparison.OrdinalIgnoreCase) &&
+                //    s.FormType.Equals(formType, StringComparison.OrdinalIgnoreCase) &&
+                //    s.Plant == plant);
+
+                //if (alreadyExists)
+                //{
+                //    // Sudah ada, tidak perlu set Sequence lagi
+                //    continue;
+                //}
+
+                //if (row["Sequence"] != DBNull.Value && int.TryParse(row["Sequence"].ToString(), out int seq))
+                //{
+                //    // Normalize Plant for comparison
+                //    string normalizedPlant = plant.ToUpperInvariant();
+                //    string normalizedFormType = formType.ToUpperInvariant();
+
+                //    // Check if sequence already exists in database list
+                //    var isSequenceUsed = sequenceList.Any(s =>
+                //    s.FormType.Equals(formType, StringComparison.OrdinalIgnoreCase) &&
+                //    s.Plant == plant &&
+                //    s.Sequence == seq);
+
+                //    if (isSequenceUsed)
+                //    {
+                //        // Create a comma-separated list of sequences for SQL condition
+                //        var sequenceValues = string.Join(",", sequenceList
+                //            .Where(s => s.FormType.Equals(formType, StringComparison.OrdinalIgnoreCase) &&
+                //                        s.Plant == plant) // Filter by FormType and Plant
+                //            .Select(s => $"'{s.Sequence}'"));
+
+                //        conditions.Add($"UPPER(LTRIM(RTRIM(Sequence))) IN ({sequenceValues})");
+                //        condRemark.Add($"Sequence {seq} sudah digunakan untuk FormType {formType} dan Plant {plant}");
+                //    }
+                //}
+            }
+
 
             if (!excelData.Success)
             {
@@ -705,13 +812,32 @@ namespace Repository.CAR
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
                         SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
 
-                       WITH cte AS (
+                        WITH cte AS (
                             SELECT *,
                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
                             FROM ##temp
                         )
                         DELETE FROM cte WHERE row_num > 1";
                     }
+
+                    if (!string.IsNullOrEmpty(uniqueSequence))
+                    {
+                        sql += $@"
+                        ;WITH cte AS (
+                            SELECT {excelCol}, ROW_NUMBER() OVER (PARTITION BY {uniqueSequence} ORDER BY {uniqueSequence}) AS row_num
+                            FROM ##temp
+                        )
+                        INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
+                        SELECT {excelCol}, 'Duplicate Data of {uniqueSequence}' FROM cte WHERE row_num > 1;
+
+                        WITH cte AS (
+                            SELECT *,
+                                   ROW_NUMBER() OVER (PARTITION BY {uniqueSequence} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
+                    }
+                    
                     if (specialCond != null && specialCond.Count > 0)
                     // Execute special conditions if any
                     {

@@ -25,14 +25,12 @@ namespace Services.Helper
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Form Number</td>
             <td style=""border: 1px solid black; padding: 8px;"">@FormNumber <a href='@Formlink'> (click for more details)</a></td>
-            <td style=""border: 1px solid black; padding: 8px;"">Dept</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@Dept</td>
+            @Dept
         </tr>
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Status</td>
             <td style=""border: 1px solid black; padding: 8px;"">@Status</td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>Vendor</b></td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>@Vendor</b></td>
+            @Vendor
         </tr>
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Detection Date</td>

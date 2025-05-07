@@ -265,6 +265,10 @@ namespace Services.CAR
                                  PDAAprovalByName = main.PDAAprovalByName,
                                  PDAAprovalDate = main.PDAAprovalDate,
                                  pdaAprovalComment = main.pdaAprovalComment,
+                                 PDAVoidBy = main.PDAVoidBy,
+                                 PDAVoidByName = main.PDAVoidByName,
+                                 PDAVoidDate = main.PDAVoidDate,
+                                 PDAVoidComment = main.PDAVoidComment,
                                  ImmActRecDetail = main.ImmActRecDetail,
                                  CostPC = main.CostPC,
                                  Curency = main.Curency,
@@ -304,7 +308,9 @@ namespace Services.CAR
                                  Typeofcontravention = main.Typeofcontravention,
                                  RiskCategory = main.RiskCategory,
 
-                                 Detectedby = main.Detectedby
+                                 Detectedby = main.Detectedby,
+                                 PlatingLineNoName = main.PlatingLineNoName,
+                                 CheckingMethod = main.CheckingMethod
                              };
             maindata = joinedData;
             

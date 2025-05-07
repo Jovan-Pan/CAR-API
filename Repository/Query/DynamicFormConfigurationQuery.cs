@@ -41,7 +41,8 @@ namespace Repository.Query
             'ReceiveAprovalBy', 'ReceiveAprovalByName', 'ReceiveAprovalDate', 'PDAReviewBy',
             'PDAReviewByName', 'PDAReviewDate', 'PDAReviewComment', 'isPDAReviewResultAprov',
             'ReviewBy', 'ReviewByName', 'ReviewSubmitDate', 'ReviewComment', 'ReviewMethod',
-            'isReviewResultAprov', 'PDAAprovalComment', 'ReceiveAprovalComment', 'MainStatus','IssueType'
+            'isReviewResultAprov', 'PDAAprovalComment', 'ReceiveAprovalComment', 'MainStatus','IssueType',
+            'PDAVoidBy','PDAVoidByName','PDAVoidDate','PDAVoidComment'
         )
         ORDER BY ORDINAL_POSITION;";
 
@@ -129,6 +130,56 @@ namespace Repository.Query
         SET Sequence= @Sequence,DelFlag = 0, UpdatedBy = @userId, UpdatedByName = @userId, UpdatedDate = GETDATE() 
         WHERE ID = @id";
 
+        //public static readonly string Import = @"
+        //Use CAR;UPDATE DynamicFormConfiguration
+        //SET 
+        //    Plant = B.Plant,
+        //    FormType = B.FormType,
+        //    FieldName = B.FieldName,
+        //    FieldType = B.FieldType,
+        //    FieldLength = B.FieldLength,
+        //    Mandatory = B.Mandatory,
+        //    FieldElement = B.FieldElement,
+        //    OptionDataResource = B.OptionDataResource,
+        //    DBResource = B.DBResource,
+        //    Query = B.Query,
+        //    DataOption = B.DataOption,
+        //    Sequence = B.Sequence,
+        //    UpdatedBy = UPPER(@userId),
+        //    UpdatedByName = UPPER(@userId),
+        //    UpdatedDate = GETDATE(),
+        //    DelFlag = 0
+        //FROM DynamicFormConfiguration A
+        //INNER JOIN ##temp B 
+        //ON (A.FieldName = B.FieldName)
+
+        //INSERT INTO DynamicFormConfiguration 
+        //(Plant, FormType, FieldName, FieldType, FieldLength, Mandatory, FieldElement, OptionDataResource, 
+        //DBResource, Query, DataOption, Sequence, CreatedBy, CreatedByName, CreatedDate, DelFlag) 
+        //SELECT
+        //    B.Plant,
+        //    B.FormType,
+        //    B.FieldName,
+        //    B.FieldType,
+        //    B.FieldLength,
+        //    B.Mandatory,
+        //    B.FieldElement,
+        //    B.OptionDataResource,
+        //    B.DBResource,
+        //    B.Query,
+        //    B.DataOption,
+        //    B.Sequence,
+        //    UPPER(@userId),
+        //    UPPER(@userId),
+        //    GETDATE(),
+        //    0
+        //FROM ##temp B
+        //WHERE NOT EXISTS (
+        //    SELECT A.FieldName
+        //    FROM DynamicFormConfiguration A 
+        //    WHERE A.FieldName = B.FieldName
+        //)";
+
         public static readonly string Import = @"
         Use CAR;UPDATE DynamicFormConfiguration
         SET 
@@ -150,7 +201,7 @@ namespace Repository.Query
             DelFlag = 0
         FROM DynamicFormConfiguration A
         INNER JOIN ##temp B 
-        ON (A.FieldName = B.FieldName)
+        ON (A.FieldName = B.FieldName and A.Plant = B.Plant and A.FormType = B.FormType)
 
         INSERT INTO DynamicFormConfiguration 
         (Plant, FormType, FieldName, FieldType, FieldLength, Mandatory, FieldElement, OptionDataResource, 
@@ -176,9 +227,8 @@ namespace Repository.Query
         WHERE NOT EXISTS (
             SELECT A.FieldName
             FROM DynamicFormConfiguration A 
-            WHERE A.FieldName = B.FieldName
+            WHERE A.FieldName = B.FieldName and A.Plant = B.Plant and A.FormType = B.FormType
         )";
-
         public static readonly string query = @"
                                                 DECLARE @query NVARCHAR(MAX);
 
@@ -231,9 +281,14 @@ namespace Repository.Query
         FROM RankedData
         WHERE RowNum = 1;";
 
-        public static readonly string GetDynamicFlowConfiguration = @"
+       public static readonly string GetDynamicFlowConfiguration = @"
        SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
        FROM DynamicFlowConfiguration
        WHERE Plant = @plant AND FormType = @FormType AND DelFlag = 0";
+
+
+        public static readonly string CheckValidSequence = @"
+        SELECT CAST(Sequence AS INT) AS Sequence, FormType, Plant, FieldName from DynamicFormConfiguration   
+        ";
     } 
 }

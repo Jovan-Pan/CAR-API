@@ -121,13 +121,14 @@ namespace Repository.Query
         ,PDAActionBy,PDAActionByName,PDAActionDate,PDAActionImmAct,PDAActionComment
         ,PDAActionUpdatedBy,PDAActionUpdatedByName,PDAActionUpdatedDate
         ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate,PDAAprovalComment as pdaAprovalComment
+        ,PDAVoidBy,PDAVoidByName,PDAVoidDate,PDAVoidComment
         ,ImmActRecDetail,CostPC,Curency,ActionResult
         ,ReceiveActionRootCause,RootCauseDetail,procecessGrpCode
         ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason
         ,ReceiveActionBy,ReceiveActionByName,ReceiveActionDate
         ,ReceiveActionUpdatedBy,ReceiveActionUpdatedByName,ReceiveActionUpdatedDate
         ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment
-        ,Detectedby
+        ,Detectedby,[Plating Line No/Name] as PlatingLineNoName,checkingMethod
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
 
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
