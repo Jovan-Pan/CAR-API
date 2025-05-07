@@ -170,7 +170,7 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='auto' height='200' style='display: inline-block; margin-right:10px;' />";
+                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' width='auto' height='200' style='display: inline-block; margin-right:10px; object-fit: contain;' />";
                                     }
                                 }
 
