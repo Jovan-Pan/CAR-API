@@ -11,7 +11,7 @@ namespace Repository.Query
         public static readonly string GetDynamicFlowConfiguration = @"
         SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM DynamicFlowConfiguration
-        WHERE 1=1";
+        WHERE Plant = @plant ";
 
         public static readonly string SearchADV = @"
         SELECT DISTINCT ID, Plant, FormType, Flow, CreatedBy, CreatedByName, CreatedDate,UpdatedBy, UpdatedByName, UpdatedDate, DelFlag

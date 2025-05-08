@@ -175,6 +175,40 @@ namespace Repository.CAR
                 plant = DynamicFormConfigurationDto.plant
             });
 
+            var existingDataNCR = await conn.QueryFirstOrDefaultAsync<DynamicFormConfigurationDto>(CheckExistingFormType, new
+            {
+                FormType = "NCR",
+                plant = DynamicFormConfigurationDto.plant
+            });
+
+            if (existingDataNCR == null)
+            {
+                await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
+                {
+                    plant = DynamicFormConfigurationDto.plant,
+                    FormType = "NCR",
+                    Flow = "RAISE CAR,DISPOSITION,CAR ISSUED,RECEIVER,RECEIVER APPROVAL,ISSUER APPROVAL,VERIFICATION",
+                    userid = DynamicFormConfigurationDto.userid
+                });
+            }
+
+            var existingDataQFR = await conn.QueryFirstOrDefaultAsync<DynamicFormConfigurationDto>(CheckExistingFormType, new
+            {
+                FormType = "QFR",
+                plant = DynamicFormConfigurationDto.plant
+            });
+
+            if (existingDataQFR == null)
+            {
+                await conn.QueryAsync<DynamicFormConfigurationDto>(queryInsertFlow, new
+                {
+                    plant = DynamicFormConfigurationDto.plant,
+                    FormType = "QFR",
+                    Flow = "RAISE CAR,DISPOSITION,CAR ISSUED,RECEIVER,RECEIVER APPROVAL,ISSUER APPROVAL,VERIFICATION",
+                    userid = DynamicFormConfigurationDto.userid
+                });
+            }
+
             if (existingData == null)
             {
                 if (DynamicFormConfigurationDto.FormType != "NCR")

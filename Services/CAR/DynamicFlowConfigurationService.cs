@@ -16,9 +16,9 @@ namespace Services.CAR
 {
     internal sealed class DynamicFlowConfigurationService(IDataManager data, ICacheManager memCache, ILocalizationService localization) : IDynamicFlowConfigurationService
     {
-        public async Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> GetDynamicFlowConfiguration(string search, string SearchFTADV, string SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> GetDynamicFlowConfiguration(string search, string SearchFTADV, string SearchADV, bool delflag, int plant)
         {
-            var result = await data.DynamicFlowConfiguration.GetDynamicFlowConfiguration(search, SearchFTADV, SearchADV, delflag);
+            var result = await data.DynamicFlowConfiguration.GetDynamicFlowConfiguration(search, SearchFTADV, SearchADV, delflag, plant);
             return ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>.SuccessResponse(result);
         }
 
