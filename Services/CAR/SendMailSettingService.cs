@@ -141,28 +141,22 @@ namespace Services.CAR
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
-                                        using var originalImage = Image.FromFile(attachment.FilePath);
+                                        using var originalImg = Image.FromFile(attachment.FilePath);
+                                        using var img = ResizeAndPadImage(originalImg, 200, 200);
                                         using var ms = new MemoryStream();
 
-                                        var encoderParameters = new EncoderParameters(1);
-                                        encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L); // 50% quality
-
-                                        ImageCodecInfo jpegCodec = ImageCodecInfo.GetImageDecoders()
-                                            .FirstOrDefault(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+                                        var encoderParams = new EncoderParameters(1);
+                                        encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
+                                        var jpegCodec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
 
                                         if (jpegCodec != null)
-                                        {
-                                            originalImage.Save(ms, jpegCodec, encoderParameters);
-                                        }
+                                            img.Save(ms, jpegCodec, encoderParams);
                                         else
-                                        {
-                                            originalImage.Save(ms, ImageFormat.Jpeg); // fallback
-                                        }
+                                            img.Save(ms, ImageFormat.Jpeg);
 
-                                        string base64String = Convert.ToBase64String(ms.ToArray());
-
-                                        string fileExtension = Path.GetExtension(attachment.FilePath).ToLower();
-                                        string mimeType = fileExtension switch
+                                        string base64 = Convert.ToBase64String(ms.ToArray());
+                                        string ext = Path.GetExtension(attachment.FilePath).ToLower();
+                                        string mime = ext switch
                                         {
                                             ".png" => "image/png",
                                             ".gif" => "image/gif",
@@ -170,7 +164,7 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src='data:{mimeType};base64,{base64String}' height='200' style='display: inline-block; margin-right:10px; object-fit: contain;' />";
+                                        imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
                                     }
                                 }
 
@@ -201,6 +195,30 @@ namespace Services.CAR
             }
             return ApiResponse<string>.SuccessResponse(null, (mailmsg.Length == 0 ? "" : " Send Mail Fail : " + mailmsg));
         }
+
+        private static Image ResizeAndPadImage(Image originalImage, int targetWidth = 200, int targetHeight = 200)
+        {
+            float ratioX = (float)targetWidth / originalImage.Width;
+            float ratioY = (float)targetHeight / originalImage.Height;
+            float ratio = Math.Min(ratioX, ratioY);
+
+            int newWidth = (int)(originalImage.Width * ratio);
+            int newHeight = (int)(originalImage.Height * ratio);
+
+            int posX = (targetWidth - newWidth) / 2;
+            int posY = (targetHeight - newHeight) / 2;
+
+            var canvas = new Bitmap(targetWidth, targetHeight);
+            using (Graphics g = Graphics.FromImage(canvas))
+            {
+                g.Clear(Color.White); 
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(originalImage, posX, posY, newWidth, newHeight);
+            }
+
+            return canvas;
+        }
+
 
         public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetSendMailSetting(GETMailSettings GETMailSettings)
         {
