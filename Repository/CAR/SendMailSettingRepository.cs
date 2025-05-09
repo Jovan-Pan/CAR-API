@@ -209,7 +209,7 @@ namespace Repository.CAR
             conditions.Add(" isSendEmail not in ('Y','N') ");
             condRemark.Add("isSendEmail value is Y or N");
 
-            string uniqueField = "[Action Type]";
+            string uniqueField = "Plant,[Action Type]";
 
             await using var connMDM = dbContext.MDMConnection();
             var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
