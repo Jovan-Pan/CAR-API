@@ -188,6 +188,7 @@ namespace Services.CAR
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = string.Join(";", MailtoccList);
                             mailparam.LinkedFiles = linkedFiles;
+                            mailparam.AttachmentsPath = linkedFiles;
                             await mdmP.SendEmail(mailparam);
                         }
                     }
