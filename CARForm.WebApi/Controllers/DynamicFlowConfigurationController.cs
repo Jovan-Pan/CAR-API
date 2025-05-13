@@ -12,9 +12,9 @@ namespace WebApi.Controllers
     public class DynamicFlowConfigurationController(IServiceManager business) : Controller
     {
         [HttpGet(nameof(GetDynamicFlowConfiguration))]
-        public async Task<IActionResult> GetDynamicFlowConfiguration(string? search, string? SearchFTADV, string? SearchADV, bool delflag)
+        public async Task<IActionResult> GetDynamicFlowConfiguration(string? search, string? SearchFTADV, string? SearchADV, bool delflag, int plant)
         {
-            var result = await business.DynamicFlowConfiguration.GetDynamicFlowConfiguration(search, SearchFTADV, SearchADV, delflag);
+            var result = await business.DynamicFlowConfiguration.GetDynamicFlowConfiguration(search, SearchFTADV, SearchADV, delflag, plant);
             return Ok(result);
 
         }

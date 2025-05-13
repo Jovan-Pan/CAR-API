@@ -12,7 +12,7 @@ namespace Services.Contracts.CAR
 {
     public interface IDynamicFlowConfigurationService
     {
-        Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> GetDynamicFlowConfiguration(string? search, string? SearchFTADV, string? SearchADV, bool delflag);
+        Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> GetDynamicFlowConfiguration(string? search, string? SearchFTADV, string? SearchADV, bool delflag, int plant);
         Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> InsertNewData(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto);
         Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> UpdateData(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto);
         Task<ApiResponse<IEnumerable<DynamicFlowConfigurationDto>>> DataDelete(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto);
