@@ -141,6 +141,14 @@ namespace Services.CAR
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
+                                        string contentId = Guid.NewGuid().ToString();
+
+                                        linkedFiles.Add(new LinkedFile
+                                        {
+                                            FilePath = attachment.FilePath,
+                                            ContentId = contentId
+                                        });
+
                                         using var originalImg = Image.FromFile(attachment.FilePath);
                                         using var img = ResizeAndPadImage(originalImg, 200, 200);
                                         using var ms = new MemoryStream();
@@ -164,7 +172,7 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
+                                        imagesHtml += $"<img src=\"cid:{contentId}\" style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
                                     }
                                 }
 

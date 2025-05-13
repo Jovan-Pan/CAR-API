@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using Entities.Infrastructure;
 using Entities.Account.Dto;
 using System.Net.Mail;
+using System.Net.Mime;
 
 namespace Infrastructure;
 
@@ -94,20 +95,19 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
             }
         }
 
-        // Linked files untuk embedded images
         if (param.LinkedFiles != null)
         {
-            foreach (var linkedFile in param.LinkedFiles)
+            for (int i = 0; i < param.LinkedFiles.Count; i++)
             {
+                var linkedFile = param.LinkedFiles[i];
                 if (!string.IsNullOrEmpty(linkedFile.FilePath) && File.Exists(linkedFile.FilePath))
                 {
                     var fileBytes = await File.ReadAllBytesAsync(linkedFile.FilePath);
-                    var file = new FileInfo(linkedFile.FilePath);
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
 
-                    // Upload file gambar
-                    formData.Add(new ByteArrayContent(fileBytes), "LinkedFiles", file.Name);
-
-                    // Upload ContentId-nya
+                    // Gunakan nama unik agar bisa dikenali sebagai pasangan
+                    formData.Add(fileContent, $"LinkedFiles", Path.GetFileName(linkedFile.FilePath));
                     formData.Add(new StringContent(linkedFile.ContentId), "LinkedFileContentIds");
                 }
             }
