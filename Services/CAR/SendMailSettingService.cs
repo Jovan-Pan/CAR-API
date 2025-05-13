@@ -172,7 +172,7 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src=\"cid:{contentId}\" style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
+                                        imagesHtml += $"<img src='cid:{contentId}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
                                     }
                                 }
 
@@ -188,6 +188,7 @@ namespace Services.CAR
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = string.Join(";", MailtoccList);
                             mailparam.LinkedFiles = linkedFiles;
+                            mailparam.AttachmentsPath = linkedFiles;
                             await mdmP.SendEmail(mailparam);
                         }
                     }

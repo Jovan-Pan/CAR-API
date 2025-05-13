@@ -24,7 +24,8 @@ public class SendEmailParam
     [Required]
     public string CreateUser { get; set; } = string.Empty;
 
-    public List<string> AttachmentsPath { get; set; } = [];
+    //public List<string> AttachmentsPath { get; set; } = [];
+    public List<LinkedFile> AttachmentsPath { get; set; } = [];
     public List<LinkedFile> LinkedFiles { get; set; } = new();
 }
 
