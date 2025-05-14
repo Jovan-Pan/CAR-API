@@ -154,7 +154,7 @@ namespace Services.CAR
                                         using var ms = new MemoryStream();
 
                                         var encoderParams = new EncoderParameters(1);
-                                        encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
+                                        encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
                                         var jpegCodec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
 
                                         if (jpegCodec != null)
@@ -172,7 +172,8 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src=\"cid:{contentId}\" style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
+                                        imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
+                                        //imagesHtml += $"<img src='cid:{contentId}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
                                     }
                                 }
 
@@ -188,6 +189,7 @@ namespace Services.CAR
                             mailparam.CreateUser = mydata.UserId;
                             mailparam.CopyRecipient = string.Join(";", MailtoccList);
                             mailparam.LinkedFiles = linkedFiles;
+                            mailparam.AttachmentsPath = linkedFiles;
                             await mdmP.SendEmail(mailparam);
                         }
                     }
