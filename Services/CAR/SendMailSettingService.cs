@@ -172,12 +172,12 @@ namespace Services.CAR
                                             _ => "application/octet-stream"
                                         };
 
-                                        imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
+                                        imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200pt; width:200pt; object-fit:contain; display:inline-block; margin-right:10pt; border:1pt solid #ddd;' />";
                                         //imagesHtml += $"<img src='cid:{contentId}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
                                     }
                                 }
 
-                                Datadetails = Datadetails.Replace("@NCPicture", !string.IsNullOrEmpty(imagesHtml) ? imagesHtml : "No images available.");
+                                Datadetails = Datadetails.Replace("@NCPicture", "Refer to Attachment.");
                             }
 
                             body = body.Replace("@Data", Datadetails);
