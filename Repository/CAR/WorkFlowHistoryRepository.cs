@@ -31,7 +31,7 @@ namespace Repository.CAR
         {
             string query = WorkFlowHistoryQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
-            if (mydata.buttonText == "Approve")
+            if (mydata.buttonText == "Approve" || mydata.buttonText == "Submit" || mydata.buttonText == "Update")
             {
                 return await conn.QueryAsync<IssueSubmissionParameters>(query, new { plant = mydata.UserPlant, role = mydata.mailactionType, status = mydata.FlowStatus, formno = mydata.FormNumber, performedBy = mydata.UserName, decision = mydata.buttonText, comment = mydata.Comment });
             }
