@@ -150,6 +150,14 @@ namespace Services.CAR
                                         {
                                             try
                                             {
+                                                string contentId = Guid.NewGuid().ToString();
+
+                                                linkedFiles.Add(new LinkedFile
+                                                {
+                                                    FilePath = attachment.FilePath,
+                                                    ContentId = contentId
+                                                });
+
                                                 using var originalImg = Image.FromFile(attachment.FilePath);
                                                 using var img = ResizeAndPadImage(originalImg, 200, 200);
                                                 using var ms = new MemoryStream();
