@@ -113,22 +113,22 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
             }
         }
 
-        //if (param.LinkedFiles != null)
-        //{
-        //    for (int i = 0; i < param.LinkedFiles.Count; i++)
-        //    {
-        //        var linkedFile = param.LinkedFiles[i];
-        //        if (!string.IsNullOrEmpty(linkedFile.FilePath) && File.Exists(linkedFile.FilePath))
-        //        {
-        //            var fileBytes = await File.ReadAllBytesAsync(linkedFile.FilePath);
-        //            var fileContent = new ByteArrayContent(fileBytes);
-        //            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        if (param.LinkedFiles != null)
+        {
+            for (int i = 0; i < param.LinkedFiles.Count; i++)
+            {
+                var linkedFile = param.LinkedFiles[i];
+                if (!string.IsNullOrEmpty(linkedFile.FilePath) && File.Exists(linkedFile.FilePath))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(linkedFile.FilePath);
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
 
-        //            formData.Add(fileContent, $"Files", Path.GetFileName(linkedFile.FilePath));
-        //            formData.Add(new StringContent(linkedFile.ContentId), "Files");
-        //        }
-        //    }
-        //}
+                    formData.Add(fileContent, $"LinkedFiles", Path.GetFileName(linkedFile.FilePath));
+                    formData.Add(new StringContent(linkedFile.ContentId), "LinkedFileContentIds");
+                }
+            }
+        }
 
 
         //await _httpClient.PostAsync(url, formData);
