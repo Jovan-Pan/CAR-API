@@ -173,6 +173,7 @@ namespace Services.CAR
                                                 };
 
                                                 imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200pt; width:200pt; object-fit:contain; display:inline-block; margin-right:10pt; border:1pt solid #ddd;' />";
+                                                Datadetails = Datadetails.Replace("@NCPicture", "Refer to Attachment.");
                                             }
                                             catch (OutOfMemoryException)
                                             {
@@ -183,16 +184,8 @@ namespace Services.CAR
                                                
                                             }
                                         }
-
-                                        linkedFiles.Add(new LinkedFile
-                                        {
-                                            FilePath = attachment.FilePath,
-                                            ContentId = Guid.NewGuid().ToString()
-                                        });
                                     }
                                 }
-
-                                Datadetails = Datadetails.Replace("@NCPicture", "Refer to Attachment.");
                             }
 
                             body = body.Replace("@Data", Datadetails);
