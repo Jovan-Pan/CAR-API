@@ -131,6 +131,7 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
                             Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
                             Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
+                            Datadetails = Datadetails.Replace("@NCPicture", "No Attachment.");
 
                             var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
                             var linkedFiles = new List<LinkedFile>();
@@ -141,39 +142,53 @@ namespace Services.CAR
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
-                                        string contentId = Guid.NewGuid().ToString();
+                                        string ext = Path.GetExtension(attachment.FilePath).ToLower();
+
+                                        // hanya proses sebagai image jika ekstensi valid
+                                        var validImageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+                                        if (validImageExtensions.Contains(ext))
+                                        {
+                                            try
+                                            {
+                                                using var originalImg = Image.FromFile(attachment.FilePath);
+                                                using var img = ResizeAndPadImage(originalImg, 200, 200);
+                                                using var ms = new MemoryStream();
+
+                                                var encoderParams = new EncoderParameters(1);
+                                                encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
+                                                var jpegCodec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
+
+                                                if (jpegCodec != null)
+                                                    img.Save(ms, jpegCodec, encoderParams);
+                                                else
+                                                    img.Save(ms, ImageFormat.Jpeg);
+
+                                                string base64 = Convert.ToBase64String(ms.ToArray());
+                                                string mime = ext switch
+                                                {
+                                                    ".png" => "image/png",
+                                                    ".gif" => "image/gif",
+                                                    ".jpg" or ".jpeg" => "image/jpeg",
+                                                    _ => "application/octet-stream"
+                                                };
+
+                                                imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200pt; width:200pt; object-fit:contain; display:inline-block; margin-right:10pt; border:1pt solid #ddd;' />";
+                                            }
+                                            catch (OutOfMemoryException)
+                                            {
+                                                
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                               
+                                            }
+                                        }
 
                                         linkedFiles.Add(new LinkedFile
                                         {
                                             FilePath = attachment.FilePath,
-                                            ContentId = contentId
+                                            ContentId = Guid.NewGuid().ToString()
                                         });
-
-                                        using var originalImg = Image.FromFile(attachment.FilePath);
-                                        using var img = ResizeAndPadImage(originalImg, 200, 200);
-                                        using var ms = new MemoryStream();
-
-                                        var encoderParams = new EncoderParameters(1);
-                                        encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50L);
-                                        var jpegCodec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
-
-                                        if (jpegCodec != null)
-                                            img.Save(ms, jpegCodec, encoderParams);
-                                        else
-                                            img.Save(ms, ImageFormat.Jpeg);
-
-                                        string base64 = Convert.ToBase64String(ms.ToArray());
-                                        string ext = Path.GetExtension(attachment.FilePath).ToLower();
-                                        string mime = ext switch
-                                        {
-                                            ".png" => "image/png",
-                                            ".gif" => "image/gif",
-                                            ".jpg" or ".jpeg" => "image/jpeg",
-                                            _ => "application/octet-stream"
-                                        };
-
-                                        imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200pt; width:200pt; object-fit:contain; display:inline-block; margin-right:10pt; border:1pt solid #ddd;' />";
-                                        //imagesHtml += $"<img src='cid:{contentId}' style='height:200px; width:200px; object-fit:contain; display:inline-block; margin-right:10px; border:1px solid #ddd;' />";
                                     }
                                 }
 
