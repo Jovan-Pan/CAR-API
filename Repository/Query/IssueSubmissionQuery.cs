@@ -242,15 +242,11 @@ namespace Repository.Query
         set 
         Status = 'SUBMITED-APPEAL',
         MainStatus = 'CAR RAISE',
-        ReceiveActionRejectReason = null,
-        ReceiveActionComment = null,
-        ReceiveActionBy = null,
-        ReceiveActionByName = null,
-        ReceiveActionDate = null,
-        ReceiveAprovalBy = null,
-        ReceiveAprovalByName = null,
-        ReceiveAprovalDate = null,
-        ReceiveAprovalComment = null
+        ReceiveActionRejectReason = @rejectReason,
+        ReceiveActionComment = @rejectReason,
+        ReceiveActionBy = @UserId,
+        ReceiveActionByName = @UserName,
+        ReceiveActionDate = GETDATE()
         where FormNo = @FormNumber
         ";
 
