@@ -131,21 +131,22 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
                             Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
                             Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
-                            Datadetails = Datadetails.Replace("@NCPicture", "No Attachment.");
+                            Datadetails = Datadetails.Replace("@NCPicture", "No Picture Attachment.");
 
                             var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
                             var linkedFiles = new List<LinkedFile>();
+                            bool hasValidImage = false;
+
                             if (attachments != null && attachments.Any())
                             {
                                 string imagesHtml = "";
+                                var validImageExtensions = new[] { ".jpg", ".jpeg", ".png"};
+
                                 foreach (var attachment in attachments)
                                 {
                                     if (!string.IsNullOrEmpty(attachment.FilePath))
                                     {
                                         string ext = Path.GetExtension(attachment.FilePath).ToLower();
-
-                                        // hanya proses sebagai image jika ekstensi valid
-                                        var validImageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
                                         if (validImageExtensions.Contains(ext))
                                         {
                                             try
@@ -175,24 +176,28 @@ namespace Services.CAR
                                                 string mime = ext switch
                                                 {
                                                     ".png" => "image/png",
-                                                    ".gif" => "image/gif",
                                                     ".jpg" or ".jpeg" => "image/jpeg",
                                                     _ => "application/octet-stream"
                                                 };
 
                                                 imagesHtml += $"<img src='data:{mime};base64,{base64}' style='height:200pt; width:200pt; object-fit:contain; display:inline-block; margin-right:10pt; border:1pt solid #ddd;' />";
-                                                Datadetails = Datadetails.Replace("@NCPicture", "Refer to Attachment.");
+                                                hasValidImage = true;
                                             }
                                             catch (OutOfMemoryException)
                                             {
-                                                
+                                                // log warning, skip processing
                                             }
                                             catch (Exception ex)
                                             {
-                                               
+                                                // log error, skip processing
                                             }
                                         }
                                     }
+                                }
+
+                                if (hasValidImage)
+                                {
+                                    Datadetails = Datadetails.Replace("No Picture Attachment.", "Refer to Attachment.");
                                 }
                             }
 
