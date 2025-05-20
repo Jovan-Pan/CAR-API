@@ -99,7 +99,14 @@ namespace Services.CAR
                             string body = globalmailMaster.FirstOrDefault().Emailbody;
                             body = body.Replace("@UserAction", mydata.sendmailUserAction);
 
-                            string Datadetails = MailBodyContentDetail.mailBodyContentDet;
+                            string Datadetails = "";
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            {
+                                Datadetails = MailBodyContentDetail.mailBodyContentDet;
+                            }
+                            else {
+                                Datadetails = MailBodyContentDetail.mailBodyContentDet;
+                            }
                             Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
@@ -111,26 +118,75 @@ namespace Services.CAR
                             {
                                 Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
-                            Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
-                            Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
-                            Datadetails = Datadetails.Replace("@Product", mydata.Product);
-                            //Datadetails = Datadetails.Replace("@Model", mydata.Model);
-                            //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
-                            Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode);
-                            Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
-                            Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
-                            Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null 
-                            ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td ><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>" 
-                            : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
-                            + mydata.Dept + "</b></td>");
-                            Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null
-                            ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
-                            : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
-                            + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>");
-                            Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "0" : mydata.TttlQty.ToString());
-                            Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
-                            Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
-                            Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
+
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            {
+                                Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
+                                Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
+                                Datadetails = Datadetails.Replace("@Product", mydata.Product == null ?
+                                "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > Product </ td >< td style = \"border: 1px solid black; padding: 8px; \" > @Product </ td >");
+                                //Datadetails = Datadetails.Replace("@Model", mydata.Model);
+                                //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
+                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode == null ?
+                                "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > MaterialCode </ td >< td style = \"border: 1px solid black; padding: 8px; \" > @MaterialCode </ td >");
+                                Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
+                                Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
+                                Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null
+                                ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td ><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                                : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                + mydata.Dept + "</b></td>");
+                                Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null
+                                ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                                : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>");
+                                Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "0" : mydata.TttlQty.ToString());
+                                Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
+                                Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
+                                Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
+                            }
+                            else
+                            {
+                                Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
+                                Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
+                                Datadetails = Datadetails.Replace("@Product", mydata.Product == null ?
+                                "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > Product </ td >< td style = \"border: 1px solid black; padding: 8px; \" >"+ mydata.Product +" </ td >");
+                                
+                                //Datadetails = Datadetails.Replace("@Model", mydata.Model);
+                                //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
+                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode == null ?
+                                "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > MaterialCode </ td >< td style = \"border: 1px solid black; padding: 8px; \" >"+ mydata.MaterialCode + " </ td >");
+                                
+                                Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > MaterialDesc </ td >< td style = \"border: 1px solid black; padding: 8px; \" >" + mydata.MaterialDesc.ToString() + " </ td >");
+                                
+                                Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > NC % (Sampling Check) </ td >< td style = \"border: 1px solid black; padding: 8px; \" >" + mydata.NcRatio.ToString() + " </ td >");
+
+                                Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null
+                                ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td ><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                                : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                + mydata.Dept + "</b></td>");
+                                Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null
+                                ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                                : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>");
+                                Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > Total Qty </ td >< td style = \"border: 1px solid black; padding: 8px; \" >" + mydata.TttlQty.ToString() + " </ td >");
+
+                                Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > Affected Cavity </ td >< td style = \"border: 1px solid black; padding: 8px; \" >" + mydata.AffectedCavity.ToString() + " </ td >");
+
+                                Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > NC Category </ td >< td style = \"border: 1px solid black; padding: 8px; \" >" + mydata.NCCategory.ToString() + " </ td >");
+
+                                Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" :
+                                "< td style = \"border: 1px solid black; padding: 8px; \" > NC Description </ td >< td style = \"border: 1px solid black; padding: 8px; \" >" + mydata.NCDescription.ToString() + " </ td >");
+
+                            }
                             Datadetails = Datadetails.Replace("@NCPicture", "No Picture Attachment.");
 
                             var attachments = await data.ISM.GetAttachmentsByFormNo(mydata.FormNumber);
