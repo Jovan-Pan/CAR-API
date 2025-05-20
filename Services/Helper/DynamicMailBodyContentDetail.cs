@@ -1,6 +1,4 @@
-﻿using OfficeOpenXml.Style;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Helper
 {
-    public class MailBodyContentDetail
+    public class DynamicMailBodyContentDetail
     {
         public static readonly string mailBodyContentDet = @"
          <table style=""border-collapse: collapse; width: 100%; border: 1px solid black;"">
@@ -19,8 +17,7 @@ namespace Services.Helper
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Form Type</td>
             <td style=""border: 1px solid black; padding: 8px;"">@FormType</td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>NC % (Sampling Check)</b></td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>@SamplingCheck</b></td>
+            @SamplingCheck
         </tr>
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Form Number</td>
@@ -35,28 +32,19 @@ namespace Services.Helper
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">Detection Date</td>
             <td style=""border: 1px solid black; padding: 8px;"">@DetectionDate</td>
-            <td style=""border: 1px solid black; padding: 8px;"">Total Qty</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@TotalQty</td>
+            @TotalQty
         </tr>
         <tr>
-            //<td style=""border: 1px solid black; padding: 8px;"">Product</td>
-            //<td style=""border: 1px solid black; padding: 8px;"">@Product</td>
             @Product
-            <td style=""border: 1px solid black; padding: 8px;"">Affected Cavity</td>
-            <td style=""border: 1px solid black; padding: 8px;"">@AffectedCavity</td>
+            @AffectedCavity
         </tr>
         <tr>
-            // <td style=""border: 1px solid black; padding: 8px;"">Material Code</td>
-            //<td style=""border: 1px solid black; padding: 8px;"">@MaterialCode</td>
             @MaterialCode
-            <td style=""border: 1px solid black; padding: 8px;""><b>NC Category</b></td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>@NCCategory</b></td>
+            @NCCategory
         </tr>
         <tr>
-            <td style=""border: 1px solid black; padding: 8px;""><b>Material Desc</b></td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>@MaterialDesc</b></td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>NC Description</b></td>
-            <td style=""border: 1px solid black; padding: 8px;""><b>@NCDescription</b></td>
+            @MaterialDesc
+            @NCDescription          
         </tr>
         <tr>
             <td style=""border: 1px solid black; padding: 8px;"">NC Picture</td>
