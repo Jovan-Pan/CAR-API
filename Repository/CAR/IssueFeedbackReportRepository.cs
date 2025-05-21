@@ -90,7 +90,7 @@ namespace Repository.CAR
         {
             string Processquery = IssueFeedbackReportQuery.GetMailToCCStatic;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<string>(Processquery, new { formno});
+            return await conn.QueryAsync<string>(Processquery, new { plant= UserPlant ,group =  group});
         }
 
         public async Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction)
