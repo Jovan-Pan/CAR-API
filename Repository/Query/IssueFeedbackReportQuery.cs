@@ -161,5 +161,14 @@ namespace Repository.Query
         public static readonly string GetMailtocc = @"
         select distinct UseEmail from IssueFeedBackEmailRecipient where formno = @formno and UserLevel ='MailToCC'";
 
+        public static readonly string GetMailToCCStatic = @"
+        select distinct U.UseEmail
+        from SystemvsUservsEmailSubscribeForm A
+        join SystemvsUservsEmailSubscribeFormDetail B on A.ID = B.ID
+        join Usr U on B.UserID = U.UseID
+        where a.IsDeleted = 0 and B.IsDeleted = 0
+        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and EmailCCList = 1
+        And B.UserID NOT IN(select UseID from uservsvendor)";
+
     }
 }
