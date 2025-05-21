@@ -53,7 +53,17 @@ namespace Services.CAR
                         List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
 
                         var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
-                        List<string> MailtoccList = MailToCC.ToList();
+                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus);
+                        List<string> MailtoccList = new List<string>();
+                        List<string> MailtoccListStatic = new List<string>();
+                        if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                        {
+                             MailtoccListStatic = MailToCCStatic.ToList();
+                        }
+                        else
+                        {
+                             MailtoccList = MailToCC.ToList();
+                        }
 
                         if (mydata.Dept == "VEND")
                         {
@@ -88,6 +98,7 @@ namespace Services.CAR
                             if (!string.IsNullOrEmpty(globalmailMaster.FirstOrDefault()?.ReplyMailid))
                             {
                                 MailtoccList.Add(globalmailMaster.FirstOrDefault().ReplyMailid);
+                                MailtoccListStatic.Add(globalmailMaster.FirstOrDefault().ReplyMailid);
                             }
 
 
@@ -105,7 +116,7 @@ namespace Services.CAR
                                 Datadetails = MailBodyContentDetail.mailBodyContentDet;
                             }
                             else {
-                                Datadetails = MailBodyContentDetail.mailBodyContentDet;
+                                Datadetails = DynamicMailBodyContentDetail.mailBodyContentDet;
                             }
                             Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
@@ -264,7 +275,14 @@ namespace Services.CAR
                             body = body.Replace("@Emaillink", globalmailMaster.FirstOrDefault().Emaillink);
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
-                            mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            {
+                                mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                            }
+                            else
+                            {
+                                mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
+                            }
                             mailparam.LinkedFiles = linkedFiles;
                             mailparam.AttachmentsPath = linkedFiles;
                             await mdmP.SendEmail(mailparam);

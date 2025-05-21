@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Contracts.Repository.CAR
 {
@@ -15,6 +16,7 @@ namespace Contracts.Repository.CAR
         Task<int> GetTotalRecord(GlobalParam param, ConditionParams ConditionParams);
         Task<IEnumerable<string>> getIssuerId(int plant, string FormNo);
         Task<IEnumerable<string>> GetMailtocc(string formno);
+        Task<IEnumerable<string>> GetMailToCCStatic(string formno, int UserPlant, string group);
         Task<IEnumerable<IssueFeedbackDto>> GetMaindata(GlobalParam param, ConditionParams ConditionParams);
         Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction);
         Task<IEnumerable<UsrDto>> GetEmailRecipientsList(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction);
