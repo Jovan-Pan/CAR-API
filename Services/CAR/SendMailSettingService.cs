@@ -53,7 +53,7 @@ namespace Services.CAR
                         List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
 
                         var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
-                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus);
+                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                         List<string> MailtoccList = new List<string>();
                         List<string> MailtoccListStatic = new List<string>();
                         if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
