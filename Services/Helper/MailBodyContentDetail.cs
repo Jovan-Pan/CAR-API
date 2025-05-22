@@ -39,12 +39,14 @@ namespace Services.Helper
             <td style=""border: 1px solid black; padding: 8px;"">@TotalQty</td>
         </tr>
         <tr>
-            @Product
+            <td style=""border: 1px solid black; padding: 8px;"">Product</td>
+            <td style=""border: 1px solid black; padding: 8px;"">@Product</td>
             <td style=""border: 1px solid black; padding: 8px;"">Affected Cavity</td>
             <td style=""border: 1px solid black; padding: 8px;"">@AffectedCavity</td>
         </tr>
         <tr>
-            @MaterialCode
+            <td style=""border: 1px solid black; padding: 8px;"">Material Code</td>
+            <td style=""border: 1px solid black; padding: 8px;"">@MaterialCode</td>
             <td style=""border: 1px solid black; padding: 8px;""><b>NC Category</b></td>
             <td style=""border: 1px solid black; padding: 8px;""><b>@NCCategory</b></td>
         </tr>

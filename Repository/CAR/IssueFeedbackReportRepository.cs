@@ -86,11 +86,11 @@ namespace Repository.CAR
             return await conn.QueryAsync<string>(Processquery, new { formno });
         }
 
-        public async Task<IEnumerable<string>>GetMailToCCStatic(string formno, int UserPlant, string group)
+        public async Task<IEnumerable<string>>GetMailToCCStatic(string formno, int UserPlant, string group, string dept)
         {
             string Processquery = IssueFeedbackReportQuery.GetMailToCCStatic;
-            await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<string>(Processquery, new { plant= UserPlant ,group =  group});
+            await using var conn = dbContext.MDMConnection();
+            return await conn.QueryAsync<string>(Processquery, new { plant= UserPlant ,group =  group, dept = dept });
         }
 
         public async Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction)

@@ -53,19 +53,19 @@ namespace Services.CAR
                         List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
 
                         var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
-                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus);
+                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                         List<string> MailtoccList = new List<string>();
                         List<string> MailtoccListStatic = new List<string>();
                         if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
                         {
-                             MailtoccListStatic = MailToCCStatic.ToList();
+                            MailtoccListStatic = MailToCCStatic.ToList();
                         }
                         else
                         {
-                             MailtoccList = MailToCC.ToList();
+                            MailtoccList = MailToCC.ToList();
                         }
 
-                        if (mydata.Dept == "VEND")
+                    if (mydata.Dept == "VEND")
                         {
                            var userSubsFormMasterVendor = await mdm.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                            recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
@@ -82,7 +82,7 @@ namespace Services.CAR
                         recipentList = recipentList.Distinct().ToList();
 
                         if (globalmailMaster.Count() == 0)
-                        {
+                        {       
                             mailmsg = "Data Maill Content Not Maintain";
                         }
                         else if (recipentList.Count() == 0)
@@ -134,14 +134,10 @@ namespace Services.CAR
                             {
                                 Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                                 Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
-                                Datadetails = Datadetails.Replace("@Product", mydata.Product == null ?
-                                "" :
-                                "< td style = \"border: 1px solid black; padding: 8px; \" > Product </ td >< td style = \"border: 1px solid black; padding: 8px; \" > @Product </ td >");
+                                Datadetails = Datadetails.Replace("@Product", mydata.Product);
                                 //Datadetails = Datadetails.Replace("@Model", mydata.Model);
                                 //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
-                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode == null ?
-                                "" :
-                                "< td style = \"border: 1px solid black; padding: 8px; \" > MaterialCode </ td >< td style = \"border: 1px solid black; padding: 8px; \" > @MaterialCode </ td >");
+                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode); 
                                 Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
                                 Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
                                 Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null
@@ -277,11 +273,11 @@ namespace Services.CAR
                             mailparam.CreateUser = mydata.UserId;
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
                             {
-                                mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                                mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
                             }
                             else
                             {
-                                mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
+                                mailparam.CopyRecipient = string.Join(";", MailtoccList);
                             }
                             mailparam.LinkedFiles = linkedFiles;
                             mailparam.AttachmentsPath = linkedFiles;
