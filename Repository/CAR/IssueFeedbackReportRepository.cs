@@ -89,7 +89,7 @@ namespace Repository.CAR
         public async Task<IEnumerable<string>>GetMailToCCStatic(string formno, int UserPlant, string group)
         {
             string Processquery = IssueFeedbackReportQuery.GetMailToCCStatic;
-            await using var conn = dbContext.CARConnection();
+            await using var conn = dbContext.MDMConnection();
             return await conn.QueryAsync<string>(Processquery, new { plant= UserPlant ,group =  group});
         }
 
