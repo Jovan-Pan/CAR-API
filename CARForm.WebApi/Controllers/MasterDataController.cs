@@ -96,6 +96,14 @@ public class MasterDataController(IServiceManager business) : Controller
 
     }
 
+    [HttpGet(nameof(GetSystemDeptVsUserDynamic))]
+    public async Task<IActionResult> GetSystemDeptVsUserDynamic(int plant, string Userid)
+    {
+        var result = await business.MasterData.GetSystemDeptVsUserDynamic(plant, Userid);
+        return Ok(result);
+
+    }
+
     [HttpGet(nameof(GetVendor))]
     public async Task<IActionResult> GetVendor(int plant)
     {

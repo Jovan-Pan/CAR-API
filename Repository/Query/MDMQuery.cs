@@ -107,6 +107,13 @@ namespace Repository.Query
         order by A.dept asc
         ";
 
+        public static readonly string GetSystemDeptVsUserDynamic = @"
+       select distinct A.dept,B.deptName
+       from TSYSTEMVSDEPT A 
+       join TDEPT B on A.Plant = b.Plant and A.Dept = B.Dept
+       where A.SysCode = 'CAR' and A.DelFlag = 0 and B.DelFlag = 0 and A.Plant = @plant
+       order by A.dept asc";
+
         public static readonly string GetVendor = @"
         select DISTINCT Vendor as vendorCode,Description AS vendDesc from USERVSVENDOR A 
         join TUSER_AUTHORIZE B on A.UseID = b.UserID 

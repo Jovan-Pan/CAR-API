@@ -92,6 +92,11 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         var result = await mdm.GetSystemDeptVsUser(plant, Userid);
         return ApiResponse<IEnumerable<SystemDeptVsUserDto>>.SuccessResponse(result);
     }
+    public async Task<ApiResponse<IEnumerable<SystemDeptVsUserDto>>> GetSystemDeptVsUserDynamic(int plant, string Userid)
+    {
+        var result = await mdm.GetSystemDeptVsUserDynamic(plant, Userid);
+        return ApiResponse<IEnumerable<SystemDeptVsUserDto>>.SuccessResponse(result);
+    }
 
     public async Task<ApiResponse<IEnumerable<VendorDto>>> GetVendor(int plant)
     {
