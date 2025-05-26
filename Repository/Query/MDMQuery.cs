@@ -174,7 +174,7 @@ namespace Repository.Query
         join TSMNProductPIC P on P.Plant = A.Plant and P.Userid = b.UserID and P.DelFlag = 0
         join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
         where a.IsDeleted = 0 and B.IsDeleted = 0
-        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
+        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept AND EmailCCList = 0
         And B.UserID NOT IN(select UseID from uservsvendor)
         ";
 
