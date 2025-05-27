@@ -20,6 +20,7 @@ public interface IMDMRepository
     Task<IEnumerable<TMATERIALDto>> GetMaterialWoProdAut(GetMaterialParam request);
     Task<IEnumerable<NcCategoryDto>> GetNCCategory();
     Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUser(int plant, string Userid);
+    Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUserDynamic(int plant, string Userid);
     Task<IEnumerable<VendorDto>> GetVendor(int plant);
     Task<IEnumerable<BasePathConfigDto>> getBasePathConfig(int plant);
     Task<IEnumerable<UserFormAuthorizeDto>> getUserFormAuthorize(int plant, string Userid, string FormName);

@@ -107,6 +107,13 @@ namespace Repository.Query
         order by A.dept asc
         ";
 
+        public static readonly string GetSystemDeptVsUserDynamic = @"
+       select distinct A.dept,B.deptName
+       from TSYSTEMVSDEPT A 
+       join TDEPT B on A.Plant = b.Plant and A.Dept = B.Dept
+       where A.SysCode = 'CAR' and A.DelFlag = 0 and B.DelFlag = 0 and A.Plant = @plant
+       order by A.dept asc";
+
         public static readonly string GetVendor = @"
         select DISTINCT Vendor as vendorCode,Description AS vendDesc from USERVSVENDOR A 
         join TUSER_AUTHORIZE B on A.UseID = b.UserID 
@@ -167,7 +174,7 @@ namespace Repository.Query
         join TSMNProductPIC P on P.Plant = A.Plant and P.Userid = b.UserID and P.DelFlag = 0
         join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
         where a.IsDeleted = 0 and B.IsDeleted = 0
-        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
+        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept AND EmailCCList = 0
         And B.UserID NOT IN(select UseID from uservsvendor)
         ";
 
