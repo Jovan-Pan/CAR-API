@@ -164,6 +164,10 @@ namespace Services.CAR
 
                                 //Datadetails = Datadetails.Replace("@Model", mydata.Model);
                                 //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
+                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode == null ? "" :
+                                "<td style = \"border: 1px solid black; padding: 8px; \">Material Code</td>" +
+                                "<td style = \"border: 1px solid black; padding: 8px; \">" + mydata.MaterialCode.ToString() + "</td>");
+
                                 Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "" :
                                 "<td style = \"border: 1px solid black; padding: 8px; \">MaterialDesc</td>" +
                                 "<td style = \"border: 1px solid black; padding: 8px; \">" + mydata.MaterialDesc.ToString() + "</td>");
