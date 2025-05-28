@@ -22,6 +22,7 @@ using System.Collections;
 using System.Net.Mail;
 using System.Drawing.Imaging;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace Services.CAR
 {
@@ -155,47 +156,82 @@ namespace Services.CAR
                             }
                             else
                             {
+                                string productHtml = mydata.Product == null ? "" :
+                           "<td style=\"border: 1px solid black; padding: 8px;\">Product</td>" +
+                           "<td style=\"border: 1px solid black; padding: 8px;\">" + mydata.Product + "</td>";
+
+                                string affectedCavityHtml = mydata.AffectedCavity == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">AffectedCavity</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.AffectedCavity.ToString() + "</td>";
+
+                                string materialCodeHtml = mydata.MaterialCode == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">Material Code</td>" +
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">" + mydata.MaterialCode.ToString() + "</td>";
+
+                                string ncCategoryHtml = mydata.NCCategory == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">NCCategory</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.NCCategory.ToString() + "</td>";
+
+                                string materialDescHtml = mydata.MaterialDesc == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">MaterialDesc</td>" +
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">" + mydata.MaterialDesc.ToString() + "</td>";
+
+                                string ncDescriptionHtml = mydata.NCDescription == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">NCDescription</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.NCDescription.ToString() + "</td>";
+
+                                string samplingCheckHtml = mydata.NcRatio == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">SamplingCheck</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.NcRatio.ToString() + "</td>";
+
+                                string deptHtml = mydata.Dept == null
+                                    ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                                    : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                    + mydata.Dept + "</b></td>";
+
+                                string vendorHtml = mydata.VendorCode == null
+                                    ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
+                                    : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                    + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>";
+
+                                string totalQtyHtml = mydata.TttlQty == null ? "" :
+                                    "<td style=\"border: 1px solid black; padding: 8px;\">TotalQty</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.TttlQty.ToString() + "</td>";
+
+
+                                Datadetails = DynamicMailBodyContentDetail.mailBodyContentDet;
+                                Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
+                                Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
+                                Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                                 Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                                 Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
-                                Datadetails = Datadetails.Replace("@Product", mydata.Product == null ?
-                                "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \"> Product </td>" +
-                                "<td style = \"border: 1px solid black; padding: 8px; \">"+ mydata.Product +"</td>");
 
-                                //Datadetails = Datadetails.Replace("@Model", mydata.Model);
-                                //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
-                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">Material Code</td>" +
-                                "<td style = \"border: 1px solid black; padding: 8px; \">" + mydata.MaterialCode.ToString() + "</td>");
+                                // Apply the constructed HTML for each pair
+                                Datadetails = Datadetails.Replace("@Product", productHtml);
+                                Datadetails = Datadetails.Replace("@AffectedCavity", affectedCavityHtml);
+                                Datadetails = Datadetails.Replace("@MaterialCode", materialCodeHtml);
+                                Datadetails = Datadetails.Replace("@NCCategory", ncCategoryHtml);
+                                Datadetails = Datadetails.Replace("@MaterialDesc", materialDescHtml);
+                                Datadetails = Datadetails.Replace("@NCDescription", ncDescriptionHtml);
 
-                                Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">MaterialDesc</td>" +
-                                "<td style = \"border: 1px solid black; padding: 8px; \">" + mydata.MaterialDesc.ToString() + "</td>");
+                                // Also replace these, ensuring they handle their own "empty" cases
+                                Datadetails = Datadetails.Replace("@SamplingCheck", samplingCheckHtml);
+                                Datadetails = Datadetails.Replace("@Dept", deptHtml);
+                                Datadetails = Datadetails.Replace("@Vendor", vendorHtml);
+                                Datadetails = Datadetails.Replace("@TotalQty", totalQtyHtml);
 
-                                Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">SamplingCheck</td><td style = \"border: 1px solid black; padding: 8px; \">" + mydata.NcRatio.ToString() + "</td>");
-
-                                Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null
-                                ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
-                                : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
-                                + mydata.Dept + "</b></td>");
-
-                                Datadetails = Datadetails.Replace("@Vendor", mydata.VendorCode == null
-                                ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
-                                : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
-                                + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>");
-
-                                Datadetails = Datadetails.Replace("@TotalQty", mydata.TttlQty == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">TotalQty</td><td style = \"border: 1px solid black; padding: 8px; \">" + mydata.TttlQty.ToString() + "</td>");
-
-                                Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">AffectedCavity</td><td style = \"border: 1px solid black; padding: 8px; \">" + mydata.AffectedCavity.ToString() + "</td>");
-
-                                Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">NCCategory</td><td style = \"border: 1px solid black; padding: 8px; \">" + mydata.NCCategory.ToString() + "</td>");
-
-                                Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "" :
-                                "<td style = \"border: 1px solid black; padding: 8px; \">NCDescription</td><td style = \"border: 1px solid black; padding: 8px; \">" + mydata.NCDescription.ToString() + "</td>");
+                                // --- Logic to remove <tr> if its content is empty ---
+                                // For "@Product" and "@AffectedCavity"
+                                if (string.IsNullOrWhiteSpace(productHtml) && string.IsNullOrWhiteSpace(affectedCavityHtml))
+                                {
+                                    Datadetails = Regex.Replace(Datadetails, @"<tr>\s*<\/tr>", "", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                                }
+                                // For "@MaterialCode" and "@NCCategory"
+                                if (string.IsNullOrWhiteSpace(materialCodeHtml) && string.IsNullOrWhiteSpace(ncCategoryHtml))
+                                {
+                                    Datadetails = Regex.Replace(Datadetails, @"<tr>\s*<\/tr>", "", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                                }
+                                // For "@MaterialDesc" and "@NCDescription"
+                                if (string.IsNullOrWhiteSpace(materialDescHtml) && string.IsNullOrWhiteSpace(ncDescriptionHtml))
+                                {
+                                    Datadetails = Regex.Replace(Datadetails, @"<tr>\s*<\/tr>", "", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                                }
                             }
                             Datadetails = Datadetails.Replace("@NCPicture", "No Picture Attachment.");
 
