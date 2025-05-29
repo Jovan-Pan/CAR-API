@@ -157,41 +157,41 @@ namespace Services.CAR
                             else
                             {
                                 string productHtml = mydata.Product == null ? "" :
-                           "<td style=\"border: 1px solid black; padding: 8px;\">Product</td>" +
-                           "<td style=\"border: 1px solid black; padding: 8px;\">" + mydata.Product + "</td>";
+                           "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Product</td>" +
+                           "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.Product + "</td>";
 
                                 string affectedCavityHtml = mydata.AffectedCavity == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">AffectedCavity</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.AffectedCavity.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">AffectedCavity</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.AffectedCavity.ToString() + "</td>";
 
                                 string materialCodeHtml = mydata.MaterialCode == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">Material Code</td>" +
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">" + mydata.MaterialCode.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Material Code</td>" +
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.MaterialCode.ToString() + "</td>";
 
                                 string ncCategoryHtml = mydata.NCCategory == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">NCCategory</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.NCCategory.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">NCCategory</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NCCategory.ToString() + "</td>";
 
                                 string materialDescHtml = mydata.MaterialDesc == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">MaterialDesc</td>" +
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">" + mydata.MaterialDesc.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">MaterialDesc</td>" +
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.MaterialDesc.ToString() + "</td>";
 
                                 string ncDescriptionHtml = mydata.NCDescription == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">NCDescription</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.NCDescription.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">NCDescription</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NCDescription.ToString() + "</td>";
 
                                 string samplingCheckHtml = mydata.NcRatio == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">SamplingCheck</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.NcRatio.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">SamplingCheck</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NcRatio.ToString() + "</td>";
 
                                 string deptHtml = mydata.Dept == null
-                                    ? "<td style=\"border: 1px solid black; padding: 8px;\">Dept</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
-                                    : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                    ? "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Dept</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">N.A.</td>"
+                                    : "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\"><b>Dept</b></td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\"><b>"
                                     + mydata.Dept + "</b></td>";
 
                                 string vendorHtml = mydata.VendorCode == null
-                                    ? "<td style=\"border: 1px solid black; padding: 8px;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px;\">N.A.</td>"
-                                    : "<td style=\"border: 1px solid black; padding: 8px;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px;\"><b>"
+                                    ? "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Vendor</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">N.A.</td>"
+                                    : "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\"><b>Vendor</b></td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\"><b>"
                                     + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>";
 
                                 string totalQtyHtml = mydata.TttlQty == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px;\">TotalQty</td><td style=\"border: 1px solid black; padding: 8px;\">" + mydata.TttlQty.ToString() + "</td>";
+                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">TotalQty</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.TttlQty.ToString() + "</td>";
 
 
                                 Datadetails = DynamicMailBodyContentDetail.mailBodyContentDet;
