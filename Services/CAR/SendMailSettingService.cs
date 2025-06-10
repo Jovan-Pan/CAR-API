@@ -50,8 +50,14 @@ namespace Services.CAR
                     {
                         SendEmailParam mailparam = new SendEmailParam();
                         var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
-                        var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
-                        List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+                        //var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                        //List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+                        List<string> recipentList = new List<string>();
+                        if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                        {
+                            var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                            recipentList.AddRange(userSubsFormMaster.Select(form => form.UseEmail).ToList());
+                        }
 
                         var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
                         var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
