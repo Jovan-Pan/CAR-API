@@ -36,7 +36,7 @@ namespace Services.CAR
             var skip = (param.PageNumber - 1) * param.PageSize;
             
             string whereCondition = DisplayDataCondition.GenerateWhereCondition(param);
-            string orderByCondition = DisplayDataCondition.GenerateOrderByCondition(param.order);
+            string orderByCondition = DisplayDataCondition.GenerateOrderByConditionIFR(param.sortField, param.sortOrder);
             int totalRecords = 0;
             int take = param.PageSize;
             ConditionParams Cpr = new ConditionParams();

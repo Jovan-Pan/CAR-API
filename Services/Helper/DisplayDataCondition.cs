@@ -98,6 +98,21 @@ namespace Services.Helper
             return globalSearchTermWhereCondition;
         }
 
+        public static string GenerateOrderByConditionIFR(string sortField, int? sortOrder)
+        {
+            string orderByCondition = string.Empty;
+            if (string.IsNullOrWhiteSpace(sortField) || !sortOrder.HasValue)
+            {
+                return "ORDER BY Formno ASC";
+            }
+
+            string colorderBy = " order by ";
+            string orderDirection = sortOrder == 1 ? "ASC" : "DESC";
+            
+            return $"ORDER BY {sortField} {orderDirection}";
+            
+        }
+
         public static string GenerateOrderByCondition(List<Order> dataTablesCol)
         {
             string orderByCondition = string.Empty;
