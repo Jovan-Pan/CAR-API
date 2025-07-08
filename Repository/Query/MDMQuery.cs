@@ -11,8 +11,8 @@ namespace Repository.Query
         public static readonly string AllowAllDataToAcc = @"    
         SELECT 
             CASE 
-                WHEN  UsePass = '' THEN CAST(1 AS BIT) 
-                ELSE CAST(0 AS BIT) 
+                WHEN  UsePass = '' THEN 'true'
+                ELSE 'false' 
             END AS IsUserAllowed
         FROM usr 
         WHERE useid = @userId
