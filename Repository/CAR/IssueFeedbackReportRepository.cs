@@ -25,7 +25,28 @@ namespace Repository.CAR
 
 
             await using var conn = dbContext.CARConnection();
-            return await conn.ExecuteScalarAsync<int>(query, new { plant = param.Plant });
+            return await conn.ExecuteScalarAsync<int>(query, new {
+                plant = param.Plant,
+                deptAuthList = param.deptAuthList,
+                productAuthList = param.productAuthList,
+                formType = param.formType,
+                formNumber = param.formNumber,
+                status = param.status,
+                mainStatus = param.mainStatus,
+                dept = param.dept,
+                processGrp = param.processGrp,
+                statusOfFinding = param.statusOfFinding,
+                product = param.product,
+                model = param.model,
+                mattype = param.mattype,
+                material = param.material,
+                vendor = param.vendor,
+                UserVendor = param.UserVendor,
+                fromdate = param.fromdate?.ToString("yyyy-MM-dd"),
+                todate = param.todate?.ToString("yyyy-MM-dd"),
+                skip = ConditionParams.skip,
+                take = ConditionParams.take
+            });
         }
 
         public async Task<IEnumerable<IssueFeedbackDto>> GetMaindata(GlobalParam param, ConditionParams ConditionParams)

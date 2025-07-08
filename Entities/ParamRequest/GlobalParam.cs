@@ -32,5 +32,7 @@ namespace Entities.ParamRequest
         public string? UserVendor { get; set; }
         public string? UserID { get; set; }
 
+        public string? sortField { get; set; }
+        public int? sortOrder { get; set; }
     }
 }

@@ -334,7 +334,7 @@ namespace Repository.Query
         public static readonly string PDAReviewerAprove = @"
         update IssueFeedback
         set 
-        Status = 'REVIEW',
+        Status = @IssueStatus,
         MainStatus = 'PENDING APPROVAL',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
@@ -374,10 +374,11 @@ namespace Repository.Query
         and FormType = @formType
         --and MaterialCode = @material 
         and NCCategory = @nccategory 
-        and NCReason = @ncreason 
+        --and NCReason = @ncreason 
         and Dept=@dept 
         and (VendorCode=@vendor or @vendor is null)
-        and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
+        and procecessGrpCode = @processgroup
+        and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";
 
         public static readonly string pdaActionVoid = @"

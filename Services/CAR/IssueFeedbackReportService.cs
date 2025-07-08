@@ -36,7 +36,7 @@ namespace Services.CAR
             var skip = (param.PageNumber - 1) * param.PageSize;
             
             string whereCondition = DisplayDataCondition.GenerateWhereCondition(param);
-            string orderByCondition = DisplayDataCondition.GenerateOrderByCondition(param.order);
+            string orderByCondition = DisplayDataCondition.GenerateOrderByConditionIFR(param.sortField, param.sortOrder);
             int totalRecords = 0;
             int take = param.PageSize;
             ConditionParams Cpr = new ConditionParams();
@@ -183,7 +183,7 @@ namespace Services.CAR
                     Cpr.ExtraWhereCondition += Condquery;
                 }
                 #endregion
- 
+            var FilterTtlRecord = await data.IFR.GetTotalRecord(param, Cpr);
             var maindata = await data.IFR.GetMaindata(param, Cpr);
             var formNoList = maindata.Select(data => data.FormNo);
             var dataAtch = await data.IFR.GetDataAttchment(param.Plant, formNoList,null);
@@ -334,9 +334,9 @@ namespace Services.CAR
 
                     maindata = maindataList;
                 }
-            }
+            }   
             result.maindata = maindata;
-            result.totrecord = totrecord;
+            result.totrecord = FilterTtlRecord;
             return ApiResponse<IssueFeedbackResultDto>.SuccessResponse(result);
         }
 
