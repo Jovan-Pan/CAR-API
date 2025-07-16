@@ -47,11 +47,11 @@ namespace Repository.CAR
 
         public async Task<IEnumerable<DynamicFlowConfigurationDto>> InsertNewData(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto)
         {
-            string checkQuery = "SELECT COUNT(1) FROM DynamicFlowConfiguration WHERE FormType = @FormType";
+            string checkQuery = "SELECT COUNT(1) FROM DynamicFlowConfiguration WHERE FormType = @FormType and plant = @plant";
             string query = DynamicFlowConfigurationQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
             // Check if the record already exists
-            var existingCount = await conn.ExecuteScalarAsync<dynamic>(checkQuery, new { FormType = CRUDDynamicFlowConfigurationDto.FormType });
+            var existingCount = await conn.ExecuteScalarAsync<dynamic>(checkQuery, new { FormType = CRUDDynamicFlowConfigurationDto.FormType, plant = CRUDDynamicFlowConfigurationDto.Plant });
             if (existingCount > 0)
             {
                 return existingCount;
