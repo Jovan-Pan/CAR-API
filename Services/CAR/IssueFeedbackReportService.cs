@@ -16,7 +16,7 @@ using Contracts.Repository.MasterData;
 using Contracts.Repository;
 using Contracts;
 using Microsoft.AspNetCore.Http;
-using System.Xml.Linq;
+using System.Xml.Linq;  
 using Services.Contracts;
 using System.Transactions;
 using System.Reflection.Emit;
@@ -51,12 +51,20 @@ namespace Services.CAR
      
             #region generate condition query for advance filter
                 string Condquery = @"";
-                if (param.formType != null)
+                if (param.formType != null && !param.formType.Contains("NCR/QFR"))
                 {
                     if (param.formType.Count() > 0)
                     {
                         Condquery += Environment.NewLine;
-                        Condquery += " AND FormType IN @formType ";
+                        Condquery += " AND (FormType IN (@formType)) ";
+                    }
+                }
+                if (param.formType != null && param.formType.Contains("NCR/QFR"))
+                {
+                    if (param.formType.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND(FormType IN('NCR', 'QFR')) ";
                     }
                 }
                 if (param.formNumber != null)
@@ -174,7 +182,27 @@ namespace Services.CAR
                             Condquery += Environment.NewLine;
                             Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
                         }
-                    }
+                        else if (param.datetype == "IssueDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(IssueDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "IssueUpdatedDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(IssueUpdatedDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "ReceiveAprovalDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(ReceiveAprovalDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "PDAReviewDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(PDAReviewDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                }
                 }
 
                 if (Condquery.Length > 0)
@@ -197,7 +225,7 @@ namespace Services.CAR
             var mdmMaterial = await mdm.GetMaterialWoProdAut(mparam);
             var mdmDept = await mdm.GetSystemDeptVsUser(param.Plant, "CAR");
             var mdmCurency = await mdm.GetCurrency(mparam.plant);
-            var mdmProcGrp = await mdm.getProcessGrp(mparam.plant);
+            var mdmProcGrp = await mdm.getProcessGrp(mparam.plant); 
 
             var joinedData = from main in maindata
                              join mattype in mdmMattype on main.MaterialType equals mattype.MaterialType into matGroup
@@ -350,7 +378,14 @@ namespace Services.CAR
             }
             if (param.formType != null)
             {
-                condition += " AND (FormType IN @formType or '' IN @formType) ";
+                if (param.formType.Contains("NCR/QFR"))
+                {
+                    condition += " AND (FormType IN ('NCR','QFR')) ";
+                }
+                else
+                {
+                    condition += " AND (FormType IN @formType or '' IN @formType) ";
+                }
             }
             var result  = await data.IFR.GetTotalRecordForEachStts(param, condition);
             return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);

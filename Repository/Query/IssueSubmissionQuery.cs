@@ -47,14 +47,59 @@ namespace Repository.Query
         values
         (
         @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
-        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby,@PlatingLineNoName,@CheckingMethod
+        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,@IssueStatus,'CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby,@PlatingLineNoName,@CheckingMethod
         )
         ";
 
+        public static readonly string SaveAsDraftDataIssueFeedback = @"
+        UPDATE IssueFeedback
+            SET
+                Plant = @UserPlant,
+                FormType = @FormType,
+                DetectionDate = @DetectionDate,
+                StatusOfFinding = @StatusOfFinding,
+                Product = @Product,
+                Model = @Model,
+                MaterialType = @MaterialType,
+                MaterialCode = @MaterialCode,
+                NcQty = @NcQty,
+                SamplingCheck = @SamplingCheck,
+                NcRatio = @NcRatio,
+                Dept = @Dept,
+                VendorCode = @VendorCode,
+                VendorDesc = @VendorDesc,
+                TttlQty = @TttlQty,
+                TttlQtyUOM = @TttlQtyUOM,
+                AffectedCavity = @AffectedCavity,
+                AffectedCavityNO = @AffectedCavityNO,
+                IssueType = @IssueType,
+                NCCode = @NCCode,
+                NCCategory = @NCCategory,
+                NCReason = @NCReason,
+                NCDescription = @NCDescription,
+                Status = @IssueStatus,
+                MainStatus = 'CAR RAISE',
+                IssueBy = @UserId, 
+                IssueByName = @UserName, 
+                IssueDate = GETDATE(),
+                IssueByComment = @Comment,
+                Detectedby = @Detectedby,
+                [Plating Line No/Name] = @PlatingLineNoName,
+                CheckingMethod = @CheckingMethod
+            WHERE
+                FormNo = @FormNumber";
+
         public static readonly string InsertDataAtchIssuer = @"
-        insert into IssueFeedbackAtchment(FormNo,ActionType,OriFileName,FileName,FileExt,FilePath)
-        values
-        (@FormNo,@ActionType,@OriFileName,@FileName,@FileExt,@FilePath)
+        IF NOT EXISTS (SELECT 1
+                       FROM IssueFeedbackAtchment
+                       WHERE FormNo = @FormNo
+                         AND ActionType = @ActionType
+                         AND OriFileName = @OriFileName
+                         AND FileExt = @FileExt)
+        BEGIN
+            insert into IssueFeedbackAtchment(FormNo,ActionType,OriFileName,FileName,FileExt,FilePath)
+            values (@FormNo,@ActionType,@OriFileName,@FileName,@FileExt,@FilePath)
+        END
         ";
 
         public static readonly string issuerUpdateDataIssueFeedback = @"
@@ -394,5 +439,12 @@ namespace Repository.Query
         ";
 
         public static readonly string GetAttachmentsByFormNo = @"SELECT FilePath FROM IssueFeedbackAtchment WHERE FormNo = @FormNo";
+
+        public static readonly string ChkExitsFormno = @"SELECT
+        CASE
+            WHEN EXISTS (SELECT 1 FROM ISSUEFEEDBACK WHERE FORMNO = @FormNo)
+            THEN 1
+            ELSE 0
+        END AS RecordExists;";
     }
 }
