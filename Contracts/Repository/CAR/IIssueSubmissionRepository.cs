@@ -18,6 +18,7 @@ namespace Contracts.Repository.CAR
         Task<int> CreateNewIssueFeedBcakWithVers(string OldFormNumber, string NewFormNumber, string UserId, string UserName, SqlTransaction transaction);
 
         Task<int> InsertDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction);
+        Task<int> SaveAsDraftDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> InsertDataAtchIssuer(IssueFeedbackAtchmentDto mydata, SqlTransaction transaction);
         Task<int> issuerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> issuerUpdateDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction);
@@ -44,6 +45,7 @@ namespace Contracts.Repository.CAR
         Task<int> pdaActionVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
         Task<List<IssueFeedbackAtchmentDto>> GetAttachmentsByFormNo(string formNo);
+        Task<bool> ChkExitsFormno(string formNo, SqlTransaction transaction);
 
 
     }

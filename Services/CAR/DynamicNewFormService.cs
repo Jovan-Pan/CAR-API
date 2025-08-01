@@ -74,6 +74,13 @@ namespace Services.CAR
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
+
+            #region get old data attachment
+            List<string> formNoList = new List<string>();
+            formNoList.Add(mydata.FormNumber);
+            var dataAtch = await data.IFR.GetDataAttchment(mydata.UserPlant, formNoList, transaction);
+            #endregion
+
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
             string pwd = basepathconfig.First().password;
@@ -86,6 +93,34 @@ namespace Services.CAR
                 {
                     if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
                     {
+                        #region delete old Atch
+                        var NCCategorydataAtch = dataAtch.Where(x => x.ActionType == "NC Category");
+                        if (NCCategorydataAtch.Any())
+                        {
+                            foreach (var attachment in NCCategorydataAtch)
+                            {
+                                string relativeFilePath = attachment.FilePath.Replace(credentials.BasePath, "");
+                                var fullFilePath = Path.Combine(credentials.BasePath, relativeFilePath.TrimStart('\\'));
+
+                                if (File.Exists(fullFilePath))
+                                {
+                                    IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
+                                    dtaAtch.FormNo = mydata.FormNumber;
+                                    dtaAtch.ActionType = "NC Category";
+                                    dtaAtch.OriFileName = attachment.OriFileName;
+                                    dtaAtch.FileName = attachment.FileName;
+                                    dtaAtch.FileExt = attachment.FileExt;
+                                    dtaAtch.FilePath = attachment.FilePath;
+
+                                    await data.DynamicNewForm.deleteDataAtchIssuer(dtaAtch, transaction);
+
+                                    File.Delete(fullFilePath);
+                                }
+                            }
+                        }
+                        #endregion
+
+
                         if (mydata.NCCategoryImgFiles != null)
                         {
                             var NCCategoryImgFiles = mydata.NCCategoryImgFiles.ToList();

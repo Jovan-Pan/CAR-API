@@ -39,10 +39,21 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
-            string newformno = await data.ISM.GenerateNewFormNo(mydata.UserPlant,mydata.FormType,transaction);
-            mydata.FormNumber = newformno;
+            string newformno = mydata.FormNumber;
+            if (string.IsNullOrEmpty(mydata.FormNumber))
+            {
+                newformno = await data.ISM.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
+                mydata.FormNumber = newformno;
+            }
 
-            await data.ISM.InsertDataIssueFeedback(mydata, transaction);
+            var chkExsData = await data.ISM.ChkExitsFormno(mydata.FormNumber, transaction);
+            if (!chkExsData) {
+                await data.ISM.InsertDataIssueFeedback(mydata, transaction);
+            }
+            else
+            {
+                await data.ISM.SaveAsDraftDataIssueFeedback(mydata, transaction);
+            }
             await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             string domain = basepathconfig.First().domain;
