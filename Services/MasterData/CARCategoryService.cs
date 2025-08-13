@@ -15,9 +15,9 @@ namespace Services.MasterData
 {
     internal sealed class CARCategoryService(IDataManager data, ICacheManager memCache, ILocalizationService localization) : ICARCategoryService
     {
-        public async Task<ApiResponse<IEnumerable<CARCategoryDto>>> GetCARCategory(string? search, string? SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<CARCategoryDto>>> GetCARCategory(GETCARCategory GETCARCategory)
         {
-            var result = await data.CARCategory.GetCARCategory(search, SearchADV, delflag);
+            var result = await data.CARCategory.GetCARCategory(GETCARCategory);
             return ApiResponse<IEnumerable<CARCategoryDto>>.SuccessResponse(result);
         }
 

@@ -9,7 +9,7 @@ namespace Contracts.Repository.MasterData
 {
     public interface ICARCategoryRepository
     {
-        Task<IEnumerable<CARCategoryDto>> GetCARCategory(string search, string SearchADV, bool delflag);
+        Task<IEnumerable<CARCategoryDto>> GetCARCategory(GETCARCategory GETCARCategory);
         Task<IEnumerable<CARCategoryDto>> InsertCARCategory(CRUDCARCategoryDto CRUDCARCategoryDto);
         Task<IEnumerable<CARCategoryDto>> UpdateCARCategory(CRUDCARCategoryDto CRUDCARCategoryDto);
         Task<IEnumerable<CARCategoryDto>> DataDelete(CRUDCARCategoryDto CRUDCARCategoryDto);

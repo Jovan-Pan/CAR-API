@@ -11,7 +11,7 @@ namespace Entities.ParamRequest
         public int Plant {  get; set; }
         public IEnumerable<string>? deptAuthList { get; set; }
         public IEnumerable<string>? productAuthList { get; set; }
-        public IEnumerable<string>? formType { get; set; }
+        //public IEnumerable<string>? formType { get; set; }
         public IEnumerable<string>? formNumber { get; set; }
         public IEnumerable<string>? status { get; set; }
         public IEnumerable<string>? mainStatus { get; set; }
@@ -28,5 +28,12 @@ namespace Entities.ParamRequest
         public DateTime? fromdate { get; set; }
         public DateTime? todate { get; set; }
 
+        public string? UserDept { get; set; }
+        public string? UserVendor { get; set; }
+        public string? UserID { get; set; }
+
+        public string? sortField { get; set; }
+        public int? sortOrder { get; set; }
+        public string? formType { get; set; }
     }
 }

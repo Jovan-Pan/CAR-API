@@ -18,4 +18,12 @@ namespace Entities.MasterData
         public bool DelFlag { get; set; }
 
     }
+    public class GETRootCauseCategory
+    {
+        public string? search { get; set; }
+        public string? SearchADV { get; set; }
+        public bool delflag { get; set; }
+        public string? plant { get; set; }
+
+    }
 }

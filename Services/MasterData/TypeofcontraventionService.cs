@@ -15,9 +15,9 @@ namespace Services.MasterData
 {
     internal sealed class TypeofcontraventionService(IDataManager data, ICacheManager memCache, ILocalizationService localization) : ITypeofcontraventionService
     {
-        public async Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> GetTypeofcontravention(string? search, string? SearchADV, bool delflag)
+        public async Task<ApiResponse<IEnumerable<TypeofcontraventionDto>>> GetTypeofcontravention(GETTypeofcontravention GETTypeofcontravention)
         {
-            var result = await data.Typeofcontravention.GetTypeofcontravention(search, SearchADV, delflag);
+            var result = await data.Typeofcontravention.GetTypeofcontravention(GETTypeofcontravention);
             return ApiResponse<IEnumerable<TypeofcontraventionDto>>.SuccessResponse(result);
         }
 

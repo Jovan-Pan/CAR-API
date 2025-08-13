@@ -25,7 +25,28 @@ namespace Repository.CAR
 
 
             await using var conn = dbContext.CARConnection();
-            return await conn.ExecuteScalarAsync<int>(query, new { plant = param.Plant });
+            return await conn.ExecuteScalarAsync<int>(query, new {
+                plant = param.Plant,
+                deptAuthList = param.deptAuthList,
+                productAuthList = param.productAuthList,
+                formType = param.formType,
+                formNumber = param.formNumber,
+                status = param.status,
+                mainStatus = param.mainStatus,
+                dept = param.dept,
+                processGrp = param.processGrp,
+                statusOfFinding = param.statusOfFinding,
+                product = param.product,
+                model = param.model,
+                mattype = param.mattype,
+                material = param.material,
+                vendor = param.vendor,
+                UserVendor = param.UserVendor,
+                fromdate = param.fromdate?.ToString("yyyy-MM-dd"),
+                todate = param.todate?.ToString("yyyy-MM-dd"),
+                skip = ConditionParams.skip,
+                take = ConditionParams.take
+            });
         }
 
         public async Task<IEnumerable<IssueFeedbackDto>> GetMaindata(GlobalParam param, ConditionParams ConditionParams)
@@ -56,6 +77,7 @@ namespace Repository.CAR
                     mattype = param.mattype,
                     material = param.material,
                     vendor = param.vendor,
+                    UserVendor = param.UserVendor,
                     fromdate = param.fromdate?.ToString("yyyy-MM-dd"),
                     todate = param.todate?.ToString("yyyy-MM-dd"),
                     skip = ConditionParams.skip, 
@@ -77,7 +99,20 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<string>(query,new {plant ,FormNo});
         }
-        
+
+        public async Task<IEnumerable<string>> GetMailtocc(string formno)
+        {
+            string Processquery = IssueFeedbackReportQuery.GetMailtocc;
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<string>(Processquery, new { formno });
+        }
+
+        public async Task<IEnumerable<string>>GetMailToCCStatic(string formno, int UserPlant, string group, string dept)
+        {
+            string Processquery = IssueFeedbackReportQuery.GetMailToCCStatic;
+            await using var conn = dbContext.MDMConnection();
+            return await conn.QueryAsync<string>(Processquery, new { plant= UserPlant ,group =  group, dept = dept });
+        }
 
         public async Task<IEnumerable<IssueFeedbackAtchmentDto>> GetDataAttchment(int plant, IEnumerable<string> FormNoList, SqlTransaction? transaction)
         {

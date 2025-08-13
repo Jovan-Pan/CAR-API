@@ -7,9 +7,11 @@ using Microsoft.Data.SqlClient;
 using Repository.Query;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Repository.CAR
 {
@@ -39,6 +41,13 @@ namespace Repository.CAR
         public async Task<int> InsertDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.InsertDataIssueFeedback;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> SaveAsDraftDataIssueFeedback(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.SaveAsDraftDataIssueFeedback;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
@@ -217,6 +226,30 @@ namespace Repository.CAR
             string query = IssueSubmissionQuery.cekAvailableCompletePastIssue;
             await using var conn = dbContext.CARConnection();
             return await conn.QueryFirstOrDefaultAsync<string>(query, param);
+        }
+
+        public async Task<int> pdaActionVoid(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.pdaActionVoid;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+        public async Task<List<IssueFeedbackAtchmentDto>> GetAttachmentsByFormNo(string formNo)
+        {
+            string query = IssueSubmissionQuery.GetAttachmentsByFormNo;
+            await using var conn = dbContext.CARConnection();
+            var param = new { FormNo = formNo };
+            var result = await conn.QueryAsync<IssueFeedbackAtchmentDto>(query, param);
+            return result.ToList();
+        }
+
+        public async Task<bool> ChkExitsFormno(string formNo, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ChkExitsFormno;
+            var conn = transaction.Connection;
+            int result = await conn.ExecuteScalarAsync<int>(query, new { FormNo = formNo }, transaction: transaction);
+            // Convert the integer result (1 or 0) to a boolean.
+            return result == 1;
         }
     }
 }

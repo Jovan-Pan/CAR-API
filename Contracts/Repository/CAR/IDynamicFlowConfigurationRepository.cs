@@ -10,7 +10,7 @@ namespace Contracts.Repository.CAR
 {
     public interface IDynamicFlowConfigurationRepository
     {
-        Task<IEnumerable<DynamicFlowConfigurationDto>> GetDynamicFlowConfiguration(string search, string SearchFTADV, string SearchADV, bool delflag);
+        Task<IEnumerable<DynamicFlowConfigurationDto>> GetDynamicFlowConfiguration(string search, string SearchFTADV, string SearchADV, bool delflag, int plant);
         Task<IEnumerable<DynamicFlowConfigurationDto>> InsertNewData(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto);
         Task<IEnumerable<DynamicFlowConfigurationDto>> UpdateData(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto);
         Task<IEnumerable<DynamicFlowConfigurationDto>> DataDelete(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto);

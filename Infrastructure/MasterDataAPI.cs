@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using Entities.Infrastructure;
 using Entities.Account.Dto;
+using System.Net.Mail;
+using System.Net.Mime;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure;
 
@@ -71,13 +74,62 @@ public class MasterDataAPI(IHttpClientFactory httpClientFactory) : IMasterDataAp
             { new StringContent(param.CopyRecipient), "CopyRecipient" }
         };
 
-        foreach(var filePath in param.AttachmentsPath)
-        {
-            var fileBytes = await File.ReadAllBytesAsync(filePath);
-            var file = new FileInfo(filePath);
+        //foreach(var filePath in param.AttachmentsPath)
+        //{
+        //    var fileBytes = await File.ReadAllBytesAsync(filePath);
+        //    var file = new FileInfo(filePath);
 
-            formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
+        //    formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
+        //}
+        AlternateView htmlView = AlternateView.CreateAlternateViewFromString(param.Body, null, "text/html");
+
+        //if (param.AttachmentsPath != null)
+        //{
+        //    foreach (var filePath in param.AttachmentsPath)
+        //    {
+        //        if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+        //        {
+        //            var fileBytes = await File.ReadAllBytesAsync(filePath);
+        //            var file = new FileInfo(filePath);
+        //            formData.Add(new ByteArrayContent(fileBytes), "Files", file.Name);
+        //        }
+        //    }
+        //}
+
+        if (param.AttachmentsPath != null)
+        {
+            for (int i = 0; i < param.LinkedFiles.Count; i++)
+            {
+                var linkedFile = param.LinkedFiles[i];
+                if (!string.IsNullOrEmpty(linkedFile.FilePath) && File.Exists(linkedFile.FilePath))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(linkedFile.FilePath);
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+
+                    formData.Add(fileContent, $"Files", Path.GetFileName(linkedFile.FilePath));
+                    formData.Add(new StringContent(linkedFile.ContentId), "Files");
+                }
+            }
         }
+
+        if (param.LinkedFiles != null)
+        {
+            for (int i = 0; i < param.LinkedFiles.Count; i++)
+            {
+                var linkedFile = param.LinkedFiles[i];
+                if (!string.IsNullOrEmpty(linkedFile.FilePath) && File.Exists(linkedFile.FilePath))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(linkedFile.FilePath);
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+
+                    formData.Add(fileContent, $"LinkedFiles", Path.GetFileName(linkedFile.FilePath));
+                    formData.Add(new StringContent(linkedFile.ContentId), "LinkedFileContentIds");
+                }
+            }
+        }
+
 
         //await _httpClient.PostAsync(url, formData);
 

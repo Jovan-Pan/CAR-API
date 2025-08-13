@@ -43,18 +43,63 @@ namespace Repository.Query
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment)
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,Detectedby,[Plating Line No/Name],CheckingMethod)
         values
         (
         @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
-        ,@AffectedCavity,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,'SUBMITED','CAR RAISE',@UserId,@UserName,GETDATE(),@Comment
+        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,@IssueStatus,'CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby,@PlatingLineNoName,@CheckingMethod
         )
         ";
 
+        public static readonly string SaveAsDraftDataIssueFeedback = @"
+        UPDATE IssueFeedback
+            SET
+                Plant = @UserPlant,
+                FormType = @FormType,
+                DetectionDate = @DetectionDate,
+                StatusOfFinding = @StatusOfFinding,
+                Product = @Product,
+                Model = @Model,
+                MaterialType = @MaterialType,
+                MaterialCode = @MaterialCode,
+                NcQty = @NcQty,
+                SamplingCheck = @SamplingCheck,
+                NcRatio = @NcRatio,
+                Dept = @Dept,
+                VendorCode = @VendorCode,
+                VendorDesc = @VendorDesc,
+                TttlQty = @TttlQty,
+                TttlQtyUOM = @TttlQtyUOM,
+                AffectedCavity = @AffectedCavity,
+                AffectedCavityNO = @AffectedCavityNO,
+                IssueType = @IssueType,
+                NCCode = @NCCode,
+                NCCategory = @NCCategory,
+                NCReason = @NCReason,
+                NCDescription = @NCDescription,
+                Status = @IssueStatus,
+                MainStatus = 'CAR RAISE',
+                IssueBy = @UserId, 
+                IssueByName = @UserName, 
+                IssueDate = GETDATE(),
+                IssueByComment = @Comment,
+                Detectedby = @Detectedby,
+                [Plating Line No/Name] = @PlatingLineNoName,
+                CheckingMethod = @CheckingMethod
+            WHERE
+                FormNo = @FormNumber";
+
         public static readonly string InsertDataAtchIssuer = @"
-        insert into IssueFeedbackAtchment(FormNo,ActionType,OriFileName,FileName,FileExt,FilePath)
-        values
-        (@FormNo,@ActionType,@OriFileName,@FileName,@FileExt,@FilePath)
+        IF NOT EXISTS (SELECT 1
+                       FROM IssueFeedbackAtchment
+                       WHERE FormNo = @FormNo
+                         AND ActionType = @ActionType
+                         AND OriFileName = @OriFileName
+                         AND FileExt = @FileExt)
+        BEGIN
+            insert into IssueFeedbackAtchment(FormNo,ActionType,OriFileName,FileName,FileExt,FilePath)
+            values (@FormNo,@ActionType,@OriFileName,@FileName,@FileExt,@FilePath)
+        END
         ";
 
         public static readonly string issuerUpdateDataIssueFeedback = @"
@@ -76,6 +121,10 @@ namespace Repository.Query
         ,Dept = @Dept
         ,VendorCode = @VendorCode
         ,VendorDesc = @VendorDesc
+        ,AffectedCavityNO = @AffectedCavityNO
+        ,Detectedby = @Detectedby
+        ,[Plating Line No/Name] = @PlatingLineNoName
+        ,CheckingMethod = @CheckingMethod
         where FormNo = @FormNumber
         ";
 
@@ -215,7 +264,7 @@ namespace Repository.Query
         set 
         Status = @IssueStatus,
         IssueType = @IssueType,
-        MainStatus = case when @IssueStatus = 'ISSUED' then 'CAR RAISE' else 'OPEN' end,
+        MainStatus = case when @IssueStatus = 'ISSUED' OR @IssueStatus = 'ISSUED-REJECT'  then 'CAR RAISE' else 'OPEN' end,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,
@@ -321,16 +370,16 @@ namespace Repository.Query
         public static readonly string CreateNewIssueFeedBcakWithVers = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment)
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment)
         select Plant,FormType,@NewFormNumber,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN','CAR RAISE',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN','CAR RAISE',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
         from IssueFeedback where FormNo = @OldFormNumber
         ";
 
         public static readonly string PDAReviewerAprove = @"
         update IssueFeedback
         set 
-        Status = 'REVIEW',
+        Status = @IssueStatus,
         MainStatus = 'PENDING APPROVAL',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
@@ -370,10 +419,32 @@ namespace Repository.Query
         and FormType = @formType
         --and MaterialCode = @material 
         and NCCategory = @nccategory 
-        and NCReason = @ncreason 
+        --and NCReason = @ncreason 
         and Dept=@dept 
         and (VendorCode=@vendor or @vendor is null)
-        and procecessGrpCode = @processgroup and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
+        and procecessGrpCode = @processgroup
+        and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
         ";
+
+        public static readonly string pdaActionVoid = @"
+        update IssueFeedback
+        set 
+        Status = 'VOID',
+        MainStatus = 'CLOSED',
+        PDAVoidBy = @UserId,
+        PDAVoidByName = @UserName,
+        PDAVoidDate = GETDATE(),
+        PDAVoidComment = @rejectReason
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string GetAttachmentsByFormNo = @"SELECT FilePath FROM IssueFeedbackAtchment WHERE FormNo = @FormNo";
+
+        public static readonly string ChkExitsFormno = @"SELECT
+        CASE
+            WHEN EXISTS (SELECT 1 FROM ISSUEFEEDBACK WHERE FORMNO = @FormNo)
+            THEN 1
+            ELSE 0
+        END AS RecordExists;";
     }
 }

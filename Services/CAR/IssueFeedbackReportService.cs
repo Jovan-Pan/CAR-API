@@ -16,7 +16,7 @@ using Contracts.Repository.MasterData;
 using Contracts.Repository;
 using Contracts;
 using Microsoft.AspNetCore.Http;
-using System.Xml.Linq;
+using System.Xml.Linq;  
 using Services.Contracts;
 using System.Transactions;
 using System.Reflection.Emit;
@@ -36,7 +36,7 @@ namespace Services.CAR
             var skip = (param.PageNumber - 1) * param.PageSize;
             
             string whereCondition = DisplayDataCondition.GenerateWhereCondition(param);
-            string orderByCondition = DisplayDataCondition.GenerateOrderByCondition(param.order);
+            string orderByCondition = DisplayDataCondition.GenerateOrderByConditionIFR(param.sortField, param.sortOrder);
             int totalRecords = 0;
             int take = param.PageSize;
             ConditionParams Cpr = new ConditionParams();
@@ -47,126 +47,171 @@ namespace Services.CAR
 
             var totrecord = await data.IFR.GetTotalRecord(param, Cpr);
 
+            var AllowAllData = await mdm.AllowAllDataToAcc(param.UserID);
+     
             #region generate condition query for advance filter
-            string Condquery = @"";
-            if (param.formType != null)
-            {
-                if(param.formType.Count() > 0)
+                string Condquery = @"";
+                if (param.formType != null && !param.formType.Contains("NCR/QFR"))
                 {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND FormType IN @formType ";
-                }
-            }
-            if (param.formNumber != null)
-            {
-                if (param.formNumber.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND FormNo IN @formNumber ";
-                }
-            }
-            if (param.status != null)
-            {
-                if (param.status.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += @" AND status IN @status ";
-                }
-            }
-            if (param.mainStatus != null)
-            {
-                if (param.mainStatus.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += @" AND mainStatus IN @mainStatus ";
-                }
-            }
-            if (param.dept != null)
-            {
-                if (param.dept.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND Dept IN @dept ";
-                }
-            }
-            if (param.statusOfFinding != null)
-            {
-                if (param.statusOfFinding.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND StatusOfFinding IN @statusOfFinding ";
-                }
-            }
-            if (param.processGrp != null)
-            {
-                if (param.processGrp.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND procecessGrpCode IN @processGrp ";
-                }
-            }
-            if (param.product != null)
-            {
-                if (param.product.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND Product IN @product ";
-                }
-            }
-            if (param.model != null)
-            {
-                if (param.model.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND Model IN @model ";
-                }
-            }
-            if (param.mattype != null)
-            {
-                if (param.mattype.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND MaterialType IN @mattype ";
-                }
-            }
-            if (param.material != null)
-            {
-                if (param.material.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND MaterialCode IN @material ";
-                }
-            }
-            if (param.vendor != null)
-            {
-                if (param.vendor.Count() > 0)
-                {
-                    Condquery += Environment.NewLine;
-                    Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
-                }
-            }
-            if (param.datetype != null)
-            {
-                if (param.fromdate != null && param.todate != null) {
-                    if (param.datetype == "DetectionDate")
+                    if (param.formType.Count() > 0)
                     {
                         Condquery += Environment.NewLine;
-                        Condquery += " AND format(DetectionDate,'yyyy-MM-dd') between @fromdate and @todate ";
-                    }
-                    else if (param.datetype == "EffectiveDate")
-                    {
-                        Condquery += Environment.NewLine;
-                        Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        Condquery += " AND (FormType IN (@formType)) ";
                     }
                 }
-            }
+                if (param.formType != null && param.formType.Contains("NCR/QFR"))
+                {
+                    if (param.formType.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND(FormType IN('NCR', 'QFR')) ";
+                    }
+                }
+                if (param.formNumber != null)
+                {
+                    if (param.formNumber.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND FormNo IN @formNumber ";
+                    }
+                }
+                if (param.status != null)
+                {
+                    if (param.status.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += @" AND status IN @status ";
+                    }
+                }
+                if (param.mainStatus != null)
+                {
+                    if (param.mainStatus.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += @" AND mainStatus IN @mainStatus ";
+                    }
+                }
+                if (param.dept != null)
+                {
+                    if (param.dept.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND Dept IN @dept ";
+                    }
+                }
+                if (param.statusOfFinding != null)
+                {
+                    if (param.statusOfFinding.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND StatusOfFinding IN @statusOfFinding ";
+                    }
+                }
+                if (param.processGrp != null)
+                {
+                    if (param.processGrp.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND procecessGrpCode IN @processGrp ";
+                    }
+                }
+                if (param.product != null)
+                {
+                    if (param.product.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND Product IN @product ";
+                    }
+                }
+                if (param.model != null)
+                {
+                    if (param.model.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND Model IN @model ";
+                    }
+                }
+                if (param.mattype != null)
+                {
+                    if (param.mattype.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND MaterialType IN @mattype ";
+                    }
+                }
+                if (param.material != null)
+                {
+                    if (param.material.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND MaterialCode IN @material ";
+                    }
+                }
+                if (param.vendor != null)
+                {
+                    if (param.vendor.Count() > 0)
+                    {
+                        Condquery += Environment.NewLine;
+                        Condquery += " AND isnull(VendorCode,'NA') IN @vendor ";
+                    }
+                }
+                if (!AllowAllData)
+                {
+                    if (param.UserDept == "VEND")
+                    {
+                        if (param.UserVendor != null)
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND (ISNULL(VendorCode, 'NA') = ISNULL(@UserVendor, 'NA')) ";
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND status NOT IN ('DRAFT-SUBMIT', 'SUBMITED', 'SUBMITED-APPEAL', 'RE-SUBMIT', 'SUBMITED-REJECT', 'RE-SUBMIT-APPEAL', 'OPEN', 'OPEN-REJECT', 'OPEN-APPEAL', 'PDA-DESICION','PDA-DESICION-APPEAL')";
+                        }
+                    }
+                }
+                if (param.datetype != null)
+                {
+                    if (param.fromdate != null && param.todate != null)
+                    {
+                        if (param.datetype == "DetectionDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(DetectionDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "EffectiveDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "IssueDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(IssueDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "IssueUpdatedDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(IssueUpdatedDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "ReceiveAprovalDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(ReceiveAprovalDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "PDAReviewDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(PDAReviewDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                }
+                }
 
-            if (Condquery.Length > 0) {
-                Cpr.ExtraWhereCondition += Environment.NewLine;
-                Cpr.ExtraWhereCondition += Condquery;
-            }
-            #endregion
-
+                if (Condquery.Length > 0)
+                {
+                    Cpr.ExtraWhereCondition += Environment.NewLine;
+                    Cpr.ExtraWhereCondition += Condquery;
+                }
+                #endregion
+            var FilterTtlRecord = await data.IFR.GetTotalRecord(param, Cpr);
             var maindata = await data.IFR.GetMaindata(param, Cpr);
             var formNoList = maindata.Select(data => data.FormNo);
             var dataAtch = await data.IFR.GetDataAttchment(param.Plant, formNoList,null);
@@ -180,7 +225,7 @@ namespace Services.CAR
             var mdmMaterial = await mdm.GetMaterialWoProdAut(mparam);
             var mdmDept = await mdm.GetSystemDeptVsUser(param.Plant, "CAR");
             var mdmCurency = await mdm.GetCurrency(mparam.plant);
-            var mdmProcGrp = await mdm.getProcessGrp(mparam.plant);
+            var mdmProcGrp = await mdm.getProcessGrp(mparam.plant); 
 
             var joinedData = from main in maindata
                              join mattype in mdmMattype on main.MaterialType equals mattype.MaterialType into matGroup
@@ -216,6 +261,7 @@ namespace Services.CAR
                                  TttlQty = main.TttlQty,
                                  TttlQtyUOM = main.TttlQtyUOM,
                                  AffectedCavity = main.AffectedCavity,
+                                 AffectedCavityNO = main.AffectedCavityNO,
                                  IssueType = main.IssueType,
                                  NCCode = main.NCCode,
                                  NCCategory = main.NCCategory,
@@ -247,6 +293,10 @@ namespace Services.CAR
                                  PDAAprovalByName = main.PDAAprovalByName,
                                  PDAAprovalDate = main.PDAAprovalDate,
                                  pdaAprovalComment = main.pdaAprovalComment,
+                                 PDAVoidBy = main.PDAVoidBy,
+                                 PDAVoidByName = main.PDAVoidByName,
+                                 PDAVoidDate = main.PDAVoidDate,
+                                 PDAVoidComment = main.PDAVoidComment,
                                  ImmActRecDetail = main.ImmActRecDetail,
                                  CostPC = main.CostPC,
                                  Curency = main.Curency,
@@ -281,6 +331,14 @@ namespace Services.CAR
                                  ReviewSubmitDate = main.ReviewSubmitDate,
                                  ReviewComment = main.ReviewComment,
                                  ReviewMethod = main.ReviewMethod,
+
+                                 PossibleHazards = main.PossibleHazards,
+                                 Typeofcontravention = main.Typeofcontravention,
+                                 RiskCategory = main.RiskCategory,
+
+                                 Detectedby = main.Detectedby,
+                                 PlatingLineNoName = main.PlatingLineNoName,
+                                 CheckingMethod = main.CheckingMethod
                              };
             maindata = joinedData;
             
@@ -304,22 +362,30 @@ namespace Services.CAR
 
                     maindata = maindataList;
                 }
-            }
+            }   
             result.maindata = maindata;
-            result.totrecord = totrecord;
+            result.totrecord = FilterTtlRecord;
             return ApiResponse<IssueFeedbackResultDto>.SuccessResponse(result);
         }
 
         public async Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param)
-        {
+          {
+            var AllowAllData = await mdm.AllowAllDataToAcc(param.UserId);
             string condition = " AND (Dept IS NULL OR Dept IN @DeptList) AND (Product IS NULL OR Product IN @ProductList) ";
-            if (param.vendorcode != null)
+            if (param.vendorcode != null && !AllowAllData)
             {
-                condition = " AND vendorcode = @vendorcode ";
+                condition = " AND vendorcode = @vendorcode AND status NOT IN ('DRAFT-SUBMIT', 'SUBMITED', 'SUBMITED-APPEAL', 'RE-SUBMIT', 'SUBMITED-REJECT', 'RE-SUBMIT-APPEAL', 'OPEN', 'OPEN-REJECT', 'OPEN-APPEAL', 'PDA-DESICION','PDA-DESICION-APPEAL')";
             }
             if (param.formType != null)
             {
-                condition += " AND (FormType IN @formType or '' IN @formType) ";
+                if (param.formType.Contains("NCR/QFR"))
+                {
+                    condition += " AND (FormType IN ('NCR','QFR')) ";
+                }
+                else
+                {
+                    condition += " AND (FormType IN @formType or '' IN @formType) ";
+                }
             }
             var result  = await data.IFR.GetTotalRecordForEachStts(param, condition);
             return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);

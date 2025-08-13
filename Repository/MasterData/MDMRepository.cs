@@ -13,7 +13,14 @@ namespace Repository.MasterData;
 
 internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
 {
+    public async Task<bool> AllowAllDataToAcc(string userId)
+    {
+        string query = MDMQuery.AllowAllDataToAcc;
 
+        await using var conn = dbContext.MDMConnection();
+        var result = await conn.ExecuteScalarAsync<bool>(query, new { userId });
+        return result;
+    }
     public async Task<IEnumerable<string>> GetPlantListForCRCUSystemByUserId(string userId)
     {
         string query = MDMQuery.GetPlantList;
@@ -100,6 +107,12 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<SystemDeptVsUserDto>(Processquery, new { plant = plant, Userid = Userid });
     }
+    public async Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUserDynamic(int plant, string Userid)
+    {
+        string Processquery = MDMQuery.GetSystemDeptVsUserDynamic;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<SystemDeptVsUserDto>(Processquery, new { plant = plant, Userid = Userid });
+    }
 
     public async Task<IEnumerable<VendorDto>> GetVendor(int plant)
     {
@@ -163,6 +176,12 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryAsync<SystemvsUservsEmailSubscribeForm>(Processquery, new { plant, group, dept });
     }
+    public async Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeFormVendor(string VendorCode, int plant, string group, string dept)
+    {
+        string Processquery = MDMQuery.GetSystemvsUservsEmailSubscribeFormVendor;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryAsync<SystemvsUservsEmailSubscribeForm>(Processquery, new { VendorCode, plant, group, dept });
+    }
 
     public async Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID)
     {
@@ -184,10 +203,10 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         {
             Processquery = MDMQuery.GetUsr;
         }
-        else if(!string.IsNullOrEmpty(data.VendorCode) && data.Dept == "VEND")
-        {
-            Processquery = MDMQuery.GetUsrForVndr;
-        }
+        //else if(!string.IsNullOrEmpty(data.VendorCode) && data.Dept == "VEND")
+        //{
+        //    Processquery = MDMQuery.GetUsrForVndr;
+        //}
         else
         {
             Processquery = MDMQuery.GetUsrForDept;

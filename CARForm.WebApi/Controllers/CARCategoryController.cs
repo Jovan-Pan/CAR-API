@@ -11,9 +11,9 @@ namespace WebApi.Controllers
     public class CARCategoryController(IServiceManager business) : Controller
     {
         [HttpGet(nameof(GetCARCategory))]
-        public async Task<IActionResult> GetCARCategory(string? search, string? SearchADV, bool delflag)
+        public async Task<IActionResult> GetCARCategory([FromQuery] GETCARCategory GETCARCategory)
         {
-            var result = await business.CARCategory.GetCARCategory(search, SearchADV, delflag);
+            var result = await business.CARCategory.GetCARCategory(GETCARCategory);
             return Ok(result);
         }
 

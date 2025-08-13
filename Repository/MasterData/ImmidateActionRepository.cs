@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,15 +27,15 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<string>(query, new { plant = plant });
         }
-        public async Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(string? search, string? SearchADV,bool delflag)
+        public async Task<IEnumerable<ImmidateActionDto>> GetImmidateAction(GETImmidateAction GETImmidateAction)
         {
             string query;
 
-            if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+            if (string.IsNullOrEmpty(GETImmidateAction.search) && string.IsNullOrEmpty(GETImmidateAction.SearchADV))
             {
                 query = ImmidateActionQuery.GetImmidateAction;
             }
-            else if (!string.IsNullOrEmpty(SearchADV))
+            else if (!string.IsNullOrEmpty(GETImmidateAction.SearchADV))
             {
                 query = ImmidateActionQuery.SearchadvData;
             }
@@ -43,12 +44,12 @@ namespace Repository.MasterData
                 query = ImmidateActionQuery.SearchDatainDB;
             }
 
-            if (!delflag)
+            if (!GETImmidateAction.delflag)
             {
                 query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<ImmidateActionDto>(query, new { search = search, SearchADV = SearchADV });
+            return await conn.QueryAsync<ImmidateActionDto>(query, new { search = GETImmidateAction.search, SearchADV = GETImmidateAction.SearchADV, plant = GETImmidateAction.plant });
         }
         public async Task<IEnumerable<ImmidateActionDto>> InsertNewImmidateAction(string ImmidateName, int plant, string userId)
         {
@@ -181,12 +182,24 @@ namespace Repository.MasterData
             ArrayList conditions = new ArrayList();
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
-            conditions.Add(" ISNULL([Immidate Name], '') = ''  or ISNULL(Plant, '') = ''  ");
-            condRemark.Add("Null Mandatory Data");
-            conditions.Add(" LEN([Immidate Name]) > 50");
-            condRemark.Add("Process Group Code maximal 50 characters");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Name Is required");
+            conditions.Add("ISNULL([Immidate Name], '') = ''");
+            condRemark.Add("Immidate Name Is required");
+            conditions.Add("LEN([Immidate Name]) > 50");
+            condRemark.Add("Immidate Name maximal 50 characters");
 
-            string uniqueField = "[Immidate Name]";
+            string uniqueField = "[Plant],[Immidate Name]";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 
@@ -286,16 +299,14 @@ namespace Repository.MasterData
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                        WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 

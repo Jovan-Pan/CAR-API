@@ -12,6 +12,12 @@ namespace WebApi.Controllers;
 [ApiController]
 public class MasterDataController(IServiceManager business) : Controller
 {
+    [HttpGet(nameof(AllowAllDataToAcc))]
+    public async Task<IActionResult> AllowAllDataToAcc(string userId)
+    {
+        var result = await business.MasterData.AllowAllDataToAcc(userId);
+        return Ok(result);
+    }
     [HttpGet("GetMenuSetting/{userId}")]
     public async Task<IActionResult> GetMenuSetting(string userId)
     {
@@ -86,6 +92,14 @@ public class MasterDataController(IServiceManager business) : Controller
     public async Task<IActionResult> GetSystemDeptVsUser(int plant, string Userid)
     {
         var result = await business.MasterData.GetSystemDeptVsUser(plant, Userid);
+        return Ok(result);
+
+    }
+
+    [HttpGet(nameof(GetSystemDeptVsUserDynamic))]
+    public async Task<IActionResult> GetSystemDeptVsUserDynamic(int plant, string Userid)
+    {
+        var result = await business.MasterData.GetSystemDeptVsUserDynamic(plant, Userid);
         return Ok(result);
 
     }

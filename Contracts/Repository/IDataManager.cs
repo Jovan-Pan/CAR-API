@@ -21,5 +21,5 @@ public interface IDataManager
     IDynamicNewFormRepository DynamicNewForm { get; }
     IDynamicFlowConfigurationRepository DynamicFlowConfiguration { get; }
     ITableMappingFieldNameRepository TableMappingFieldName { get; }
-
+    IWorkFlowHistoryRepository WorkFlowHistory { get; }
 }

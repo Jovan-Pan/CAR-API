@@ -20,6 +20,7 @@ using Services.Helper;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Drawing;
 using OfficeOpenXml.Style;
+using System.Numerics;
 
 namespace Repository.MasterData
 {
@@ -31,15 +32,15 @@ namespace Repository.MasterData
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<string>(query, new { plant = plant });
         }
-        public async Task<IEnumerable<RootCauseCategoryDto>> GetRootCauseCategory(string search, string SearchADV, bool delflag)
+        public async Task<IEnumerable<RootCauseCategoryDto>> GetRootCauseCategory(GETRootCauseCategory GETRootCauseCategory)
         {
             string query;
 
-            if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+            if (string.IsNullOrEmpty(GETRootCauseCategory.search) && string.IsNullOrEmpty(GETRootCauseCategory.SearchADV))
             {
                 query = RootCauseQuery.GetRootCauseCategory;
             }
-            else if (!string.IsNullOrEmpty(SearchADV))
+            else if (!string.IsNullOrEmpty(GETRootCauseCategory.SearchADV))
             {
                 query = RootCauseQuery.SearchadvData;
             }
@@ -48,12 +49,12 @@ namespace Repository.MasterData
                 query = RootCauseQuery.SearchDatainDB;
             }
 
-            if (!delflag)
+            if (!GETRootCauseCategory.delflag)
             {
                 query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { search = search, SearchADV = SearchADV });
+            return await conn.QueryAsync<RootCauseCategoryDto>(query, new { search = GETRootCauseCategory.search, SearchADV = GETRootCauseCategory.SearchADV, plant = GETRootCauseCategory.plant });
         }
         public async Task<IEnumerable<RootCauseCategoryDto>> InsertNewRootCauseCategory(string RootCauseName, string userId, int plant)
         {
@@ -189,12 +190,24 @@ namespace Repository.MasterData
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL([Root Cause Name], '') = '' OR ISNULL(Plant, '') = ''");
-            condRemark.Add("Null Mandatory Data");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Name Is required");
+            conditions.Add("ISNULL([Root Cause Name], '') = ''");
+            condRemark.Add("RootCauseName Mandatory Data");
             conditions.Add("LEN([Root Cause Name]) > 50");
             condRemark.Add("Root Cause Name maximal 50 characters");
 
-            string uniqueField = "[Root Cause Name]";
+            string uniqueField = "Plant,[Root Cause Name]";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 
@@ -294,17 +307,15 @@ namespace Repository.MasterData
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
-                                    
+                        WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
+
                     }
 
                     // Execute special conditions if any

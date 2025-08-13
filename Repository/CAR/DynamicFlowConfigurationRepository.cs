@@ -20,7 +20,7 @@ namespace Repository.CAR
 {
     internal sealed class DynamicFlowConfigurationRepository(DbContext dbContext) : IDynamicFlowConfigurationRepository
     {
-        public async Task<IEnumerable<DynamicFlowConfigurationDto>> GetDynamicFlowConfiguration(string search, string SearchFTADV, string SearchADV, bool delflag)
+        public async Task<IEnumerable<DynamicFlowConfigurationDto>> GetDynamicFlowConfiguration(string search, string SearchFTADV, string SearchADV, bool delflag, int plant)
         {
             string query;
 
@@ -42,16 +42,16 @@ namespace Repository.CAR
                 query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<DynamicFlowConfigurationDto>(query, new { search = search, SearchFTADV = SearchFTADV, SearchADV = SearchADV });
+            return await conn.QueryAsync<DynamicFlowConfigurationDto>(query, new { search = search, SearchFTADV = SearchFTADV, SearchADV = SearchADV, plant = plant });
         }
 
         public async Task<IEnumerable<DynamicFlowConfigurationDto>> InsertNewData(CRUDDynamicFlowConfigurationDto CRUDDynamicFlowConfigurationDto)
         {
-            string checkQuery = "SELECT COUNT(1) FROM DynamicFlowConfiguration WHERE FormType = @FormType";
+            string checkQuery = "SELECT COUNT(1) FROM DynamicFlowConfiguration WHERE FormType = @FormType and plant = @plant";
             string query = DynamicFlowConfigurationQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
             // Check if the record already exists
-            var existingCount = await conn.ExecuteScalarAsync<dynamic>(checkQuery, new { FormType = CRUDDynamicFlowConfigurationDto.FormType });
+            var existingCount = await conn.ExecuteScalarAsync<dynamic>(checkQuery, new { FormType = CRUDDynamicFlowConfigurationDto.FormType, plant = CRUDDynamicFlowConfigurationDto.Plant });
             if (existingCount > 0)
             {
                 return existingCount;

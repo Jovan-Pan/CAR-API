@@ -51,12 +51,36 @@ namespace Services.CAR
 
             }
 
-            string newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
-            mydata.FormNumber = newformno;
+            IEnumerable<UsrDto> userListvend = Enumerable.Empty<UsrDto>();
+            if (mydata.Dept == "VEND")
+            {
+                var vendorUsers = await data.MDM.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept) ?? Enumerable.Empty<SystemvsUservsEmailSubscribeForm>();
+                userListvend = vendorUsers.Select(x => new UsrDto
+                {
+                    UseID = x.UserID,
+                    UseNam = x.UseNam,
+                    UseEmail = x.UseEmail
+                });
+                //List<string> recipentList = userSubsFormMasterVendor.Select(form => form.UseEmail).ToList();
+            }
 
+
+            string newformno = mydata.FormNumber;
+            if (string.IsNullOrEmpty(mydata.FormNumber))
+            {
+                newformno = await data.DynamicNewForm.GenerateNewFormNo(mydata.UserPlant, mydata.FormType, transaction);
+                mydata.FormNumber = newformno;
+            }
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
-            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata,userList, transaction);
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
+
+            #region get old data attachment
+            List<string> formNoList = new List<string>();
+            formNoList.Add(mydata.FormNumber);
+            var dataAtch = await data.IFR.GetDataAttchment(mydata.UserPlant, formNoList, transaction);
+            #endregion
+
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
             string pwd = basepathconfig.First().password;
@@ -69,6 +93,34 @@ namespace Services.CAR
                 {
                     if (unc.NetUseWithCredentials(credentials.BasePath, credentials.UserID, credentials.Domain, credentials.Password))
                     {
+                        #region delete old Atch
+                        var NCCategorydataAtch = dataAtch.Where(x => x.ActionType == "NC Category");
+                        if (NCCategorydataAtch.Any())
+                        {
+                            foreach (var attachment in NCCategorydataAtch)
+                            {
+                                string relativeFilePath = attachment.FilePath.Replace(credentials.BasePath, "");
+                                var fullFilePath = Path.Combine(credentials.BasePath, relativeFilePath.TrimStart('\\'));
+
+                                if (File.Exists(fullFilePath))
+                                {
+                                    IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
+                                    dtaAtch.FormNo = mydata.FormNumber;
+                                    dtaAtch.ActionType = "NC Category";
+                                    dtaAtch.OriFileName = attachment.OriFileName;
+                                    dtaAtch.FileName = attachment.FileName;
+                                    dtaAtch.FileExt = attachment.FileExt;
+                                    dtaAtch.FilePath = attachment.FilePath;
+
+                                    await data.DynamicNewForm.deleteDataAtchIssuer(dtaAtch, transaction);
+
+                                    File.Delete(fullFilePath);
+                                }
+                            }
+                        }
+                        #endregion
+
+
                         if (mydata.NCCategoryImgFiles != null)
                         {
                             var NCCategoryImgFiles = mydata.NCCategoryImgFiles.ToList();
@@ -173,7 +225,31 @@ namespace Services.CAR
                 return ApiResponse<string>.FailResponse("Master Data Base Path For Attachment Not Found");
             }
 
+            IEnumerable<UsrDto> userList = Enumerable.Empty<UsrDto>();
+
+            if (!string.IsNullOrEmpty(mydata.VendorCode))
+            {
+                userList = await data.MDM.CheckUserVSVend(mydata) ?? Enumerable.Empty<UsrDto>();
+                if (!userList.Any())
+                {
+                    return ApiResponse<string>.FailResponse("Please Maintain Vendor data in MDM USERS Form");
+                }
+
+            }
+            IEnumerable<UsrDto> userListvend = Enumerable.Empty<UsrDto>();
+            if (mydata.Dept == "VEND")
+            {
+                var vendorUsers = await data.MDM.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept) ?? Enumerable.Empty<SystemvsUservsEmailSubscribeForm>();
+                userListvend = vendorUsers.Select(x => new UsrDto
+                {
+                    UseID = x.UserID,
+                    UseEmail = x.UseEmail
+                });
+                //List<string> recipentList = userSubsFormMasterVendor.Select(form => form.UseEmail).ToList();
+            }
+
             await data.DynamicNewForm.issuerUpdateDataIssueFeedback(mydata, transaction);
+            await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();

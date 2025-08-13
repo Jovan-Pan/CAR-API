@@ -19,15 +19,15 @@ namespace Repository.MasterData
 {
     internal sealed class TypeofcontraventionRepository(DbContext dbContext) : ITypeOfContraventionRepository
     {
-        public async Task<IEnumerable<TypeofcontraventionDto>> GetTypeofcontravention(string search, string SearchADV, bool delflag)
+        public async Task<IEnumerable<TypeofcontraventionDto>> GetTypeofcontravention(GETTypeofcontravention GETTypeofcontravention)
         {
             string query;
 
-            if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+            if (string.IsNullOrEmpty(GETTypeofcontravention.search) && string.IsNullOrEmpty(GETTypeofcontravention.SearchADV))
             {
                 query = TypeofcontraventionQuery.GetTypeofcontravention;
             }
-            else if (!string.IsNullOrEmpty(SearchADV))
+            else if (!string.IsNullOrEmpty(GETTypeofcontravention.SearchADV))
             {
                 query = TypeofcontraventionQuery.SearchDataADV;
             }
@@ -36,12 +36,12 @@ namespace Repository.MasterData
                 query = TypeofcontraventionQuery.SearchDataInDB;
             }
 
-            if (!delflag)
+            if (!GETTypeofcontravention.delflag)
             {
                 query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<TypeofcontraventionDto>(query, new { search = search, SearchADV = SearchADV });
+            return await conn.QueryAsync<TypeofcontraventionDto>(query, new { search = GETTypeofcontravention.search, SearchADV = GETTypeofcontravention.SearchADV, plant = GETTypeofcontravention.plant });
         }
 
         public async Task<IEnumerable<TypeofcontraventionDto>> InsertNewData(CRUDTypeofcontraventionDto CRUDTypeofcontraventionDto)
@@ -171,12 +171,24 @@ namespace Repository.MasterData
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL(Typeofcontravention, '') = '' OR ISNULL(Plant, '') = ''");
-            condRemark.Add("Null Mandatory Data");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Is required");
+            conditions.Add("ISNULL(Typeofcontravention, '') = ''");
+            condRemark.Add("Typeofcontravention Is required");
             conditions.Add("LEN(Typeofcontravention) > 100");
             condRemark.Add("Typeofcontravention maximal 100 characters");
 
-            string uniqueField = "Typeofcontravention";
+            string uniqueField = "Plant,Typeofcontravention";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 
@@ -276,16 +288,14 @@ namespace Repository.MasterData
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                        WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 

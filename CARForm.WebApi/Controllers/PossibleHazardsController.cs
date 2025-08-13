@@ -11,9 +11,9 @@ namespace WebApi.Controllers
     public class PossibleHazardsController(IServiceManager business) : Controller
     {
         [HttpGet(nameof(GetPossibleHazards))]
-        public async Task<IActionResult> GetPossibleHazards(string? search, string? SearchADV, bool delflag)
+        public async Task<IActionResult> GetPossibleHazards([FromQuery] GETPossibleHazards GETPossibleHazards)
         {
-            var result = await business.PossibleHazards.GetPossibleHazards(search, SearchADV, delflag);
+            var result = await business.PossibleHazards.GetPossibleHazards(GETPossibleHazards);
             return Ok(result);
 
         }

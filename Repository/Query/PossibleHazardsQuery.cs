@@ -11,17 +11,17 @@ namespace Repository.Query
         public static readonly string GetPossibleHazards = @"
         SELECT DISTINCT ID, Plant, PossibleHazards, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM PossibleHazards
-        WHERE 1=1";
+        WHERE Plant =@Plant";
 
         public static readonly string SearchPossibleHazards = @"
         SELECT DISTINCT ID, Plant, PossibleHazards, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM PossibleHazards
-        WHERE PossibleHazards LIKE '%' + @SearchADV + '%'";
+        WHERE Plant =@Plant AND PossibleHazards LIKE '%' + @SearchADV + '%'";
 
         public static readonly string SearchPossibleHazardsInDB = @"
         SELECT DISTINCT ID, Plant, PossibleHazards, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM PossibleHazards
-        WHERE PossibleHazards LIKE '%' + @search + '%'";
+        WHERE Plant =@Plant AND PossibleHazards LIKE '%' + @search + '%'";
 
         public static readonly string InsertNewData = @"
         INSERT INTO PossibleHazards (Plant,PossibleHazards, CreatedBy, CreatedByName, CreatedDate) 

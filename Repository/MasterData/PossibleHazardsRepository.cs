@@ -19,15 +19,15 @@ namespace Repository.MasterData
 {
     internal sealed class PossibleHazardsRepository(DbContext dbContext) : IPossibleHazardsRepository
     {
-        public async Task<IEnumerable<PossibleHazardsDto>> GetPossibleHazards(string search, string SearchADV, bool delflag)
+        public async Task<IEnumerable<PossibleHazardsDto>> GetPossibleHazards(GETPossibleHazards GETPossibleHazards)
         {
             string query;
 
-            if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+            if (string.IsNullOrEmpty(GETPossibleHazards.search) && string.IsNullOrEmpty(GETPossibleHazards.SearchADV))
             {
                 query = PossibleHazardsQuery.GetPossibleHazards;
             }
-            else if (!string.IsNullOrEmpty(SearchADV))
+            else if (!string.IsNullOrEmpty(GETPossibleHazards.SearchADV))
             {
                 query = PossibleHazardsQuery.SearchPossibleHazards;
             }
@@ -36,12 +36,12 @@ namespace Repository.MasterData
                 query = PossibleHazardsQuery.SearchPossibleHazardsInDB;
             }
 
-            if (!delflag)
+            if (!GETPossibleHazards.delflag)
             {
                 query += " and DelFlag = 0";
             }
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<PossibleHazardsDto>(query, new { search = search, SearchADV = SearchADV });
+            return await conn.QueryAsync<PossibleHazardsDto>(query, new { search = GETPossibleHazards.search, SearchADV = GETPossibleHazards.SearchADV, plant = GETPossibleHazards.plant});
         }
 
         public async Task<IEnumerable<PossibleHazardsDto>> InsertNewData(CRUDPossibleHazardsDto CRUDPossibleHazardsDto)
@@ -171,12 +171,24 @@ namespace Repository.MasterData
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL(PossibleHazards, '') = '' OR ISNULL(Plant, '') = ''");
-            condRemark.Add("Null Mandatory Data");
+            conditions.Add("ISNULL(PossibleHazards, '') = ''");
+            condRemark.Add("PossibleHazards Is required");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Is required");
             conditions.Add("LEN(PossibleHazards) > 100");
             condRemark.Add("PossibleHazards maximal 100 characters");
 
-            string uniqueField = "PossibleHazards";
+            string uniqueField = "Plant,PossibleHazards";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 
@@ -276,16 +288,14 @@ namespace Repository.MasterData
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                        WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 

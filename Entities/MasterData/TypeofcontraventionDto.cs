@@ -26,4 +26,13 @@ namespace Entities.MasterData
         public string? Typeofcontravention { get; set; }
         public string? userid { get; set; }
     }
+
+    public class GETTypeofcontravention
+    {
+        public string? search { get; set; }
+        public string? SearchADV { get; set; }
+        public bool delflag { get; set; }
+        public string? plant { get; set; }
+    }
+    
 }

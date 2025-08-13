@@ -8,6 +8,7 @@ namespace Contracts.Repository.MasterData;
 
 public interface IMDMRepository
 {
+    Task<bool> AllowAllDataToAcc(string Userid);
     Task<UserVendorInfoDto> GetUserVendorInfo(int plant, string userid);
     Task<IEnumerable<string>> GetPlantListForCRCUSystemByUserId(string userId);
     Task<FormAuthorizeInfoDto> GetFormAuthorize(FormAuthorizeParam param);
@@ -19,6 +20,7 @@ public interface IMDMRepository
     Task<IEnumerable<TMATERIALDto>> GetMaterialWoProdAut(GetMaterialParam request);
     Task<IEnumerable<NcCategoryDto>> GetNCCategory();
     Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUser(int plant, string Userid);
+    Task<IEnumerable<SystemDeptVsUserDto>> GetSystemDeptVsUserDynamic(int plant, string Userid);
     Task<IEnumerable<VendorDto>> GetVendor(int plant);
     Task<IEnumerable<BasePathConfigDto>> getBasePathConfig(int plant);
     Task<IEnumerable<UserFormAuthorizeDto>> getUserFormAuthorize(int plant, string Userid, string FormName);
@@ -28,6 +30,7 @@ public interface IMDMRepository
     Task<IEnumerable<string>> getReason(int plant, string reasontype);
     Task<IEnumerable<TGlobalEmailSettingModel>> GetTGlobalEmailSetting(int plant, string wStatus);
     Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeForm(int plant, string group, string dept);
+    Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeFormVendor(string VendorCode, int plant, string group, string dept);
     Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID);
     Task<bool> GetisSpAdmin(int plant, string UseID);
     Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data);

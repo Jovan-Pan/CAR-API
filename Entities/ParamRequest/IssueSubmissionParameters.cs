@@ -31,6 +31,7 @@ namespace Entities.ParamRequest
         public decimal? TttlQty { get; set; }
         public string? TttlQtyUOM { get; set; }
         public int? AffectedCavity { get; set; }
+        public string? AffectedCavityNO { get; set; }
         public string? IssueType { get; set; }
         public string? NCCode { get; set; }
         public string? NCCategory { get; set; }
@@ -39,6 +40,10 @@ namespace Entities.ParamRequest
         public string? Comment { get; set; }
         public string? rejectReason { get; set; }
         public string? PDAImmediteAct { get; set; }
+        public string? Detectedby { get; set; }
+        public string? PlatingLineNoName { get; set; }
+        public bool? CheckingMethod { get; set; }
+
 
         public string? ImmActRecDetail { get; set; }
         public decimal? CostPC { get; set; }
@@ -55,5 +60,9 @@ namespace Entities.ParamRequest
         public string? mailWStatus { get; set; }
         public string? mailactionType { get; set; }
         public string? sendmailUserAction { get; set; }
+
+        public string? FlowStatus { get; set; }
+        public string? buttonText { get; set; }
+        public string? userAction { get; set; }
     }
 }

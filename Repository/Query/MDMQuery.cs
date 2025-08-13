@@ -8,6 +8,16 @@ namespace Repository.Query
 {
     public class MDMQuery
     {
+        public static readonly string AllowAllDataToAcc = @"    
+        SELECT 
+            CASE 
+                WHEN  UsePass = '' THEN 'true'
+                ELSE 'false' 
+            END AS IsUserAllowed
+        FROM usr 
+        WHERE useid = @userId
+        ";
+
         public static readonly string GetUserVendorInfo = @" 
         select A.Vendor as vendorcode,B.Description as vendorname
         from USERVSVENDOR A 
@@ -97,12 +107,18 @@ namespace Repository.Query
         order by A.dept asc
         ";
 
+        public static readonly string GetSystemDeptVsUserDynamic = @"
+       select distinct A.dept,B.deptName
+       from TSYSTEMVSDEPT A 
+       join TDEPT B on A.Plant = b.Plant and A.Dept = B.Dept
+       where A.SysCode = 'CAR' and A.DelFlag = 0 and B.DelFlag = 0 and A.Plant = @plant
+       order by A.dept asc";
+
         public static readonly string GetVendor = @"
-        select distinct V.Vendor as vendorCode,V.Description as vendDesc 
-        from tVendor_New V
-        join tVendorPOrg P on V.POrg = P.POrg and P.Vendor = V.Vendor and P.DelFlag = 0
-        where V.DelFlag = 0 and P.Plant = @plant
-        order by V.Description asc
+        select DISTINCT Vendor as vendorCode,Description AS vendDesc from USERVSVENDOR A 
+        join TUSER_AUTHORIZE B on A.UseID = b.UserID 
+        JOIN TGROUPACCESS c ON b.GroupID = c.GroupID AND b.System = b.System AND b.FormName = c.FormName
+        where A.Plant = @plant and b.System = 'CAR'
         ";
 
         public static readonly string getBasePathConfig = @"
@@ -158,7 +174,30 @@ namespace Repository.Query
         join TSMNProductPIC P on P.Plant = A.Plant and P.Userid = b.UserID and P.DelFlag = 0
         join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
         where a.IsDeleted = 0 and B.IsDeleted = 0
-        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
+        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept AND EmailCCList = 0
+        And B.UserID NOT IN(select UseID from uservsvendor)
+        ";
+
+        public static readonly string GetSystemvsUservsEmailSubscribeFormVendor = @"
+        SELECT DISTINCT 
+            A.Plant,
+            A.SystemCode,
+            A.Dept,
+            B.UserID,
+            A.[Group],
+            NULL AS CategoryName,
+            U.UseEmail,
+            U.UseNam
+        FROM SystemvsUservsEmailSubscribeForm A
+        JOIN SystemvsUservsEmailSubscribeFormDetail B ON A.ID = B.ID
+        JOIN Usr U ON B.UserID = U.UseID
+        JOIN uservsvendor UV ON B.UserID = UV.UseID
+        WHERE A.IsDeleted = 0 
+          AND B.IsDeleted = 0
+          AND A.SystemCode = 'CAR'
+          AND A.Plant = @plant
+          AND A.[Group] = @group
+          AND UV.Vendor = @VendorCode ;
         ";
 
         public static readonly string GetissuerEmail = @"

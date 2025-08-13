@@ -12,7 +12,7 @@ namespace Contracts.Repository.CAR
     public interface ISendMailSettingRepository
     {
         Task<IEnumerable<MailSetiingDto>> GetaData(SendMailSettingParam param);
-        Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(string? search, string? ATsearchADV, string? ATDsearchADV, bool delflag);
+        Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(GETMailSettings GETMailSettings);
         Task<IEnumerable<MailSetiingDto>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail, string userId);
         Task<IEnumerable<MailSetiingDto>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail, string userId);
         Task<IEnumerable<MailSetiingDto>> DataDelete(string actiontype, string userId);

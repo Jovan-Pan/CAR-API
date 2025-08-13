@@ -18,7 +18,7 @@ namespace Repository.Query
 
         public static readonly string GetRootCauseCategory = @"
         select distinct id,plant,RootCauseName,CreatedBy,CreatedDate,UpdatedBy,UpdatedDate,DelFlag
-        from RootCauseCategory where 1=1";
+        from RootCauseCategory where plant = @plant ";
 
         public static readonly string UpdateNewRootCauseCategory = @"
         UPDATE RootCauseCategory SET RootCauseName =@RootCauseName,UpdatedBy=@userid,UpdatedDate=GETDATE()
@@ -36,11 +36,11 @@ namespace Repository.Query
 
         public static readonly string SearchDatainDB = @"
         SELECT distinct id,plant,RootCauseName,CreatedBy,CreatedDate,UpdatedBy,UpdatedDate,DelFlag
-        FROM rootcausecategory WHERE RootCauseName LIKE '%' + @search + '%'";
+        FROM rootcausecategory WHERE plant = @plant and RootCauseName LIKE '%' + @search + '%'";
 
         public static readonly string SearchadvData = @"
         SELECT distinct id,plant,RootCauseName,CreatedBy,CreatedDate,UpdatedBy,UpdatedDate,DelFlag
-        FROM rootcausecategory WHERE RootCauseName LIKE '%' + @SearchADV + '%'";
+        FROM rootcausecategory WHERE plant = @plant and RootCauseName LIKE '%' + @SearchADV + '%'";
 
         public static readonly string Import = @"UPDATE rootcausecategory 
                                                 SET 

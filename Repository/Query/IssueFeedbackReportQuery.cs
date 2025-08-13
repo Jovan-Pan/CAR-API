@@ -52,7 +52,7 @@ namespace Repository.Query
                 A.ReviewBy,
 		        B.UseID
             FROM 
-                IssueFeedback A inner join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
+                IssueFeedback A inner join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo and B.UserLevel !='MailToCC'
 
             WHERE 
                    Plant = @plant 
@@ -66,7 +66,7 @@ namespace Repository.Query
 
         public static readonly string GetTotalRecordForEachStts = @"
         SELECT 
-            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT' or status = 'SUBMITED-APPEAL' or status = 'RE-SUBMIT-APPEAL') THEN 1 END) AS Submitted,
+            COUNT(CASE WHEN (status = 'SUBMITED' or status = 'SUBMITED-REJECT' or status = 'RE-SUBMIT' or status = 'SUBMITED-APPEAL' or status = 'RE-SUBMIT-APPEAL' or status = 'DRAFT-SUBMIT') THEN 1 END) AS Submitted,
             COUNT(CASE WHEN (status in ('OPEN','OPEN-REJECT','OPEN-APPEAL') ) THEN 1 END) AS [Open],
             COUNT(CASE WHEN status in ('PDA-DECISION','PDA-DECISION-APPEAL') THEN 1 END) AS PdaDecision,
 	        COUNT(CASE WHEN (status in ('ISSUED','ISSUED-REJECT','ISSUED-APPEAL') ) THEN 1 END) AS issued,
@@ -114,23 +114,25 @@ namespace Repository.Query
         public static readonly string GetMainData = @"
         select  
         Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,MaterialDesc,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
-        ,VendorDesc,TttlQty,TttlQtyUOM,AffectedCavity,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,mainStatus
+        ,VendorDesc,TttlQty,TttlQtyUOM,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,mainStatus
         ,IssueBy,IssueByName,IssueDate,IssueByComment
         ,IssueUpdatedBy,IssueUpdatedByName,IssueUpdatedDate
         ,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
         ,PDAActionBy,PDAActionByName,PDAActionDate,PDAActionImmAct,PDAActionComment
         ,PDAActionUpdatedBy,PDAActionUpdatedByName,PDAActionUpdatedDate
         ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate,PDAAprovalComment as pdaAprovalComment
+        ,PDAVoidBy,PDAVoidByName,PDAVoidDate,PDAVoidComment
         ,ImmActRecDetail,CostPC,Curency,ActionResult
         ,ReceiveActionRootCause,RootCauseDetail,procecessGrpCode
         ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason
         ,ReceiveActionBy,ReceiveActionByName,ReceiveActionDate
         ,ReceiveActionUpdatedBy,ReceiveActionUpdatedByName,ReceiveActionUpdatedDate
         ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment
-
+        ,Detectedby,[Plating Line No/Name] as PlatingLineNoName,checkingMethod
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
 
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
+        ,PossibleHazards,Typeofcontravention,RiskCategory 
         from IssueFeedback
         where Plant = @plant
         and (Dept IS NULL OR Dept IN @deptAuthList) and ((Product IN @productAuthList or 'ALL' IN @productAuthList) OR (Product IS NULL OR Product = ''))
@@ -155,5 +157,20 @@ namespace Repository.Query
         select B.FormNo,B.UseID,B.UseNam,B.UseEmail,B.UserLevel from IssueFeedback A
         join IssueFeedBackEmailRecipient B on A.FormNo = B.FormNo
         where A.Plant = @plant and A.FormNo IN @FormNoList";
+
+        public static readonly string GetMailtocc = @"
+        select distinct UseEmail from IssueFeedBackEmailRecipient where formno = @formno and UserLevel ='MailToCC'";
+
+        public static readonly string GetMailToCCStatic = @"
+        select distinct U.UseEmail
+        from SystemvsUservsEmailSubscribeForm A
+        join SystemvsUservsEmailSubscribeFormDetail B on A.ID = B.ID
+        join Usr U on B.UserID = U.UseID
+        join TSMNProductPIC P on P.Plant = A.Plant and P.Userid = b.UserID and P.DelFlag = 0
+        join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
+        where a.IsDeleted = 0 and B.IsDeleted = 0
+        and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept AND EmailCCList = 1
+        And B.UserID NOT IN(select UseID from uservsvendor)";
+  
     }
 }

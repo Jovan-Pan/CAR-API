@@ -19,15 +19,15 @@ namespace Repository.MasterData
 {
         internal sealed class CARCategoryRepository(DbContext dbContext) : ICARCategoryRepository
         {
-            public async Task<IEnumerable<CARCategoryDto>> GetCARCategory(string search, string SearchADV, bool delflag)
+            public async Task<IEnumerable<CARCategoryDto>> GetCARCategory(GETCARCategory GETCARCategory)
             {
                 string query;
 
-                if (string.IsNullOrEmpty(search) && string.IsNullOrEmpty(SearchADV))
+                if (string.IsNullOrEmpty(GETCARCategory.search) && string.IsNullOrEmpty(GETCARCategory.SearchADV))
                 {
                     query = CARCategoryQuery.GetCARCategory;
                 }
-                else if (!string.IsNullOrEmpty(SearchADV))
+                else if (!string.IsNullOrEmpty(GETCARCategory.SearchADV))
                 {
                     query = CARCategoryQuery.SearchCARCategory;
                 }
@@ -36,12 +36,12 @@ namespace Repository.MasterData
                     query = CARCategoryQuery.SearchCARCategoryInDB;
                 }
 
-                if (!delflag)
+                if (!GETCARCategory.delflag)
                 {
                     query += " and DelFlag = 0";
                 }
                 await using var conn = dbContext.CARConnection();
-                return await conn.QueryAsync<CARCategoryDto>(query, new { search = search, SearchADV = SearchADV });
+                return await conn.QueryAsync<CARCategoryDto>(query, new { search = GETCARCategory.search, SearchADV = GETCARCategory.SearchADV, plant = GETCARCategory.plant });
             }
 
             public async Task<IEnumerable<CARCategoryDto>> InsertCARCategory(CRUDCARCategoryDto CRUDCARCategoryDto)
@@ -163,7 +163,7 @@ namespace Repository.MasterData
 
         public async Task<ImportResult> Import(string filePath, string userId)
         {
-            string excelCol = "Plant,CARCategory ";
+            string excelCol = "Plant,CARCategory";
             string excelRange = "A4:E5000";
             string query = CARCategoryQuery.ImportCARCategory;
 
@@ -171,12 +171,24 @@ namespace Repository.MasterData
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
 
-            conditions.Add("ISNULL(CARCategory, '') = '' OR ISNULL(Plant, '') = ''");
-            condRemark.Add("Null Mandatory Data");
+            conditions.Add("ISNULL(CARCategory, '') = ''");
+            condRemark.Add("CARCategory Is required");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Is required");
             conditions.Add("LEN(CARCategory) > 100");
-            condRemark.Add("CARCategory maximal 100 characters");
+            condRemark.Add("CARCategory Maximal 100 characters");
 
-            string uniqueField = "CARCategory";
+            string uniqueField = "Plant,CARCategory";
+
+            await using var connMDM = dbContext.MDMConnection();
+            var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
+
+            if (validPlant.Count > 0)
+            {
+                string validPlantstr = string.Join("', '", validPlant);
+                conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
+                condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
 
             await using var conn = dbContext.CARConnection();
 
@@ -276,16 +288,14 @@ namespace Repository.MasterData
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                        WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 

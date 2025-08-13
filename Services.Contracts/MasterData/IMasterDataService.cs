@@ -8,6 +8,7 @@ namespace Services.Contracts.MasterData;
 
 public interface IMasterDataService
 {
+    Task<ApiResponse<bool>> AllowAllDataToAcc(string userId);
     Task<ApiResponse<IEnumerable<MenuItem>>> GetMenuSetting(string userId);
     Task<ApiResponse<IEnumerable<string>>> GetPlantListForCRCUSystemByUserId(string userId);
     Task<ApiResponse<FormAuthorizeInfoDto>> GetFormAuthorize(FormAuthorizeParam param);
@@ -19,6 +20,7 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<TMATERIALDto>>> GetMaterial(GetMaterialParam request);
     Task<ApiResponse<IEnumerable<NcCategoryDto>>> GetNCCategory();
     Task<ApiResponse<IEnumerable<SystemDeptVsUserDto>>> GetSystemDeptVsUser(int plant, string Userid);
+    Task<ApiResponse<IEnumerable<SystemDeptVsUserDto>>> GetSystemDeptVsUserDynamic(int plant, string Userid);
     Task<ApiResponse<IEnumerable<VendorDto>>> GetVendor(int plant);
     Task<ApiResponse<IEnumerable<UserFormAuthorizeDto>>> getUserFormAuthorize(int plant, string Userid, string FormName);
     Task<ApiResponse<IEnumerable<string>>> getUserStatusAuthorize(int plant, string Userid);

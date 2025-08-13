@@ -243,7 +243,7 @@ namespace Repository.Query
         set 
         Status = @IssueStatus,
         IssueType = @IssueType,
-        MainStatus = @MainStatus,
+        MainStatus = case when @IssueStatus = 'ISSUED' OR @IssueStatus = 'ISSUED-REJECT'  then 'CAR RAISE' else 'OPEN' end,
         ReceiveActionRejectReason = NULL,
         ImmActRecDetail = @ImmActRecDetail,
         CostPC = @CostPC,

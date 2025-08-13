@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Entities.MasterData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 using System.Web;
@@ -19,9 +20,9 @@ namespace WebApi.Controllers
         }
         
         [HttpGet(nameof(GetRootCauseCategory))]
-        public async Task<IActionResult> GetRootCauseCategory(string? search, string? SearchADV, bool delflag)
+        public async Task<IActionResult> GetRootCauseCategory([FromQuery] GETRootCauseCategory GETRootCauseCategory)
         {
-            var result = await business.RootCause.GetRootCauseCategory(search,SearchADV, delflag);
+            var result = await business.RootCause.GetRootCauseCategory(GETRootCauseCategory);
             return Ok(result);
 
         }

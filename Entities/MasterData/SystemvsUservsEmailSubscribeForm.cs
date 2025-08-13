@@ -15,5 +15,6 @@ namespace Entities.MasterData
         public string Group { get; set; }
         public string CategoryName { get; set; }
         public string UseEmail { get; set; }
+        public string? UseNam { get; set; }
     }
 }

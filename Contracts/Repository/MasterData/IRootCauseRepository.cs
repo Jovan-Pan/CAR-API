@@ -15,7 +15,7 @@ namespace Contracts.Repository.MasterData
     {
         Task<IEnumerable<string>> getRootCauseList(int plant);
         Task<IEnumerable<RootCauseCategoryDto>> InsertNewRootCauseCategory(string RootCauseName, string userId, int plant);
-        Task<IEnumerable<RootCauseCategoryDto>> GetRootCauseCategory(string search,string SearchADV, bool delflag);
+        Task<IEnumerable<RootCauseCategoryDto>> GetRootCauseCategory(GETRootCauseCategory GETRootCauseCategory);
         Task<IEnumerable<RootCauseCategoryDto>> UpdateNewRootCauseCategory(string RootCauseName,int id, string userId);
         Task<IEnumerable<RootCauseCategoryDto>> DataDelete(int id, string userId);
         Task<IEnumerable<RootCauseCategoryDto>> DataPermDelete(int id);
