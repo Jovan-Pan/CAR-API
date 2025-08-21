@@ -51,7 +51,7 @@ namespace Repository.Query
                                                     Delflag = 0 
                                                 FROM RootCauseCategory A 
                                                 INNER JOIN ##temp B 
-                                                ON (A.RootCauseName = B.[Root Cause Name])
+                                                ON (A.RootCauseName = B.[Root Cause Name] AND A.Plant = B.Plant)
                                                 INSERT INTO rootcausecategory 
                                                 (Plant, RootCauseName, CreatedBy, CreatedDate, Delflag) 
                                                 SELECT 
@@ -65,7 +65,7 @@ namespace Repository.Query
                                                     NOT EXISTS (
                                                         SELECT A.RootCauseName
                                                         FROM RootCauseCategory A 
-                                                        WHERE A.RootCauseName = B.[Root Cause Name]
+                                                        WHERE A.RootCauseName = B.[Root Cause Name] AND A.Plant = B.Plant
                                                     )";
     }
 }
