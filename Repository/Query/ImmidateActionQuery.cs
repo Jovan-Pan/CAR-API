@@ -56,7 +56,7 @@ namespace Repository.Query
                                                     Delflag = 0 
                                                 FROM ImmidateAction A 
                                                 INNER JOIN ##temp B 
-                                                ON (A.ImmidateName = B.[Immidate Name])
+                                                ON (A.ImmidateName = B.[Immidate Name] AND A.Plant = B.Plant)
                                                 INSERT INTO ImmidateAction 
                                                 (Plant, ImmidateName, CreatedBy, CreatedDate, Delflag) 
                                                 SELECT 
@@ -70,7 +70,7 @@ namespace Repository.Query
                                                     NOT EXISTS (
                                                         SELECT A.ImmidateName
                                                         FROM ImmidateAction A 
-                                                        WHERE A.ImmidateName = B.[Immidate Name]
+                                                        WHERE A.ImmidateName = B.[Immidate Name] AND A.Plant = B.Plant
                                                     )";
     }
 
