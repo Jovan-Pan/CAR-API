@@ -56,7 +56,7 @@ namespace Repository.Query
             DelFlag = 0
         FROM TypeOfContravention A
         INNER JOIN ##temp B 
-        ON (A.TypeOfContravention = B.TypeOfContravention)
+        ON (A.TypeOfContravention = B.TypeOfContravention AND A.Plant = B.Plant)
 
         INSERT INTO TypeOfContravention 
         (Plant,TypeOfContravention, CreatedBy, CreatedByName, CreatedDate, DelFlag) 
@@ -71,7 +71,7 @@ namespace Repository.Query
         WHERE NOT EXISTS (
             SELECT A.TypeOfContravention
             FROM TypeOfContravention A 
-            WHERE A.TypeOfContravention = B.TypeOfContravention
+            WHERE A.TypeOfContravention = B.TypeOfContravention AND A.Plant = B.Plant
         )";
     }
 }

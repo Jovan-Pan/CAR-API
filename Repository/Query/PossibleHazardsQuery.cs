@@ -56,7 +56,7 @@ namespace Repository.Query
             DelFlag = 0
         FROM PossibleHazards A
         INNER JOIN ##temp B 
-        ON (A.PossibleHazards = B.PossibleHazards)
+        ON (A.PossibleHazards = B.PossibleHazards AND A.Plant = B.Plant)
 
         INSERT INTO PossibleHazards 
         (Plant,PossibleHazards, CreatedBy, CreatedByName, CreatedDate, DelFlag) 
@@ -71,7 +71,7 @@ namespace Repository.Query
         WHERE NOT EXISTS (
             SELECT A.PossibleHazards
             FROM PossibleHazards A 
-            WHERE A.PossibleHazards = B.PossibleHazards
+            WHERE A.PossibleHazards = B.PossibleHazards AND A.Plant = B.Plant
         )";
     }
 }
