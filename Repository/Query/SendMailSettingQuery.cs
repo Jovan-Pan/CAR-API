@@ -67,7 +67,7 @@ namespace Repository.Query
                                                     isDeleted = 0
                                                 FROM SendEmailSetting A
                                                 INNER JOIN ##temp B 
-                                                    ON A.ActionType = B.[Action Type] AND A.Plant = B.Plant;
+                                                    ON A.ActionType = B.[Action Type] AND A.Plant = B.Plant
 
                                                 INSERT INTO SendEmailSetting
                                                     (Plant, ActionType, ActionTypeDesc, isSendEmail, CreatedBy, CreatedByName, CreatedDate, isDeleted)
