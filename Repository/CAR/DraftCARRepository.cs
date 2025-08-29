@@ -50,7 +50,7 @@ namespace Repository.CAR
         {
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
             var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "" };
-            var row3Header = new object[] { "int", "nvarchar(10)", "nvarchar(100)", "nvarchar(20)", "nvarchar(100)", "nvarchar(10)", "int", "int", "nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "int", "int", "nvarchar(10)", "nvarchar(5)", "nvarchar(100)" };
+            var row3Header = new object[] { "int", "nvarchar(10)", "nvarchar(100)", "nvarchar(20)", "nvarchar(100)", "nvarchar(10)", "int", "nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "int", "int", "nvarchar(10)", "nvarchar(5)", "nvarchar(100)" };
             var row4Header = new object[] { "Plant", "FormType", "Product", "Material Code", "Material Description", "UOM", "Total Qty", "Supplier Dept", "Supplier Vendor", "Supplier Name", "Inspected Sample", "Nonconforming", "NC Category", "NC Description", "Status of finding", "Affected Cavity" };
             var row5Header = new object[] { "2310", "QFR", "", "70230246", "7WHSOA3 G-CARD COA32360", "PC", "37", "", "50002836", "PT. SINYOTAMA INDONESIA", "10", "10", "402", "HUMAN-MIX MODEL", "NC", "" };
 
@@ -124,12 +124,38 @@ namespace Repository.CAR
             conditions.Add("ISNULL(FormType, '') = ''");
             condRemark.Add("Form Type Is required");
 
+            conditions.Add("ISNULL([Supplier Dept], '') = ''");
+            condRemark.Add("Please fill Dept!");
+
+            conditions.Add("ISNULL([Material Code], '') = ''");
+            condRemark.Add("Please fill Material Code!");
+
+            conditions.Add("ISNULL([UOM], '') = ''");
+            condRemark.Add("Please fill UOM!");
+
+            conditions.Add("ISNULL([Total Qty], '')= ''");
+            condRemark.Add("Please fill Total Qty!");
+
+            conditions.Add("ISNULL([Supplier Dept], '') = ''");
+            condRemark.Add("Please fill Supplier Dept!");
+
+            conditions.Add("ISNULL([Inspected Sample], '') = ''");
+            condRemark.Add("Please fill Inspected Sample!");
+
+            conditions.Add("ISNULL([Nonconforming], '')= ''");
+            condRemark.Add("Please fill Nonconforming!");
+
+            conditions.Add("[Status of finding] != 'NC'");
+            condRemark.Add("Status of finding must be NC!");
+
+            conditions.Add("[Supplier Dept] != 'VEND' AND [Supplier Vendor] != ''");
+            condRemark.Add("Please choose one Dept or Vendor!");
+
             string uniqueField = "";
             string CheckingMethod = "1";
 
             await using var connMDM = dbContext.MDMConnection();
             var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
-
             if (validPlant.Count > 0)
             {
                 string validPlantstr = string.Join("', '", validPlant);
@@ -186,6 +212,7 @@ namespace Repository.CAR
 
                     string formNo = "";
                     string QueryGetFormNo = IssueSubmissionQuery.GenerateNewFormNo;
+                    var addedColumns = new HashSet<string>();
 
                     foreach (DataRow row in excelData.DataTable.Rows)
                     {
@@ -199,16 +226,18 @@ namespace Repository.CAR
 
                         foreach (DataColumn column in excelData.DataTable.Columns)
                         {
-                            if (!string.IsNullOrWhiteSpace(column.ColumnName))
-                            {
-                                createTempTable += $"[{column.ColumnName}] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
-                                columnMappings.Add(column.ColumnName);
+                            string colName = column.ColumnName;
 
-                                var value = row[column]; 
+                            if (!string.IsNullOrWhiteSpace(colName) && !addedColumns.Contains(colName))
+                            {
+                                createTempTable += $"[{colName}] NVARCHAR(MAX) COLLATE DATABASE_DEFAULT, ";
+                                columnMappings.Add(colName);
+                                addedColumns.Add(colName);
                             }
+
+                            var value = row[column]; // tetap bisa ambil value jika diperlukan
                         }
                     }
-
 
                     // Append [Issue Remark] if it's not already included
                     if (!columnMappings.Contains("Issue Remark"))
@@ -241,24 +270,35 @@ namespace Repository.CAR
                     string sql = $@"UPDATE ##temp SET {columnNameTrim}; UPDATE ##temp SET [Issue Remark] = '';";
 
                     // Check for invalid data
-                    string formattedCol = string.Join(", ",excelCol.Split(',').Select(col => $"[{col.Trim()}]"));
+                    string formattedCol = string.Join(", ", excelCol.Split(',').Select(col => $"[{col.Trim()}]"));
 
+                    sql += @" IF OBJECT_ID('tempdb..#invaliddata') IS NOT NULL DROP TABLE #invaliddata;
+                          SELECT TOP 0 * INTO #invaliddata FROM ##temp;";
                     if (conditions != null && conditions.Count > 0)
                     {
-                        sql += @" IF OBJECT_ID('tempdb..#invaliddata') IS NOT NULL DROP TABLE #invaliddata;
-                          SELECT TOP 0 * INTO #invaliddata FROM ##temp;";
 
                         for (int i = 0; i < conditions.Count; i++)
                         {
                             sql += $@"
-                        INSERT INTO #invaliddata ({formattedCol}, [Issue Remark])
-                        SELECT {formattedCol}, '{condRemark[i]}'
-                        FROM ##temp
-                        WHERE {conditions[i]};
+                            INSERT INTO #invaliddata ({formattedCol}, [Issue Remark])
+                            SELECT {formattedCol}, '{condRemark[i]}'
+                            FROM ##temp
+                            WHERE {conditions[i]};
 
-                        DELETE FROM ##temp WHERE {conditions[i]};";
+                            DELETE FROM ##temp WHERE {conditions[i]};";
                         }
                     }
+
+                    //query to check is material exists or not
+
+                    string formattedCol2 = string.Join(",", formattedCol.Split(',').Select(col => $"a.{col}"));
+
+                    sql += $@"
+                            INSERT INTO #invaliddata ({formattedCol2}, [Issue Remark]) 
+                            SELECT {formattedCol2}, 'The material is not exists' 
+                            FROM ##temp a LEFT JOIN MDMTmaterial b ON a.Plant=b.Plant AND a.[Material Code]=b.Material 
+                            WHERE b.Material IS NULL 
+                            ";
 
                     // Check for duplicate data
                     //if (!string.IsNullOrEmpty(uniqueField))
