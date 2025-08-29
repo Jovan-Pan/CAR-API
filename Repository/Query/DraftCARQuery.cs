@@ -95,7 +95,7 @@ namespace Repository.Query
                 [Total Qty], [Supplier Dept], [Supplier Vendor], [Supplier Name], [Inspected Sample], 
                 Nonconforming, [NC Category], [NC Description], [Status of finding], [Affected Cavity],
                 Status, 'CAR RAISE', UPPER(@userId), @UserName
-            FROM ##temp;
+            FROM ##temp_DraftCAR;
 
             OPEN temp_cursor;
             FETCH NEXT FROM temp_cursor INTO 

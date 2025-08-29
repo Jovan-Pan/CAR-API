@@ -197,7 +197,7 @@ namespace Repository.CAR
                 try
                 {
                     // Create temp table
-                    var createTempTable = @"IF OBJECT_ID('tempdb..##temp') IS NOT NULL DROP TABLE ##temp; CREATE TABLE ##temp (";
+                    var createTempTable = @"IF OBJECT_ID('tempdb..##temp_DraftCAR') IS NOT NULL DROP TABLE ##temp_DraftCAR; CREATE TABLE ##temp_DraftCAR (";
                     var columnMappings = new List<string>(); // For SqlBulkCopy mappings
 
                     // Loop through the columns in the DataTable to create table definition and mappings
@@ -255,7 +255,7 @@ namespace Repository.CAR
                     // Bulk copy data to temp table
                     using (var bulkCopy = new SqlBulkCopy((SqlConnection)conn, SqlBulkCopyOptions.Default, (SqlTransaction)transaction))
                     {
-                        bulkCopy.DestinationTableName = "##temp";
+                        bulkCopy.DestinationTableName = "##temp_DraftCAR";
                         foreach (var columnName in columnMappings)
                         {
                             bulkCopy.ColumnMappings.Add(columnName, columnName);
@@ -267,25 +267,25 @@ namespace Repository.CAR
                     var columnNameTrim = string.Join(", ", excelData.DataTable.Columns.Cast<DataColumn>()
                         .Select(c => $"[{c.ColumnName}] = LTRIM(RTRIM([{c.ColumnName}]))"));
 
-                    string sql = $@"UPDATE ##temp SET {columnNameTrim}; UPDATE ##temp SET [Issue Remark] = '';";
+                    string sql = $@"UPDATE ##temp_DraftCAR SET {columnNameTrim}; UPDATE ##temp_DraftCAR SET [Issue Remark] = '';";
 
                     // Check for invalid data
                     string formattedCol = string.Join(", ", excelCol.Split(',').Select(col => $"[{col.Trim()}]"));
 
-                    sql += @" IF OBJECT_ID('tempdb..#invaliddata') IS NOT NULL DROP TABLE #invaliddata;
-                          SELECT TOP 0 * INTO #invaliddata FROM ##temp;";
+                    sql += @" IF OBJECT_ID('tempdb..#invaliddata_DraftCAR') IS NOT NULL DROP TABLE #invaliddata_DraftCAR;
+                          SELECT TOP 0 * INTO #invaliddata_DraftCAR FROM ##temp_DraftCAR;";
                     if (conditions != null && conditions.Count > 0)
                     {
 
                         for (int i = 0; i < conditions.Count; i++)
                         {
                             sql += $@"
-                            INSERT INTO #invaliddata ({formattedCol}, [Issue Remark])
+                            INSERT INTO #invaliddata_DraftCAR ({formattedCol}, [Issue Remark])
                             SELECT {formattedCol}, '{condRemark[i]}'
-                            FROM ##temp
+                            FROM ##temp_DraftCAR
                             WHERE {conditions[i]};
 
-                            DELETE FROM ##temp WHERE {conditions[i]};";
+                            DELETE FROM ##temp_DraftCAR WHERE {conditions[i]};";
                         }
                     }
 
@@ -294,9 +294,9 @@ namespace Repository.CAR
                     string formattedCol2 = string.Join(",", formattedCol.Split(',').Select(col => $"a.{col}"));
 
                     sql += $@"
-                            INSERT INTO #invaliddata ({formattedCol2}, [Issue Remark]) 
+                            INSERT INTO #invaliddata_DraftCAR ({formattedCol2}, [Issue Remark]) 
                             SELECT {formattedCol2}, 'The material is not exists' 
-                            FROM ##temp a LEFT JOIN MDMTmaterial b ON a.Plant=b.Plant AND a.[Material Code]=b.Material 
+                            FROM ##temp_DraftCAR a LEFT JOIN MDMTmaterial b ON a.Plant=b.Plant AND a.[Material Code]=b.Material 
                             WHERE b.Material IS NULL 
                             ";
 
@@ -333,14 +333,14 @@ namespace Repository.CAR
                     await conn.ExecuteAsync(sql, transaction: transaction);
 
                     // Fetch invalid data
-                    var invalidData = await conn.QueryAsync($"SELECT * FROM #invaliddata", transaction: transaction);
+                    var invalidData = await conn.QueryAsync($"SELECT * FROM #invaliddata_DraftCAR", transaction: transaction);
 
                     List<Dictionary<string, object>> dataListInValid = invalidData
                      .Select(row => new Dictionary<string, object>(row))
                      .ToList();
 
                     // Count valid data
-                    var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp", transaction: transaction);
+                    var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp_DraftCAR", transaction: transaction);
 
                     if (validDataCount == 0 && dataListInValid.Count == 0)
                     {
