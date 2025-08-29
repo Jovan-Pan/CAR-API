@@ -386,7 +386,7 @@ namespace Repository.CAR
                         }
 
                         // Proceed to insert valid data
-                        await conn.QueryAsync<string>(query, new
+                            await conn.QueryAsync<string>(query, new
                         {
                             FilePath = filePath,
                             ExcelCol = excelCol,
