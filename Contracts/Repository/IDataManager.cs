@@ -22,4 +22,5 @@ public interface IDataManager
     IDynamicFlowConfigurationRepository DynamicFlowConfiguration { get; }
     ITableMappingFieldNameRepository TableMappingFieldName { get; }
     IWorkFlowHistoryRepository WorkFlowHistory { get; }
+    IDraftCARRepository DraftCAR { get; }
 }

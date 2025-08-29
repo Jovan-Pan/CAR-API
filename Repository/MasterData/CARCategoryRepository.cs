@@ -274,7 +274,7 @@ namespace Repository.MasterData
                         SELECT {excelCol}, '{condRemark[i]}'
                         FROM ##temp
                         WHERE {conditions[i]};
-
+    
                         DELETE FROM ##temp WHERE {conditions[i]};";
                         }
                     }
