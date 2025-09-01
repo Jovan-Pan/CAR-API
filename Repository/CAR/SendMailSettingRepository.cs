@@ -323,14 +323,12 @@ namespace Repository.CAR
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
                         SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
 
-                        DELETE FROM ##temp WHERE {uniqueField} IN (
-                            SELECT {uniqueField} FROM(
-                                                SELECT {uniqueField}
-                                                FROM ##temp
-                                                GROUP BY {uniqueField}
-                                                HAVING COUNT(*) > 1
-                                            ) AS duplicates
-                                        )";
+                         WITH cte AS (
+                            SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
+                            FROM ##temp
+                        )
+                        DELETE FROM cte WHERE row_num > 1";
 
                     }
 
