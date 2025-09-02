@@ -49,8 +49,8 @@ namespace Repository.CAR
         private static void WriteTemplateContent(ExcelWorksheet sheet)
         {
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
-            var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "" };
-            var row3Header = new object[] { "int", "nvarchar(10)", "nvarchar(100)", "nvarchar(20)", "nvarchar(100)", "nvarchar(10)", "int", "nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "nvarchar(100)", "int", "int", "nvarchar(10)", "nvarchar(5)", "nvarchar(100)" };
+            var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "", "", "Mandatory", "Mandatory", "", "", "Mandatory", "" };
+            var row3Header = new object[] { "int", "nvarchar(20)", "nvarchar(4)", "nvarchar(40)", "nvarchar(100)", "nvarchar(10)", "int", "nvarchar(6)", "nvarchar(8)", "nvarchar(100)", "int", "int", "nvarchar(20)", "nvarchar(150)", "nvarchar(100)", "int" };
             var row4Header = new object[] { "Plant", "FormType", "Product", "Material Code", "Material Description", "UOM", "Total Qty", "Supplier Dept", "Supplier Vendor", "Supplier Name", "Inspected Sample", "Nonconforming", "NC Category", "NC Description", "Status of finding", "Affected Cavity" };
             var row5Header = new object[] { "2310", "QFR", "", "70230246", "7WHSOA3 G-CARD COA32360", "PC", "37", "", "50002836", "PT. SINYOTAMA INDONESIA", "10", "10", "402", "HUMAN-MIX MODEL", "NC", "" };
 
