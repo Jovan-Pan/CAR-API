@@ -53,7 +53,7 @@ namespace Services.CAR
                         //var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                         //List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
                         List<string> recipentList = new List<string>();
-                        if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                        if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                         {
                             var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                             recipentList.AddRange(userSubsFormMaster.Select(form => form.UseEmail).ToList());
@@ -63,7 +63,7 @@ namespace Services.CAR
                         var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
                         List<string> MailtoccList = new List<string>();
                         List<string> MailtoccListStatic = new List<string>();
-                        if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                        if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                         {
                             MailtoccListStatic = MailToCCStatic.ToList();
                         }
@@ -118,7 +118,7 @@ namespace Services.CAR
                             body = body.Replace("@UserAction", mydata.sendmailUserAction);
 
                             string Datadetails = "";
-                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                             {
                                 Datadetails = MailBodyContentDetail.mailBodyContentDet;
                             }
@@ -128,7 +128,7 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
                             Datadetails = Datadetails.Replace("@FormType", mydata.FormType);
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
-                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                             {
                                 Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
@@ -137,7 +137,7 @@ namespace Services.CAR
                                 Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
 
-                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                             {
                                 Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                                 Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
@@ -316,7 +316,7 @@ namespace Services.CAR
                             body = body.Replace("@Emaillink", globalmailMaster.FirstOrDefault().Emaillink);
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
-                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR")
+                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                             {
                                 mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
                             }
