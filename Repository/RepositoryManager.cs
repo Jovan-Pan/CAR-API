@@ -29,6 +29,7 @@ public sealed class RepositoryManager(DbContext dbContext, IWebHostEnvironment h
     private readonly Lazy<ITableMappingFieldNameRepository> _TableMappingFieldName = new(() => new TableMappingFieldNameRepository(dbContext));
     private readonly Lazy<IWorkFlowHistoryRepository> _WorkFlowHistory = new(() => new WorkFlowHistoryRepository(dbContext));
     private readonly Lazy<IDraftCARRepository> _DraftCAR = new(() => new DraftCARRepository(dbContext));
+    private readonly Lazy<IProcessRepository> _Process = new(() => new ProcessRepository(dbContext));
     public IMDMRepository MDM => _mdmRepo.Value;
     public IImmidateActionRepository ImmAct => _immediteActrepo.Value;
     public IRootCauseRepository RootCause => _rootcauserepo.Value;
@@ -47,4 +48,5 @@ public sealed class RepositoryManager(DbContext dbContext, IWebHostEnvironment h
     public ITableMappingFieldNameRepository TableMappingFieldName => _TableMappingFieldName.Value;
     public IWorkFlowHistoryRepository WorkFlowHistory => _WorkFlowHistory.Value;
     public IDraftCARRepository DraftCAR => _DraftCAR.Value;
+    public IProcessRepository Process => _Process.Value;
 }
