@@ -36,5 +36,6 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<string>> ReviewerReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaActionVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
+        Task<byte[]> GetPptTemplate();
     }
 }
