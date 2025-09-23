@@ -23,4 +23,5 @@ public interface IDataManager
     ITableMappingFieldNameRepository TableMappingFieldName { get; }
     IWorkFlowHistoryRepository WorkFlowHistory { get; }
     IDraftCARRepository DraftCAR { get; }
+    IProcessRepository Process { get; }
 }

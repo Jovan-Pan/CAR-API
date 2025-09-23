@@ -34,6 +34,7 @@ public sealed class ServiceManager : IServiceManager
     private readonly Lazy<IDynamicNewFormService> _DynamicNewFormService;
     private readonly Lazy<IWorkFlowHistoryService> _WorkFlowHistoryService;
     private readonly Lazy<IDraftCARService> _DraftCARService;
+    private readonly Lazy<IProcessService> _ProcessService;
 
     public ServiceManager(IDataManager data,
         IMasterDataApi masterDataApi,
@@ -63,6 +64,7 @@ public sealed class ServiceManager : IServiceManager
         _DynamicNewFormService = new Lazy<IDynamicNewFormService>(() => new DynamicNewFormService(data, data.MDM, masterDataApi, cacheManager, localization));
         _WorkFlowHistoryService = new Lazy<IWorkFlowHistoryService>(() => new WorkFlowHistoryService(data, data.MDM, masterDataApi, cacheManager, localization));
         _DraftCARService = new Lazy<IDraftCARService>(() => new DraftCARService(data, cacheManager, localization));
+        _ProcessService = new Lazy<IProcessService>(() => new ProcessService(data, cacheManager, localization));
 
     }
     public IAccountService Account => _accountBusiness.Value;
@@ -84,4 +86,5 @@ public sealed class ServiceManager : IServiceManager
     public IDynamicNewFormService DynamicNewForm => _DynamicNewFormService.Value;
     public IWorkFlowHistoryService WorkFlowHistory => _WorkFlowHistoryService.Value;
     public IDraftCARService DraftCAR => _DraftCARService.Value;
+    public IProcessService Process => _ProcessService.Value;
 }

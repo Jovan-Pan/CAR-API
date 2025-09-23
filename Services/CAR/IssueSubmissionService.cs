@@ -1433,5 +1433,10 @@ namespace Services.CAR
             var result = await data.ISM.cekAvailableCompletePastIssue(param);
             return ApiResponse<string>.SuccessResponse(result);
         }
+        public async Task<byte[]> GetPptTemplate()
+        {
+            var result = await data.ISM.GetPptTemplate();
+            return result;
+        }
     }
 }

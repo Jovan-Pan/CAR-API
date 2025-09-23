@@ -1,19 +1,21 @@
 ﻿using Contracts.Repository;
 using Contracts.Repository.CAR;
 using Contracts.Repository.MasterData;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting.Internal;
 using Repository.CAR;
 using Repository.MasterData;
 
 namespace Repository;
 
-public sealed class RepositoryManager(DbContext dbContext) : IDataManager
+public sealed class RepositoryManager(DbContext dbContext, IWebHostEnvironment hostingEnvironment) : IDataManager
 {
     private readonly Lazy<IMDMRepository> _mdmRepo = new(() => new MDMRepository(dbContext));
     private readonly Lazy<IImmidateActionRepository> _immediteActrepo = new(() => new ImmidateActionRepository(dbContext));
     private readonly Lazy<IRootCauseRepository> _rootcauserepo = new(() => new RootCauseRepository(dbContext));
     private readonly Lazy<IErrorLogRepository> _ErrorLog = new(() => new ErrorLogRepository(dbContext));
-    private readonly Lazy<IIssueSubmissionRepository> _ISM = new(() => new IssueSubmissionRepository(dbContext));
+    private readonly Lazy<IIssueSubmissionRepository> _ISM = new(() => new IssueSubmissionRepository(dbContext, hostingEnvironment));
     private readonly Lazy<IIssueFeedbackReportRepository> _IFR = new(() => new IssueFeedbackReportRepository(dbContext));
     private readonly Lazy<ISendMailSettingRepository> _SMS = new(() => new SendMailSettingRepository(dbContext));
     private readonly Lazy<INCTextSentenceRepository> _NCTS = new(() => new NCTextSentenceRepository(dbContext));
@@ -27,6 +29,7 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     private readonly Lazy<ITableMappingFieldNameRepository> _TableMappingFieldName = new(() => new TableMappingFieldNameRepository(dbContext));
     private readonly Lazy<IWorkFlowHistoryRepository> _WorkFlowHistory = new(() => new WorkFlowHistoryRepository(dbContext));
     private readonly Lazy<IDraftCARRepository> _DraftCAR = new(() => new DraftCARRepository(dbContext));
+    private readonly Lazy<IProcessRepository> _Process = new(() => new ProcessRepository(dbContext));
     public IMDMRepository MDM => _mdmRepo.Value;
     public IImmidateActionRepository ImmAct => _immediteActrepo.Value;
     public IRootCauseRepository RootCause => _rootcauserepo.Value;
@@ -45,4 +48,5 @@ public sealed class RepositoryManager(DbContext dbContext) : IDataManager
     public ITableMappingFieldNameRepository TableMappingFieldName => _TableMappingFieldName.Value;
     public IWorkFlowHistoryRepository WorkFlowHistory => _WorkFlowHistory.Value;
     public IDraftCARRepository DraftCAR => _DraftCAR.Value;
+    public IProcessRepository Process => _Process.Value;
 }

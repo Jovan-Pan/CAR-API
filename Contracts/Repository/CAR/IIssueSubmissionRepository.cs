@@ -46,7 +46,7 @@ namespace Contracts.Repository.CAR
         Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
         Task<List<IssueFeedbackAtchmentDto>> GetAttachmentsByFormNo(string formNo);
         Task<bool> ChkExitsFormno(string formNo, SqlTransaction transaction);
-
-
+        Task<byte[]> GetPptTemplate();
     }
 }
+

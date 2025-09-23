@@ -2,8 +2,10 @@
 using Dapper;
 using Entities.CAR;
 using Entities.ParamRequest;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
+using OfficeOpenXml;
 using Repository.Query;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ using System.Transactions;
 
 namespace Repository.CAR
 {
-    internal sealed class IssueSubmissionRepository(DbContext dbContext) : IIssueSubmissionRepository
+    internal sealed class IssueSubmissionRepository(DbContext dbContext, IWebHostEnvironment hostingEnvironment) : IIssueSubmissionRepository
     {
         public async Task<SqlConnection> OpenConnectionAsync()
         {
@@ -23,6 +25,8 @@ namespace Repository.CAR
             await connection.OpenAsync();
             return connection;
         }
+
+        private readonly IWebHostEnvironment _hostingEnvironment = hostingEnvironment;
 
         public async Task<string> GenerateNewFormNo(int plant, string FormType,SqlTransaction transaction)
         {
@@ -251,5 +255,22 @@ namespace Repository.CAR
             // Convert the integer result (1 or 0) to a boolean.
             return result == 1;
         }
+        public async Task<byte[]> GetPptTemplate()
+        {
+            // Path: [Project Root]/Templates/Corrective Action Report...
+            string templatesPath = Path.Combine(_hostingEnvironment.ContentRootPath, "CAR Template");
+            string fileName = "Corrective Action Report-To be filled by responsible party.pptx";
+            string fullPath = Path.Combine(templatesPath, fileName);
+
+            if (!System.IO.File.Exists(fullPath))
+            {
+                // Berikan respons yang jelas jika file tidak ditemukan
+                throw new FileNotFoundException("PowerPoint template not found on the server.", fullPath);
+            }
+
+            return await System.IO.File.ReadAllBytesAsync(fullPath);
+
+        }
+
     }
 }
