@@ -25,4 +25,5 @@ public interface IServiceManager
     IDynamicNewFormService DynamicNewForm { get; }
     IWorkFlowHistoryService WorkFlowHistory { get; }
     IDraftCARService DraftCAR { get; }
+    IProcessService Process { get; }
 }

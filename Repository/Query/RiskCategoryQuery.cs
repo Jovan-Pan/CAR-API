@@ -55,7 +55,7 @@ namespace Repository.Query
             DelFlag = 0
         FROM RiskCategory A
         INNER JOIN ##temp B 
-        ON (A.RiskCategory = B.RiskCategory)
+        ON (A.RiskCategory = B.RiskCategory AND A.Plant = B.Plant)
 
         INSERT INTO RiskCategory 
         (Plant,RiskCategory, CreatedBy, CreatedByName, CreatedDate, DelFlag) 

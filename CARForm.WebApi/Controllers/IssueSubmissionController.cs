@@ -179,5 +179,11 @@ namespace WebApi.Controllers
             var result = await business.IssueSubmission.cekAvailableCompletePastIssue(param);
             return Ok(result);
         }
+        [HttpGet(nameof(GetPptTemplate))]
+        public async Task<IActionResult> GetPptTemplate()
+        {
+            var fileBytes = await business.IssueSubmission.GetPptTemplate();
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Template");
+        }
     }
 }

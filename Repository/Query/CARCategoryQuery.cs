@@ -9,7 +9,7 @@ namespace Repository.Query
     public class CARCategoryQuery
     {
         public static readonly string GetCARCategory = @"
-        SELECT DISTINCT ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
+        SELECT distinct ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM CARCategory
         WHERE Plant =@Plant";
 
@@ -55,7 +55,7 @@ namespace Repository.Query
             DelFlag = 0
         FROM CARCategory A
         INNER JOIN ##temp B 
-        ON (A.CARCategory = B.CARCategory)
+        ON (A.CARCategory = B.CARCategory AND A.Plant = B.Plant)
 
         INSERT INTO CARCategory 
         (CARCategory, Plant, CreatedBy, CreatedByName, CreatedDate, DelFlag) 
@@ -70,7 +70,7 @@ namespace Repository.Query
         WHERE NOT EXISTS (
             SELECT A.CARCategory
             FROM CARCategory A 
-            WHERE A.CARCategory = B.CARCategory
+            WHERE A.CARCategory = B.CARCategory AND A.Plant = B.Plant
         )";
     }
 }

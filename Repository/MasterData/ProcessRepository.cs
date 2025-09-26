@@ -1,12 +1,9 @@
-﻿using Contracts.Repository.CAR;
+﻿using Contracts.Repository.MasterData;
 using Dapper;
-using Entities.CAR;
 using Entities.MasterData;
-using Entities.ParamRequest;
 using Microsoft.Data.SqlClient;
-using Microsoft.IdentityModel.Tokens;
-using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using OfficeOpenXml;
 using Repository.Query;
 using Services.Helper;
 using System;
@@ -15,98 +12,77 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.CAR
+namespace Repository.MasterData
 {
-    internal sealed class SendMailSettingRepository(DbContext dbContext): ISendMailSettingRepository
+    internal sealed class ProcessRepository(DbContext dbContext) : IProcessRepository
     {
-        public async Task<IEnumerable<MailSetiingDto>> GetaData(SendMailSettingParam param)
+        public async Task<IEnumerable<ProcessDto>> GetProcess(GETProcess GETProcess)
         {
-            string query = string.Format(SendMailSettingQuery.GetaData);
-
-            await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, param);
-
-        }
-
-        public async Task<IEnumerable<MailSetiingDto>> GetSendMailSetting(GETMailSettings GETMailSettings)
-        {
-
             string query;
 
-            if (string.IsNullOrEmpty(GETMailSettings.search) && string.IsNullOrEmpty(GETMailSettings.ATsearchADV) && string.IsNullOrEmpty(GETMailSettings.ATDsearchADV))
+            if (string.IsNullOrEmpty(GETProcess.search) && string.IsNullOrEmpty(GETProcess.SearchADV))
             {
-                query = SendMailSettingQuery.GetSendMailSetting;
+                query = ProcessQuery.GETProcess;
             }
-            else if(!string.IsNullOrEmpty(GETMailSettings.ATsearchADV) || !string.IsNullOrEmpty(GETMailSettings.ATDsearchADV))
+            else if (!string.IsNullOrEmpty(GETProcess.SearchADV))
             {
-                query = SendMailSettingQuery.SearchadvData;
+                query = ProcessQuery.SearchProcess;
             }
             else
             {
-                query = SendMailSettingQuery.SearchDatainDB;
+                query = ProcessQuery.SearchProcessInDB;
             }
 
-            if (!GETMailSettings.delflag)
+            if (!GETProcess.delflag)
             {
-                query += " and isDeleted = 0";
+                query += " and DelFlag = 0";
             }
-
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { search = GETMailSettings.search, ATsearchADV = GETMailSettings.ATsearchADV, ATDsearchADV = GETMailSettings.ATDsearchADV, plant = GETMailSettings.plant });
-
+            return await conn.QueryAsync<ProcessDto>(query, new { search = GETProcess.search, SearchADV = GETProcess.SearchADV, plant = GETProcess.plant });
         }
-        public async Task<IEnumerable<MailSetiingDto>> InsertNewSendMailSetting(string plant, string actiontype, string actiontypedesc, bool issendemail, string userId)
+
+        public async Task<IEnumerable<ProcessDto>> InsertNewData(CRUDProcessDto CRUDProcessDto)
         {
-            string query = string.Format(SendMailSettingQuery.InsertNewSendMailSetting);
-
+            string query = ProcessQuery.InsertNewData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query,new {plant = plant, actiontype = actiontype, actiontypedesc = actiontypedesc, issendemail = issendemail, userId = userId });
-
+            return await conn.QueryAsync<ProcessDto>(query, new { Process = CRUDProcessDto.Process, userId = CRUDProcessDto.userid, plant = CRUDProcessDto.Plant });
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> UpdateSendMailSetting(string actiontype, string actiontypedesc, bool issendemail, string userId)
+        public async Task<IEnumerable<ProcessDto>> UpdateData(CRUDProcessDto CRUDProcessDto)
         {
-            string query = string.Format(SendMailSettingQuery.UpdateSendMailSetting);
-
+            string query = ProcessQuery.UpdateData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, actiontypedesc = actiontypedesc, issendemail = issendemail , userId =  userId});
-
+            return await conn.QueryAsync<ProcessDto>(query, new { Process = CRUDProcessDto.Process, id = CRUDProcessDto.id, userId = CRUDProcessDto.userid });
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> DataDelete(string actiontype, string userId)
+        public async Task<IEnumerable<ProcessDto>> DataDelete(CRUDProcessDto CRUDProcessDto)
         {
-            string query = string.Format(SendMailSettingQuery.DataDelete);
-
+            string query = ProcessQuery.DeleteData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, userId = userId});
-
+            return await conn.QueryAsync<ProcessDto>(query, new { id = CRUDProcessDto.id, userId = CRUDProcessDto.userid });
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> DataPermDelete(string actiontype)
+        public async Task<IEnumerable<ProcessDto>> DataPermDelete(CRUDProcessDto CRUDProcessDto)
         {
-            string query = string.Format(SendMailSettingQuery.DataPermDelete);
-
+            string query = ProcessQuery.PermDeleteData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype });
-
+            return await conn.QueryAsync<ProcessDto>(query, new { id = CRUDProcessDto.id });
         }
 
-        public async Task<IEnumerable<MailSetiingDto>> DataRecover(string actiontype, string userId)
+        public async Task<IEnumerable<ProcessDto>> DataRecover(CRUDProcessDto CRUDProcessDto)
         {
-            string query = string.Format(SendMailSettingQuery.DataRecover);
-
+            string query = ProcessQuery.RecoverData;
             await using var conn = dbContext.CARConnection();
-            return await conn.QueryAsync<MailSetiingDto>(query, new { actiontype = actiontype, userId = userId });
-
+            return await conn.QueryAsync<ProcessDto>(query, new { id = CRUDProcessDto.id, userId = CRUDProcessDto.userid });
         }
+
         public async Task<byte[]> Template()
         {
             string filePath = AppDomain.CurrentDomain.BaseDirectory + "\\Excel";
-            string fileName = string.Format("SendEmailSettings_{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            string fileName = string.Format("Process_{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
             string fullPath = string.Format("{0}\\{1}", filePath, fileName);
 
             if (!Directory.Exists(filePath))
@@ -121,38 +97,31 @@ namespace Repository.CAR
                 await excel.SaveAsync();
             }
 
-            //write to memory stream
             MemoryStream ms = new();
             using (FileStream file = new(fullPath, FileMode.Open, FileAccess.Read))
             {
                 await file.CopyToAsync(ms);
                 ms.Position = 0;
             }
-
-            //if (File.Exists(fullPath))
-            //    File.Delete(fullPath);
-            //return await System.IO.File.ReadAllBytesAsync(fileName);
             return await File.ReadAllBytesAsync(fullPath);
         }
 
         private static void WriteTemplateContent(ExcelWorksheet sheet)
         {
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
-            var row2Header = new object[] { "Mandatory", "Mandatory", "Mandatory", "Mandatory" };
-            var row3Header = new object[] { "int", "nvarchar(50)", "nvarchar(150)", "Bit(Y/N)" };
-            var row4Header = new object[] { "Plant", "Action Type", "Action Type Desc", "IsSendEmail" };
-            var row5Header = new object[] { "2100", "Test", "Test", "Y" };
+            var row2Header = new object[] { "Mandatory", "Mandatory" };
+            var row3Header = new object[] { "int", "nvarchar(100)" };
+            var row4Header = new object[] { "Plant", "Process" };
+            var row5Header = new object[] { "2100", "Test" };
 
             var data = new List<object[]>
-            {
-            //HEADER
-            row1Header,
-            row2Header,
-            row3Header,
-            row4Header,
-            row5Header
-            };
-
+                {
+                    row1Header,
+                    row2Header,
+                    row3Header,
+                    row4Header,
+                    row5Header
+                };
 
             //write formula
             const int startRow = 1;
@@ -166,7 +135,7 @@ namespace Repository.CAR
             {
                 range.Style.Font.Color.SetColor(Color.Red); // Set the font color to red
             }
-            using (var range = sheet.Cells[1, 1, 3, 4])
+            using (var range = sheet.Cells[1, 1, 3, 2])
             {
                 range.Style.Fill.PatternType = ExcelFillStyle.Solid; // Set the fill pattern
                 range.Style.Fill.BackgroundColor.SetColor(Color.LightBlue); // Set the background color
@@ -194,22 +163,22 @@ namespace Repository.CAR
 
         public async Task<ImportResult> Import(string filePath, string userId)
         {
-            string excelCol = "[Plant], [Action Type], [Action Type Desc], isSendEmail";
+            string excelCol = "Plant,Process ";
             string excelRange = "A4:E5000";
-            string query = SendMailSettingQuery.Import;
+            string query = ProcessQuery.Import;
+
             ArrayList conditions = new ArrayList();
             ArrayList condRemark = new ArrayList();
             ArrayList specialCond = new ArrayList();
-            specialCond.Add("UPDATE ##temp set isSendEmail = (CASE isSendEmail WHEN 'Y' then 'true' when 'N' then 'false' else isSendEmail end); ");
 
-            conditions.Add(" ISNULL([Action Type], '') = '' or ISNULL(Plant, '') = ''  ");
-            condRemark.Add("Null Mandatory Data");
-            conditions.Add(" LEN([Action Type]) > 50");
-            condRemark.Add("Action Type maximal 50 characters");
-            conditions.Add(" isSendEmail not in ('Y','N') ");
-            condRemark.Add("isSendEmail value is Y or N");
+            conditions.Add("ISNULL(Process, '') = ''");
+            condRemark.Add("Process Is required");
+            conditions.Add("ISNULL(Plant, '') = ''");
+            condRemark.Add("Plant Is required");
+            conditions.Add("LEN(Process) > 100");
+            condRemark.Add("Process maximal 100 characters");
 
-            string uniqueField = "Plant,[Action Type]";
+            string uniqueField = "Plant,Process";
 
             await using var connMDM = dbContext.MDMConnection();
             var validPlant = (await connMDM.QueryAsync<string>("select plant from tplant")).ToList();
@@ -229,7 +198,7 @@ namespace Repository.CAR
             }
 
             // Read Excel or TXT file
-            ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "SendEmailSetting", "SendEmailSetting", conditions, condRemark, excelRange, uniqueField);
+            ExcelReadResponseDto excelData = GlobalFunction.ReadExcelFile(filePath, userId, query, excelCol, "Process", "Process", conditions, condRemark, excelRange, uniqueField);
 
             if (!excelData.Success)
             {
@@ -310,9 +279,7 @@ namespace Repository.CAR
                         }
                     }
 
-    
-
-                        // Check for duplicate data
+                    // Check for duplicate data
                     if (!string.IsNullOrEmpty(uniqueField))
                     {
                         sql += $@"
@@ -321,9 +288,9 @@ namespace Repository.CAR
                             FROM ##temp
                         )
                         INSERT INTO #invaliddata ({excelCol}, [Issue Remark])
-                        SELECT {excelCol}, 'Duplicate Data' FROM cte WHERE row_num > 1;
+                        SELECT {excelCol}, 'Duplicate Excel Data' FROM cte WHERE row_num > 1;
 
-                         WITH cte AS (
+                        WITH cte AS (
                             SELECT *,
                                     ROW_NUMBER() OVER (PARTITION BY {uniqueField} ORDER BY (SELECT NULL)) AS row_num
                             FROM ##temp
@@ -342,7 +309,7 @@ namespace Repository.CAR
                     }
 
                     // Execute the SQL command
-                        await conn.ExecuteAsync(sql, transaction: transaction);
+                    await conn.ExecuteAsync(sql, transaction: transaction);
 
                     // Fetch invalid data
                     var invalidData = await conn.QueryAsync($"SELECT * FROM #invaliddata", transaction: transaction);
@@ -350,7 +317,7 @@ namespace Repository.CAR
                     List<Dictionary<string, object>> dataListInValid = invalidData
                      .Select(row => new Dictionary<string, object>(row))
                      .ToList();
-    
+
                     // Count valid data
                     var validDataCount = await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM ##temp", transaction: transaction);
 

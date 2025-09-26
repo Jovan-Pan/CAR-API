@@ -56,7 +56,7 @@ namespace Repository.Query
                                                     Delflag = 0 
                                                 FROM NCTextSentence A 
                                                 INNER JOIN ##temp B 
-                                                ON (A.TextSentence = B.TextSentence)
+                                                ON (A.TextSentence = B.TextSentence AND A.Plant = B.Plant)
                                                 INSERT INTO NCTextSentence 
                                                 (TextSentence, isFirstSentence,isLastSentence, CreatedBy, CreatedByName, CreatedDate, Delflag) 
                                                 SELECT 
@@ -72,7 +72,7 @@ namespace Repository.Query
                                                     NOT EXISTS (
                                                         SELECT A.TextSentence
                                                         FROM NCTextSentence A 
-                                                        WHERE A.TextSentence = B.TextSentence
+                                                        WHERE A.TextSentence = B.TextSentence AND A.Plant = B.Plant
                                                     )";
     }
 }
