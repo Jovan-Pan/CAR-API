@@ -22,7 +22,7 @@ using System.Transactions;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Mvc;
 using Entities.MasterData;
-using OfficeOpenXml.Style;
+using OfficeOpenXml.Style;  
 using System.IO;
 
 namespace Services.CAR
@@ -41,7 +41,7 @@ namespace Services.CAR
             int take = param.PageSize;
             ConditionParams Cpr = new ConditionParams();
             Cpr.take = take;
-            Cpr.skip = skip;
+            Cpr.skip = skip;    
             Cpr.ExtraWhereCondition = whereCondition;
             Cpr.OrderByCondition = orderByCondition;
 
@@ -177,32 +177,42 @@ namespace Services.CAR
                             Condquery += Environment.NewLine;
                             Condquery += " AND format(DetectionDate,'yyyy-MM-dd') between @fromdate and @todate ";
                         }
-                        else if (param.datetype == "EffectiveDate")
-                        {
-                            Condquery += Environment.NewLine;
-                            Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
-                        }
                         else if (param.datetype == "IssueDate")
                         {
                             Condquery += Environment.NewLine;
                             Condquery += " AND format(IssueDate,'yyyy-MM-dd') between @fromdate and @todate ";
                         }
-                        else if (param.datetype == "IssueUpdatedDate")
+                        else if (param.datetype == "PDAAprovalDate")
                         {
                             Condquery += Environment.NewLine;
-                            Condquery += " AND format(IssueUpdatedDate,'yyyy-MM-dd') between @fromdate and @todate ";
-                        }
-                        else if (param.datetype == "ReceiveAprovalDate")
-                        {
-                            Condquery += Environment.NewLine;
-                            Condquery += " AND format(ReceiveAprovalDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                            Condquery += " AND format(PDAAprovalDate,'yyyy-MM-dd') between @fromdate and @todate ";
                         }
                         else if (param.datetype == "PDAReviewDate")
                         {
                             Condquery += Environment.NewLine;
                             Condquery += " AND format(PDAReviewDate,'yyyy-MM-dd') between @fromdate and @todate ";
                         }
-                }
+                        else if (param.datetype == "EffectiveDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(effectivedate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        else if (param.datetype == "ReviewDate")
+                        {
+                            Condquery += Environment.NewLine;
+                            Condquery += " AND format(ReviewDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        }
+                        //else if (param.datetype == "IssueUpdatedDate")
+                        //{
+                        //    Condquery += Environment.NewLine;
+                        //    Condquery += " AND format(IssueUpdatedDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        //}
+                        //else if (param.datetype == "ReceiveAprovalDate")
+                        //{
+                        //    Condquery += Environment.NewLine;
+                        //    Condquery += " AND format(ReceiveAprovalDate,'yyyy-MM-dd') between @fromdate and @todate ";
+                        //}
+                    }
                 }
 
                 if (Condquery.Length > 0)
@@ -227,7 +237,7 @@ namespace Services.CAR
             var mdmCurency = await mdm.GetCurrency(mparam.plant);
             var mdmProcGrp = await mdm.getProcessGrp(mparam.plant); 
 
-            var joinedData = from main in maindata
+            var joinedData = from main in maindata  
                              join mattype in mdmMattype on main.MaterialType equals mattype.MaterialType into matGroup
                              from matTy in matGroup.DefaultIfEmpty()
                              join mats in mdmMaterial on main.MaterialCode equals mats.Material into mat
