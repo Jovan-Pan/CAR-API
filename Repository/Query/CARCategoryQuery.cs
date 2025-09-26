@@ -9,7 +9,7 @@ namespace Repository.Query
     public class CARCategoryQuery
     {
         public static readonly string GetCARCategory = @"
-        SELECT DISTINCT ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
+        SELECT distinct ID, Plant, CARCategory, CreatedBy, CreatedByName, CreatedDate, UpdatedBy, UpdatedByName, UpdatedDate, DelFlag
         FROM CARCategory
         WHERE Plant =@Plant";
 
