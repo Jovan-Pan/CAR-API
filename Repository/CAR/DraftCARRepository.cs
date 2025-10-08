@@ -49,10 +49,10 @@ namespace Repository.CAR
         private static void WriteTemplateContent(ExcelWorksheet sheet)
         {
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
-            var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "", "", "Mandatory", "Mandatory", "", "", "Mandatory", "" };
+            var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "", "", "Mandatory", "Mandatory", "", "", "Mandatory", "" };
             var row3Header = new object[] { "int", "nvarchar(20)", "nvarchar(4)", "nvarchar(40)", "nvarchar(100)", "nvarchar(10)", "int", "nvarchar(6)", "nvarchar(8)", "nvarchar(100)", "int", "int", "nvarchar(20)", "nvarchar(150)", "nvarchar(100)", "int" };
             var row4Header = new object[] { "Plant", "FormType", "Product", "Material Code", "Material Description", "UOM", "Total Qty", "Supplier Dept", "Supplier Vendor", "Supplier Name", "Inspected Sample", "Nonconforming", "NC Category", "NC Description", "Status of finding", "Affected Cavity" };
-            var row5Header = new object[] { "2310", "QFR", "", "70230246", "7WHSOA3 G-CARD COA32360", "PC", "37", "", "50002836", "PT. SINYOTAMA INDONESIA", "10", "10", "402", "HUMAN-MIX MODEL", "NC", "" };
+            var row5Header = new object[] { "2310", "QFR", "", "70230246", "7WHSOA3 G-CARD COA32360", "PC", "37", "QC", "", "", "10", "10", "402", "HUMAN-MIX MODEL", "Non Conformance ", "" };
 
             var data = new List<object[]>
                 {
@@ -69,7 +69,7 @@ namespace Repository.CAR
 
             sheet.Cells[startRow, startColumn].LoadFromArrays(data);
 
-            sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
+            sheet.Cells[startRow, startColumn, data.Count, row2Header.Length].AutoFitColumns();
 
             using (var range = sheet.Cells[1, row1Header.Length])
             {
@@ -91,14 +91,6 @@ namespace Repository.CAR
                     }
                 }
             }
-
-            //set date format for actual cr start
-            const int startFromRow = 1; // Skip the first two rows as headers
-            int endRow = data.Count; // Last row in the worksheet
-            const int columnNumber = 1; // Column D
-            var columnRange = sheet.Cells[startFromRow, columnNumber, endRow, columnNumber];
-
-            columnRange.Style.Numberformat.Format = "mm/dd/yyyy";
         }
 
         public async Task<ImportResult> Import(string filePath, string userId, string userName)
@@ -136,20 +128,41 @@ namespace Repository.CAR
             conditions.Add("ISNULL([Total Qty], '')= ''");
             condRemark.Add("Please fill Total Qty!");
 
+            conditions.Add("TRY_CAST([Total Qty] AS FLOAT) IS NULL");
+            condRemark.Add("Qty must be numeric!");
+
+            conditions.Add("TRY_CAST([Total Qty] AS FLOAT) < 0");
+            condRemark.Add("Qty cannot be negative!");
+
             conditions.Add("ISNULL([Supplier Dept], '') = ''");
             condRemark.Add("Please fill Supplier Dept!");
 
             conditions.Add("ISNULL([Inspected Sample], '') = ''");
             condRemark.Add("Please fill Inspected Sample!");
 
+            conditions.Add("TRY_CAST([Inspected Sample] AS FLOAT) IS NULL");
+            condRemark.Add("Inspected Sample must be numeric!");
+
+            conditions.Add("TRY_CAST([Inspected Sample] AS FLOAT) < 0");
+            condRemark.Add("Inspected Sample cannot be negative!");
+
             conditions.Add("ISNULL([Nonconforming], '')= ''");
             condRemark.Add("Please fill Nonconforming!");
 
-            conditions.Add("[Status of finding] != 'NC'");
-            condRemark.Add("Status of finding must be NC!");
+            conditions.Add("TRY_CAST([Nonconforming] AS FLOAT) IS NULL");
+            condRemark.Add("Nonconforming must be numeric!");
+
+            conditions.Add("TRY_CAST([Nonconforming] AS FLOAT) < 0");
+            condRemark.Add("Nonconforming cannot be negative!");
+
+            conditions.Add("[Status of finding] != 'Non Conformance'");
+            condRemark.Add("Status of finding must be Non Conformance!");
 
             conditions.Add("[Supplier Dept] != 'VEND' AND [Supplier Vendor] != ''");
             condRemark.Add("Please choose one Dept or Vendor!");
+
+            conditions.Add("TRY_CAST([Affected Cavity] AS FLOAT) IS NULL");
+            condRemark.Add("Affected Cavity must be numeric!");
 
             string uniqueField = "";
             string CheckingMethod = "1";
@@ -180,7 +193,6 @@ namespace Repository.CAR
             }
 
             var requiredColumns = new[] { "Issue Remark", "FormNo", "Status", "CheckingMethod" };
-
             foreach (var col in requiredColumns)
             {
                 if (!excelData.DataTable.Columns.Contains(col))
@@ -216,6 +228,10 @@ namespace Repository.CAR
 
                     foreach (DataRow row in excelData.DataTable.Rows)
                     {
+
+                        //To skip empty row
+                        if (IsRowEmpty(row)) continue;
+
                         string plant = row["Plant"].ToString();
                         string FormType = row["FormType"].ToString();
 
@@ -283,7 +299,7 @@ namespace Repository.CAR
                             INSERT INTO #invaliddata_DraftCAR ({formattedCol}, [Issue Remark])
                             SELECT {formattedCol}, '{condRemark[i]}'
                             FROM ##temp_DraftCAR
-                            WHERE {conditions[i]};
+                            WHERE {conditions[i]} AND CheckingMethod IS NOT NULL;
 
                             DELETE FROM ##temp_DraftCAR WHERE {conditions[i]};";
                         }
@@ -391,6 +407,19 @@ namespace Repository.CAR
                     return new ImportResult { Success = false, Message = "Error occurred: " + ex.Message };
                 }
             }
+
+            bool IsRowEmpty(DataRow row)
+            {
+                foreach (var item in row.ItemArray)
+                {
+                    if (item != null && !string.IsNullOrWhiteSpace(item.ToString()))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
         }
     }
 }
