@@ -11,6 +11,6 @@ namespace Services.Contracts.CAR
     public interface IDraftCARService
     {
         Task<byte[]> Template();
-        Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId, string userName);
+        Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId, string userName, int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
     }
 }

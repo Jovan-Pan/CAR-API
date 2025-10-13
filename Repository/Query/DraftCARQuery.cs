@@ -129,13 +129,13 @@ namespace Repository.Query
 		            TttlQty, Dept, VendorCode, VendorDesc, SamplingCheck, 
 		            NcQty, NcCategory, NCDescription, StatusOfFinding, AffectedCavity,
 		            Status, MainStatus, IssueBy, IssueByName, IssueDate, 
-		            CheckingMethod
+		            CheckingMethod, DetectionDate, NCRatio
 	            ) 
 	            SELECT @Plant, @newformno, @FormType, @Product, @MaterialCode, @UOM,
 		            @TotalQty, @SupplierDept, @SupplierVendor, @SupplierName, @InspectedSample,
 		            @Nonconforming, @NCCategory, @NCDescription, @StatusOfFinding, @AffectedCavity,
 		            @Status, @MainStatus, @IssueBy, @IssueByName, GETDATE(), 
-		            @CheckingMethod
+		            @CheckingMethod, GETDATE(), (( CAST(@Nonconforming AS decimal(18,2)) / CAST(@TotalQty AS decimal(18,2)) ) * 100)
 
                 FETCH NEXT FROM temp_cursor INTO 
                     @Plant, @FormType, @Product, @MaterialCode, @UOM, 

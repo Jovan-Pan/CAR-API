@@ -15,6 +15,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static Dapper.SqlMapper;
 
 namespace Repository.CAR
 {
@@ -93,7 +94,7 @@ namespace Repository.CAR
             }
         }
 
-        public async Task<ImportResult> Import(string filePath, string userId, string userName)
+        public async Task<ImportResult> Import(string filePath, string userId, string userName, int _plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
         {
 
             /**Query draft
@@ -164,6 +165,15 @@ namespace Repository.CAR
             conditions.Add("TRY_CAST([Affected Cavity] AS FLOAT) IS NULL");
             condRemark.Add("Affected Cavity must be numeric!");
 
+            conditions.Add("TRY_CAST([Nonconforming] AS DECIMAL(18,2)) > TRY_CAST([Inspected Sample] AS DECIMAL(18,2))");
+            condRemark.Add("Nonconforming can not be greater than Inspected Sample qty!");
+
+            conditions.Add("TRY_CAST([Inspected Sample] AS FLOAT) > TRY_CAST([Total Qty] AS DECIMAL(18,2))");
+            condRemark.Add("Inspected Sample can not be greater than Total Qty!");
+
+            conditions.Add("TRY_CAST([Nonconforming] AS FLOAT) > TRY_CAST([Total Qty] AS DECIMAL(18,2))");
+            condRemark.Add("Nonconforming can not be greater than Total Qty!");
+
             string uniqueField = "";
             string CheckingMethod = "1";
 
@@ -174,6 +184,27 @@ namespace Repository.CAR
                 string validPlantstr = string.Join("', '", validPlant);
                 conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
                 condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
+
+            string validDeptstr = string.Join("', '", deptAuthList);
+            conditions.Add($"UPPER(LTRIM(RTRIM([Supplier Dept]))) NOT IN ('{validDeptstr}') AND [Supplier Dept] IS NOT NULL AND [Supplier Dept] != '' AND [Supplier Dept] != 'VEND'");
+            condRemark.Add($"The Dept you entered is not valid");
+
+            string validProductDeptstr = string.Join("', '", productAuthList);
+            conditions.Add($"UPPER(LTRIM(RTRIM(Product))) NOT IN ('{validProductDeptstr}') AND Product IS NOT NULL AND Product != '' ");
+            condRemark.Add($"The Product Dept you entered is not valid");
+
+            var queryValidUOM = @"SELECT DISTINCT split_data.data AS UOM
+                FROM tGlobal A
+                JOIN TPLANTVSGLOBAL B ON A.ID = B.SettingID AND B.DelFlag = 0 
+                CROSS APPLY dbo.split(A.IDValue, ',') AS split_data
+                WHERE B.SysCode = 'CAR' AND A.ID = 'CarUOMOption'";
+            var validUOM = (await connMDM.QueryAsync<string>(queryValidUOM)).ToList();
+            if (validUOM.Count > 0)
+            {
+                string validUOMstr = string.Join("', '", validUOM);
+                conditions.Add($"UPPER(LTRIM(RTRIM(UOM))) NOT IN ('{validUOMstr}')");
+                condRemark.Add($"The UOM you entered is not valid");
             }
 
             await using var conn = dbContext.CARConnection();
@@ -313,8 +344,7 @@ namespace Repository.CAR
                             INSERT INTO #invaliddata_DraftCAR ({formattedCol2}, [Issue Remark]) 
                             SELECT {formattedCol2}, 'The material is not exists' 
                             FROM ##temp_DraftCAR a LEFT JOIN MDMTmaterial b ON a.Plant=b.Plant AND a.[Material Code]=b.Material 
-                            WHERE b.Material IS NULL 
-                            ";
+                            WHERE b.Material IS NULL ";
 
                     // Check for duplicate data
                     //if (!string.IsNullOrEmpty(uniqueField))

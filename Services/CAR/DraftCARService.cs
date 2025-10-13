@@ -24,7 +24,7 @@ namespace Services.CAR
             return result;
         }
 
-        public async Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId, string userName)
+        public async Task<IEnumerable<ImportResult>> Import(IFormFile file, string userId, string userName, int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
         {
             string filePath = Path.Combine(file.FileName);
 
@@ -33,7 +33,7 @@ namespace Services.CAR
                 await file.CopyToAsync(stream);
             }
 
-            var importResult = await data.DraftCAR.Import(filePath, userId, userName);
+            var importResult = await data.DraftCAR.Import(filePath, userId, userName, plant, deptAuthList, productAuthList);
 
             var resultList = new List<ImportResult> { importResult };
             return resultList;
