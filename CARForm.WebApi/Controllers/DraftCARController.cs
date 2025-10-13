@@ -17,9 +17,12 @@ namespace WebApi.Controllers
         }
 
         [HttpPost(nameof(Import))]
-        public async Task<IActionResult> Import([FromForm] IFormFile file, string userId, string username)
+        public async Task<IActionResult> Import([FromForm] IFormFile file, [FromForm] string userId, [FromForm] string username
+            , [FromForm] int plant
+            , [FromForm] IEnumerable<string> deptAuthList, [FromForm] IEnumerable<string> productAuthList
+            )
         {
-            var result = await business.DraftCAR.Import(file, userId, username);
+            var result = await business.DraftCAR.Import(file, userId, username, plant, deptAuthList, productAuthList);
             return Ok(result);
         }
     }

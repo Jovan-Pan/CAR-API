@@ -10,6 +10,6 @@ namespace Contracts.Repository.CAR
     public interface IDraftCARRepository
     {
         Task<byte[]> Template();
-        Task<ImportResult> Import(string filePath, string userId, string userName);
+        Task<ImportResult> Import(string filePath, string userId, string userName, int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
     }
 }
