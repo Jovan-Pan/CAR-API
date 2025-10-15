@@ -314,7 +314,15 @@ namespace Repository.CAR
                     var columnNameTrim = string.Join(", ", excelData.DataTable.Columns.Cast<DataColumn>()
                         .Select(c => $"[{c.ColumnName}] = LTRIM(RTRIM([{c.ColumnName}]))"));
 
-                    string sql = $@"UPDATE ##temp_DraftCAR SET {columnNameTrim}; UPDATE ##temp_DraftCAR SET [Issue Remark] = '';";
+                    string sql = $@"
+                    UPDATE ##temp_DraftCAR SET {columnNameTrim}; 
+                    UPDATE ##temp_DraftCAR SET [Issue Remark] = '', UOM=UPPER(UOM), [NC Category]=UPPER([NC Category]);
+                    UPDATE a SET Product=
+                        CASE
+                            WHEN NOT EXISTS(SELECT 1 FROM MDMTMaterial m WHERE m.Plant=a.Plant AND a.Product=m.Product AND a.[Material Code]=m.Material) THEN ''
+                            ELSE a.Product
+                        END
+                    FROM ##temp_DraftCAR a";
 
                     // Check for invalid data
                     string formattedCol = string.Join(", ", excelCol.Split(',').Select(col => $"[{col.Trim()}]"));

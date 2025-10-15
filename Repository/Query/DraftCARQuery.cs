@@ -46,24 +46,6 @@ namespace Repository.Query
         WHERE ID = @id";
 
         public static readonly string ImportDraftCAR =
-            //@"
-            //        insert into IssueFeedback(
-            //            Plant, FormNo, FormType, Product, MaterialCode, TttlQtyUOM, 
-            //            TttlQty, Dept, VendorCode, VendorDesc, SamplingCheck, 
-            //            NcQty, NcCategory, NCDescription, StatusOfFinding, AffectedCavity,
-            //            Status, MainStatus, IssueBy, IssueByName, IssueDate, 
-            //            CheckingMethod
-            //        ) 
-            //        SELECT 
-            //            Plant, FormNo, FormType,Product,[Material Code], UOM, 
-            //            [Total Qty],[Supplier Dept],[Supplier Vendor],[Supplier Name], [Inspected Sample], 
-            //            Nonconforming, [NC Category],[NC Description],[Status of finding],[Affected Cavity],
-            //            Status, 'CAR RAISE', UPPER(@userId), @UserName, GETDATE(), 
-            //            @CheckingMethod
-            //        FROM ##temp B
-
-            //";
-
             @"
                 DECLARE @Plant NVARCHAR(MAX),
                     @FormNo NVARCHAR(MAX),
