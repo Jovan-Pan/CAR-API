@@ -117,7 +117,7 @@ namespace Repository.Query
 		            @TotalQty, @SupplierDept, @SupplierVendor, @SupplierName, @InspectedSample,
 		            @Nonconforming, @NCCategory, @NCDescription, @StatusOfFinding, @AffectedCavity,
 		            @Status, @MainStatus, @IssueBy, @IssueByName, GETDATE(), 
-		            @CheckingMethod, GETDATE(), (( CAST(@Nonconforming AS decimal(18,2)) / CAST(@TotalQty AS decimal(18,2)) ) * 100)
+		            @CheckingMethod, GETDATE(), (( CAST(@Nonconforming AS decimal(18,2)) / CAST(@InspectedSample AS decimal(18,2)) ) * 100)
 
                 FETCH NEXT FROM temp_cursor INTO 
                     @Plant, @FormType, @Product, @MaterialCode, @UOM, 
