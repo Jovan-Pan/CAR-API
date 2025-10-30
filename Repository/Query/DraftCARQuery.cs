@@ -46,24 +46,6 @@ namespace Repository.Query
         WHERE ID = @id";
 
         public static readonly string ImportDraftCAR =
-            //@"
-            //        insert into IssueFeedback(
-            //            Plant, FormNo, FormType, Product, MaterialCode, TttlQtyUOM, 
-            //            TttlQty, Dept, VendorCode, VendorDesc, SamplingCheck, 
-            //            NcQty, NcCategory, NCDescription, StatusOfFinding, AffectedCavity,
-            //            Status, MainStatus, IssueBy, IssueByName, IssueDate, 
-            //            CheckingMethod
-            //        ) 
-            //        SELECT 
-            //            Plant, FormNo, FormType,Product,[Material Code], UOM, 
-            //            [Total Qty],[Supplier Dept],[Supplier Vendor],[Supplier Name], [Inspected Sample], 
-            //            Nonconforming, [NC Category],[NC Description],[Status of finding],[Affected Cavity],
-            //            Status, 'CAR RAISE', UPPER(@userId), @UserName, GETDATE(), 
-            //            @CheckingMethod
-            //        FROM ##temp B
-
-            //";
-
             @"
                 DECLARE @Plant NVARCHAR(MAX),
                     @FormNo NVARCHAR(MAX),
@@ -129,13 +111,13 @@ namespace Repository.Query
 		            TttlQty, Dept, VendorCode, VendorDesc, SamplingCheck, 
 		            NcQty, NcCategory, NCDescription, StatusOfFinding, AffectedCavity,
 		            Status, MainStatus, IssueBy, IssueByName, IssueDate, 
-		            CheckingMethod
+		            CheckingMethod, DetectionDate, NCRatio
 	            ) 
-	            SELECT @Plant, @newformno, @FormType, @Product, @MaterialCode, @UOM,
-		            @TotalQty, @SupplierDept, @SupplierVendor, @SupplierName, @InspectedSample,
-		            @Nonconforming, @NCCategory, @NCDescription, @StatusOfFinding, @AffectedCavity,
-		            @Status, @MainStatus, @IssueBy, @IssueByName, GETDATE(), 
-		            @CheckingMethod
+	            SELECT @Plant, @newformno, UPPER(@FormType), UPPER(@Product), UPPER(@MaterialCode), UPPER(@UOM),
+		            @TotalQty, UPPER(@SupplierDept), UPPER(@SupplierVendor), UPPER(@SupplierName), @InspectedSample,
+		            @Nonconforming, @NCCategory, UPPER(@NCDescription), UPPER(@StatusOfFinding), @AffectedCavity,
+		            UPPER(@Status), @MainStatus, @IssueBy, @IssueByName, GETDATE(), 
+		            @CheckingMethod, GETDATE(), (( CAST(@Nonconforming AS decimal(18,2)) / CAST(@InspectedSample AS decimal(18,2)) ) * 100)
 
                 FETCH NEXT FROM temp_cursor INTO 
                     @Plant, @FormType, @Product, @MaterialCode, @UOM, 

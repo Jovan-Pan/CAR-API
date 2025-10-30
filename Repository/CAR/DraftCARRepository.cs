@@ -15,6 +15,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static Dapper.SqlMapper;
 
 namespace Repository.CAR
 {
@@ -49,10 +50,10 @@ namespace Repository.CAR
         private static void WriteTemplateContent(ExcelWorksheet sheet)
         {
             var row1Header = new object[] { "(Please Don't Delete Highlighted Row)" };
-            var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "Mandatory", "", "", "Mandatory", "Mandatory", "", "", "Mandatory", "" };
+            var row2Header = new object[] { "Mandatory", "Mandatory", "", "Mandatory", "", "Mandatory", "Mandatory", "Mandatory", "", "", "Mandatory", "Mandatory", "", "", "Mandatory", "" };
             var row3Header = new object[] { "int", "nvarchar(20)", "nvarchar(4)", "nvarchar(40)", "nvarchar(100)", "nvarchar(10)", "int", "nvarchar(6)", "nvarchar(8)", "nvarchar(100)", "int", "int", "nvarchar(20)", "nvarchar(150)", "nvarchar(100)", "int" };
             var row4Header = new object[] { "Plant", "FormType", "Product", "Material Code", "Material Description", "UOM", "Total Qty", "Supplier Dept", "Supplier Vendor", "Supplier Name", "Inspected Sample", "Nonconforming", "NC Category", "NC Description", "Status of finding", "Affected Cavity" };
-            var row5Header = new object[] { "2310", "QFR", "", "70230246", "7WHSOA3 G-CARD COA32360", "PC", "37", "", "50002836", "PT. SINYOTAMA INDONESIA", "10", "10", "402", "HUMAN-MIX MODEL", "NC", "" };
+            var row5Header = new object[] { "2310", "QFR", "", "70230246", "7WHSOA3 G-CARD COA32360", "PC", "37", "QC", "", "", "10", "10", "402", "HUMAN-MIX MODEL", "Non Conformance ", "" };
 
             var data = new List<object[]>
                 {
@@ -69,7 +70,7 @@ namespace Repository.CAR
 
             sheet.Cells[startRow, startColumn].LoadFromArrays(data);
 
-            sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
+            sheet.Cells[startRow, startColumn, data.Count, row2Header.Length].AutoFitColumns();
 
             using (var range = sheet.Cells[1, row1Header.Length])
             {
@@ -91,17 +92,9 @@ namespace Repository.CAR
                     }
                 }
             }
-
-            //set date format for actual cr start
-            const int startFromRow = 1; // Skip the first two rows as headers
-            int endRow = data.Count; // Last row in the worksheet
-            const int columnNumber = 1; // Column D
-            var columnRange = sheet.Cells[startFromRow, columnNumber, endRow, columnNumber];
-
-            columnRange.Style.Numberformat.Format = "mm/dd/yyyy";
         }
 
-        public async Task<ImportResult> Import(string filePath, string userId, string userName)
+        public async Task<ImportResult> Import(string filePath, string userId, string userName, int _plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
         {
 
             /**Query draft
@@ -136,20 +129,50 @@ namespace Repository.CAR
             conditions.Add("ISNULL([Total Qty], '')= ''");
             condRemark.Add("Please fill Total Qty!");
 
+            conditions.Add("TRY_CAST([Total Qty] AS FLOAT) IS NULL");
+            condRemark.Add("Qty must be numeric!");
+
+            conditions.Add("TRY_CAST([Total Qty] AS FLOAT) < 0");
+            condRemark.Add("Qty cannot be negative!");
+
             conditions.Add("ISNULL([Supplier Dept], '') = ''");
             condRemark.Add("Please fill Supplier Dept!");
 
             conditions.Add("ISNULL([Inspected Sample], '') = ''");
             condRemark.Add("Please fill Inspected Sample!");
 
+            conditions.Add("TRY_CAST([Inspected Sample] AS FLOAT) IS NULL");
+            condRemark.Add("Inspected Sample must be numeric!");
+
+            conditions.Add("TRY_CAST([Inspected Sample] AS FLOAT) < 0");
+            condRemark.Add("Inspected Sample cannot be negative!");
+
             conditions.Add("ISNULL([Nonconforming], '')= ''");
             condRemark.Add("Please fill Nonconforming!");
 
-            conditions.Add("[Status of finding] != 'NC'");
-            condRemark.Add("Status of finding must be NC!");
+            conditions.Add("TRY_CAST([Nonconforming] AS FLOAT) IS NULL");
+            condRemark.Add("Nonconforming must be numeric!");
+
+            conditions.Add("TRY_CAST([Nonconforming] AS FLOAT) < 0");
+            condRemark.Add("Nonconforming cannot be negative!");
+
+            conditions.Add("[Status of finding] != 'Non Conformance'");
+            condRemark.Add("Status of finding must be Non Conformance!");
 
             conditions.Add("[Supplier Dept] != 'VEND' AND [Supplier Vendor] != ''");
             condRemark.Add("Please choose one Dept or Vendor!");
+
+            conditions.Add("TRY_CAST([Affected Cavity] AS FLOAT) IS NULL");
+            condRemark.Add("Affected Cavity must be numeric!");
+
+            conditions.Add("TRY_CAST([Nonconforming] AS DECIMAL(18,2)) > TRY_CAST([Inspected Sample] AS DECIMAL(18,2))");
+            condRemark.Add("Nonconforming can not be greater than Inspected Sample qty!");
+
+            conditions.Add("TRY_CAST([Inspected Sample] AS FLOAT) > TRY_CAST([Total Qty] AS DECIMAL(18,2))");
+            condRemark.Add("Inspected Sample can not be greater than Total Qty!");
+
+            conditions.Add("TRY_CAST([Nonconforming] AS FLOAT) > TRY_CAST([Total Qty] AS DECIMAL(18,2))");
+            condRemark.Add("Nonconforming can not be greater than Total Qty!");
 
             string uniqueField = "";
             string CheckingMethod = "1";
@@ -161,6 +184,27 @@ namespace Repository.CAR
                 string validPlantstr = string.Join("', '", validPlant);
                 conditions.Add($"UPPER(LTRIM(RTRIM(Plant))) NOT IN ('{validPlantstr}')");
                 condRemark.Add($"The Plant you entered is not registered in the MDM Plant Table");
+            }
+
+            string validDeptstr = string.Join("', '", deptAuthList);
+            conditions.Add($"UPPER(LTRIM(RTRIM([Supplier Dept]))) NOT IN ('{validDeptstr}') AND [Supplier Dept] IS NOT NULL AND [Supplier Dept] != '' AND [Supplier Dept] != 'VEND'");
+            condRemark.Add($"The Dept you entered is not valid");
+
+            string validProductDeptstr = string.Join("', '", productAuthList);
+            conditions.Add($"UPPER(LTRIM(RTRIM(Product))) NOT IN ('{validProductDeptstr}') AND Product IS NOT NULL AND Product != '' ");
+            condRemark.Add($"The Product Dept you entered is not valid");
+
+            var queryValidUOM = @"SELECT DISTINCT split_data.data AS UOM
+                FROM tGlobal A
+                JOIN TPLANTVSGLOBAL B ON A.ID = B.SettingID AND B.DelFlag = 0 
+                CROSS APPLY dbo.split(A.IDValue, ',') AS split_data
+                WHERE B.SysCode = 'CAR' AND A.ID = 'CarUOMOption'";
+            var validUOM = (await connMDM.QueryAsync<string>(queryValidUOM)).ToList();
+            if (validUOM.Count > 0)
+            {
+                string validUOMstr = string.Join("', '", validUOM);
+                conditions.Add($"UPPER(LTRIM(RTRIM(UOM))) NOT IN ('{validUOMstr}')");
+                condRemark.Add($"The UOM you entered is not valid");
             }
 
             await using var conn = dbContext.CARConnection();
@@ -180,7 +224,6 @@ namespace Repository.CAR
             }
 
             var requiredColumns = new[] { "Issue Remark", "FormNo", "Status", "CheckingMethod" };
-
             foreach (var col in requiredColumns)
             {
                 if (!excelData.DataTable.Columns.Contains(col))
@@ -216,6 +259,10 @@ namespace Repository.CAR
 
                     foreach (DataRow row in excelData.DataTable.Rows)
                     {
+
+                        //To skip empty row
+                        if (IsRowEmpty(row)) continue;
+
                         string plant = row["Plant"].ToString();
                         string FormType = row["FormType"].ToString();
 
@@ -267,7 +314,15 @@ namespace Repository.CAR
                     var columnNameTrim = string.Join(", ", excelData.DataTable.Columns.Cast<DataColumn>()
                         .Select(c => $"[{c.ColumnName}] = LTRIM(RTRIM([{c.ColumnName}]))"));
 
-                    string sql = $@"UPDATE ##temp_DraftCAR SET {columnNameTrim}; UPDATE ##temp_DraftCAR SET [Issue Remark] = '';";
+                    string sql = $@"
+                    UPDATE ##temp_DraftCAR SET {columnNameTrim}; 
+                    UPDATE ##temp_DraftCAR SET [Issue Remark] = '', UOM=UPPER(UOM), [NC Category]=UPPER([NC Category]);
+                    UPDATE a SET Product=
+                        CASE
+                            WHEN NOT EXISTS(SELECT 1 FROM MDMTMaterial m WHERE m.Plant=a.Plant AND a.Product=m.Product AND a.[Material Code]=m.Material) THEN ''
+                            ELSE a.Product
+                        END
+                    FROM ##temp_DraftCAR a";
 
                     // Check for invalid data
                     string formattedCol = string.Join(", ", excelCol.Split(',').Select(col => $"[{col.Trim()}]"));
@@ -283,7 +338,7 @@ namespace Repository.CAR
                             INSERT INTO #invaliddata_DraftCAR ({formattedCol}, [Issue Remark])
                             SELECT {formattedCol}, '{condRemark[i]}'
                             FROM ##temp_DraftCAR
-                            WHERE {conditions[i]};
+                            WHERE {conditions[i]} AND CheckingMethod IS NOT NULL;
 
                             DELETE FROM ##temp_DraftCAR WHERE {conditions[i]};";
                         }
@@ -297,8 +352,7 @@ namespace Repository.CAR
                             INSERT INTO #invaliddata_DraftCAR ({formattedCol2}, [Issue Remark]) 
                             SELECT {formattedCol2}, 'The material is not exists' 
                             FROM ##temp_DraftCAR a LEFT JOIN MDMTmaterial b ON a.Plant=b.Plant AND a.[Material Code]=b.Material 
-                            WHERE b.Material IS NULL 
-                            ";
+                            WHERE b.Material IS NULL ";
 
                     // Check for duplicate data
                     //if (!string.IsNullOrEmpty(uniqueField))
@@ -391,6 +445,19 @@ namespace Repository.CAR
                     return new ImportResult { Success = false, Message = "Error occurred: " + ex.Message };
                 }
             }
+
+            bool IsRowEmpty(DataRow row)
+            {
+                foreach (var item in row.ItemArray)
+                {
+                    if (item != null && !string.IsNullOrWhiteSpace(item.ToString()))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
         }
     }
 }
