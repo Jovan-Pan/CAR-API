@@ -159,40 +159,52 @@ namespace Repository.CAR
 
             var conn = transaction.Connection;
 
+            // Delete all if no recipients
             if (mydata.IssueFeedBackEmailRecipients == null)
             {
                 await conn.ExecuteAsync(deleteQueryAll, new { FormNumber = mydata.FormNumber }, transaction);
                 return 0;
             }
 
+            List<UsrDto> vendorUsers = new List<UsrDto>();
+            if (!string.IsNullOrEmpty(mydata.VendorCode))
+            {
+                    await using var mdmConn = dbContext.MDMConnection();
+                    await mdmConn.OpenAsync();
+
+                    string vendorQuery = "SELECT useid as UseID, usenam as UseNam, useemail as UseEmail FROM uservsvendor WHERE vendor = @VendorCode";
+                    vendorUsers = (await mdmConn.QueryAsync<UsrDto>(vendorQuery, new { VendorCode = mydata.VendorCode })).ToList();
+               
+            }
+
+            // Get existing users
             var existingUsers = (await conn.QueryAsync<(string UseID, string UserLevel)>(
                 selectQuery, new { FormNumber = mydata.FormNumber }, transaction
             )).ToList();
 
             var existingUserDict = existingUsers.ToDictionary(u => $"{u.UseID}-{u.UserLevel}");
 
+            // Group new users by level
             var newUsersByLevel = mydata.IssueFeedBackEmailRecipients
                 .Where(r => !string.IsNullOrEmpty(r.UseID))
                 .GroupBy(r => r.UserLevel)
                 .ToDictionary(g => g.Key, g => g.Select(u => u.UseID).ToList());
 
-
+            // Delete removed user levels
             var existingUserLevels = existingUsers.Select(u => u.UserLevel).Distinct().ToList();
-
-
             foreach (var userLevel in existingUserLevels)
             {
-                if (!newUsersByLevel.ContainsKey(userLevel))
+                if (!newUsersByLevel.ContainsKey(userLevel) && userLevel != "IssueUserVendor")
                 {
                     await conn.ExecuteAsync(deleteQueryByUserLevel, new { FormNumber = mydata.FormNumber, UserLevel = userLevel }, transaction);
                 }
             }
 
+            // Delete removed users within each level
             foreach (var kvp in newUsersByLevel)
             {
                 var userLevel = kvp.Key;
                 var userIds = kvp.Value;
-
                 await conn.ExecuteAsync(deleteQueryPartial, new
                 {
                     FormNumber = mydata.FormNumber,
@@ -202,10 +214,11 @@ namespace Repository.CAR
             }
 
             var affectedRows = 0;
+
+            // Insert regular recipients
             foreach (var recipient in mydata.IssueFeedBackEmailRecipients)
             {
                 string key = $"{recipient.UseID}-{recipient.UserLevel}";
-
                 if (!existingUserDict.ContainsKey(key))
                 {
                     var dParams = new Dapper.DynamicParameters();
@@ -219,12 +232,20 @@ namespace Repository.CAR
                 }
             }
 
-            if (!string.IsNullOrEmpty(mydata.VendorCode))
+            if (vendorUsers.Any())
             {
-                foreach (var user in userList)
+                // Handle deletion of vendor users if needed
+                var vendorUserIds = vendorUsers.Select(u => u.UseID).ToList();
+                await conn.ExecuteAsync(deleteQueryPartial, new
+                {
+                    FormNumber = mydata.FormNumber,
+                    UserLevel = "IssueUserVendor",
+                    ExistingUserIDs = vendorUserIds.Any() ? vendorUserIds : new List<string> { "-1" }
+                }, transaction);
+
+                foreach (var user in vendorUsers)
                 {
                     string key = $"{user.UseID}-IssueUserVendor";
-
                     if (!existingUserDict.ContainsKey(key))
                     {
                         var dParams = new Dapper.DynamicParameters();
@@ -237,6 +258,11 @@ namespace Repository.CAR
                         affectedRows += await conn.ExecuteAsync(insertQuery, dParams, transaction);
                     }
                 }
+            }
+            else if (!string.IsNullOrEmpty(mydata.VendorCode))
+            {
+                // If vendor code exists but no users found, delete existing vendor users
+                await conn.ExecuteAsync(deleteQueryByUserLevel, new { FormNumber = mydata.FormNumber, UserLevel = "IssueUserVendor" }, transaction);
             }
 
             return affectedRows;
