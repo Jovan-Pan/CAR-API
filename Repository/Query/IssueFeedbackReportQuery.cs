@@ -102,7 +102,7 @@ namespace Repository.Query
         order by MaterialType asc ";
 
         public static readonly string GetMaterialListFilter = @" select distinct MaterialCode from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
+        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList) AND MaterialCode IS NOT NULL
         order by MaterialCode asc ";
 
         public static readonly string GetVendorListFilter = @" select distinct VendorCode,VendorDesc as vendDesc from IssueFeedback
