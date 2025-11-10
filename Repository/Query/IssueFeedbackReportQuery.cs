@@ -73,6 +73,7 @@ namespace Repository.Query
 	        COUNT(CASE WHEN status = 'ACTION-ISSUED' THEN 1 END) AS ActIssued,
             COUNT(CASE WHEN status = 'ISSUED-REJECTED (WA)' THEN 1 END) AS ActIssuedRejecWA,
 	        COUNT(CASE WHEN status = 'ANALYZE' THEN 1 END) AS Analize,
+            COUNT(CASE WHEN status = 'ANALYZE-MANAGEMENT' THEN 1 END) AS AnalizeManagement,
 	        COUNT(CASE WHEN status = 'REVIEW' THEN 1 END) AS review,
 	        COUNT(CASE WHEN status = 'COMPLETE' THEN 1 END) AS Complete
         FROM IssueFeedback
@@ -130,7 +131,7 @@ namespace Repository.Query
         ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment
         ,Detectedby,[Plating Line No/Name] as PlatingLineNoName,checkingMethod
         ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
-
+        ,MngReviewBy,MngReviewByName,MngReviewDate
         ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
         ,PossibleHazards,Typeofcontravention,RiskCategory 
         from IssueFeedback

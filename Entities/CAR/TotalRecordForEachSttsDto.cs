@@ -15,6 +15,7 @@ namespace Entities.CAR
         public int ActIssued { get; set; }
         public int ActIssuedRejecWA { get; set; }
         public int Analize { get; set; }
+        public int AnalizeManagement { get; set; }
         public int review { get; set; }
         public int Complete { get; set; }
     }

@@ -153,6 +153,20 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(PDAReviewerAproveMng))]
+        public async Task<IActionResult> PDAReviewerAproveMng([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.PDAReviewerAproveMng(data);
+            return Ok(result);
+        }
+
+        [HttpPost(nameof(MngPDAReviewerReject))]
+        public async Task<IActionResult> MngPDAReviewerReject([FromForm] IssueSubmissionParameters data)
+        {
+            var result = await business.IssueSubmission.MngPDAReviewerReject(data);
+            return Ok(result);
+        }
+
         [HttpPost(nameof(ReviewerSubmit))]
         public async Task<IActionResult> ReviewerSubmit([FromForm] IssueSubmissionParameters data)
         {

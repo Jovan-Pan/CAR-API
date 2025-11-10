@@ -32,6 +32,8 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<string>> PDAReviewerVoid(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> PDAReviewerReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> PDAReviewerAprove(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> PDAReviewerAproveMng(IssueSubmissionParameters mydata);
+        Task<ApiResponse<string>> MngPDAReviewerReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReviewerSubmit(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> ReviewerReject(IssueSubmissionParameters mydata);
         Task<ApiResponse<string>> pdaActionVoid(IssueSubmissionParameters mydata);
