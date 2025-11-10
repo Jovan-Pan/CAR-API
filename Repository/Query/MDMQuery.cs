@@ -197,7 +197,8 @@ namespace Repository.Query
           AND A.SystemCode = 'CAR'
           AND A.Plant = @plant
           AND A.[Group] = @group
-          AND UV.Vendor = @VendorCode ;
+          AND UV.Vendor = @VendorCode
+          AND U.UsePass = '';
         ";
 
         public static readonly string GetissuerEmail = @"
