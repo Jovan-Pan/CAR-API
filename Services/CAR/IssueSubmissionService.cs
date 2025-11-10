@@ -1279,6 +1279,34 @@ namespace Services.CAR
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
         }
 
+        public async Task<ApiResponse<string>> PDAReviewerAproveMng(IssueSubmissionParameters mydata)
+        {
+
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.PDAReviewerAproveMng(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
+        }
+
+        public async Task<ApiResponse<string>> MngPDAReviewerReject(IssueSubmissionParameters mydata)
+        {
+
+            await using var conn = await data.ISM.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            await data.ISM.MngPDAReviewerReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
+            //string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
+            //await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
+
+            await transaction.CommitAsync();
+            return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
+        }
+
         public async Task<ApiResponse<string>> ReviewerSubmit(IssueSubmissionParameters mydata)
         {
             var basepathconfig = await mdm.getBasePathConfig(mydata.UserPlant);

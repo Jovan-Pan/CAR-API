@@ -336,6 +336,10 @@ namespace Services.CAR
                                  ReviewDate = main.ReviewDate,
                                  PDAReviewComment = main.PDAReviewComment,
 
+                                 MngReviewBy = main.MngReviewBy,
+                                 MngReviewByName = main.MngReviewByName,
+                                 MngReviewDate = main.MngReviewDate,
+
                                  ReviewBy = main.ReviewBy,
                                  ReviewByName = main.ReviewByName,
                                  ReviewSubmitDate = main.ReviewSubmitDate,

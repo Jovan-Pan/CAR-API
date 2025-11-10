@@ -203,10 +203,23 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> MngPDAReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.MngPDAReviewerReject;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
 
         public async Task<int> PDAReviewerAprove(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.PDAReviewerAprove;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
+        public async Task<int> PDAReviewerAproveMng(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.ReviewerMngAprove;
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
