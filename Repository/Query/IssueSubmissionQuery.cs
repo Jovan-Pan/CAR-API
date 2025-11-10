@@ -380,6 +380,18 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
+        MainStatus = case when @IssueStatus = 'REVIEW' OR @IssueStatus = 'ANALYZE-MANAGEMENT'  then 'OPEN' else 'PENDING APPROVAL' end,
+        PDAReviewBy = @UserId,
+        PDAReviewByName = @UserName,
+        PDAReviewDate = GETDATE(),
+        PDAReviewComment = @Comment
+        where FormNo = @FormNumber
+        ";
+
+        public static readonly string PDAReviewerAproveMng = @"
+        update IssueFeedback
+        set 
+        Status = @IssueStatus,
         MainStatus = 'PENDING APPROVAL',
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
@@ -387,6 +399,31 @@ namespace Repository.Query
         PDAReviewComment = @Comment
         where FormNo = @FormNumber
         ";
+
+        public static readonly string MngPDAReviewerReject = @"
+        update IssueFeedback
+        set 
+        Status = 'ISSUED-REJECT',
+        MainStatus = 'CAR RAISE',
+        MngReviewBy = @UserId,
+        MngReviewByName = @UserName,
+        MngReviewDate = GETDATE(),
+        MngReviewComment = @rejectReason
+        where FormNo = @FormNumber
+        ";
+
+
+        public static readonly string ReviewerMngAprove = @"
+        update IssueFeedback
+        set 
+        Status = @IssueStatus,
+        MainStatus = 'PENDING APPROVAL',
+        MngReviewBy = @UserId,
+        MngReviewByName = @UserName,
+        MngReviewDate = GETDATE()
+        where FormNo = @FormNumber
+        ";
+
 
         public static readonly string ReviewerSubmit = @"
         update IssueFeedback

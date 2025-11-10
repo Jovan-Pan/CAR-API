@@ -40,6 +40,8 @@ namespace Contracts.Repository.CAR
         Task<int> PDAReviewerVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> PDAReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> PDAReviewerAprove(IssueSubmissionParameters mydata, SqlTransaction transaction);
+        Task<int> PDAReviewerAproveMng(IssueSubmissionParameters mydata, SqlTransaction transaction);
+        Task<int> MngPDAReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> ReviewerSubmit(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> ReviewerReject(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> pdaActionVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);
