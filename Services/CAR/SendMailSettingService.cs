@@ -318,11 +318,25 @@ namespace Services.CAR
                             mailparam.CreateUser = mydata.UserId;
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                             {
-                                mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
+                                if (MailtoccListStatic != null && MailtoccListStatic.Any())
+                                {
+                                    mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
+                                }
+                                else
+                                {
+                                    mailparam.CopyRecipient = ";";
+                                }
                             }
                             else
                             {
-                                mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                                if (MailtoccList != null && MailtoccList.Any())
+                                {
+                                    mailparam.CopyRecipient = string.Join(";", MailtoccList);
+                                }
+                                else
+                                {
+                                    mailparam.CopyRecipient = ";";
+                                }
                             }
                             mailparam.LinkedFiles = linkedFiles;
                             mailparam.AttachmentsPath = linkedFiles;
