@@ -159,6 +159,9 @@ namespace Services.CAR
                                 Datadetails = Datadetails.Replace("@AffectedCavity", mydata.AffectedCavity == null ? "0" : mydata.AffectedCavity.ToString());
                                 Datadetails = Datadetails.Replace("@NCCategory", mydata.NCCategory == null ? "N.A" : mydata.NCCategory.ToString());
                                 Datadetails = Datadetails.Replace("@NCDescription", mydata.NCDescription == null ? "N.A" : mydata.NCDescription.ToString());
+
+                                Datadetails = Datadetails.Replace("@NcQty", mydata.NcQty == null ? "0" : mydata.NcQty.ToString());
+                                Datadetails = Datadetails.Replace("@SamplingSize", mydata.SamplingCheck == null ? "0" : mydata.SamplingCheck.ToString());
                             }
                             else
                             {
