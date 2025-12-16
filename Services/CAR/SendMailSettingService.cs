@@ -50,8 +50,7 @@ namespace Services.CAR
                     {
                         SendEmailParam mailparam = new SendEmailParam();
                         var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
-                        //var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
-                        //List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
+
                         List<string> recipentList = new List<string>();
                         if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                         {
@@ -61,35 +60,38 @@ namespace Services.CAR
 
                         var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
                         var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
-                        List<string> MailtoccList = new List<string>();
-                        List<string> MailtoccListStatic = new List<string>();
+
+                        List<string> ccListMaster = new List<string>();
                         if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                         {
-                            MailtoccListStatic = MailToCCStatic.ToList();
+                            ccListMaster.AddRange(MailToCCStatic.ToList());
                         }
                         else
                         {
-                            MailtoccList = MailToCC.ToList();
+                            ccListMaster.AddRange(MailToCC.ToList());
                         }
 
-                    if (mydata.Dept == "VEND")
+                        if (mydata.Dept == "VEND")
                         {
-                           var userSubsFormMasterVendor = await mdm.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
-                           recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
+                            var userSubsFormMasterVendor = await mdm.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                            recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
                         }
 
                         var IssuerIds = await data.IFR.getIssuerId(mydata.UserPlant, mydata.FormNumber);
                         var GetissuerEmail = await mdm.GetissuerEmail(mydata.UserPlant, IssuerIds);
-                        //List<string> recipentList = userSubsFormMaster.Select(form => form.UseEmail).ToList();
-                        //if (mydata.Dept == "VEND")
-                        //{
-                        //    recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
-                        //}
+
                         recipentList.AddRange(GetissuerEmail);
                         recipentList = recipentList.Distinct().ToList();
 
+                        if (!string.IsNullOrEmpty(globalmailMaster.FirstOrDefault()?.ReplyMailid))
+                        {
+                            ccListMaster.Add(globalmailMaster.FirstOrDefault().ReplyMailid);
+                        }
+
+                        List<string> finalCcList = ccListMaster.Distinct().Except(recipentList).ToList();
+
                         if (globalmailMaster.Count() == 0)
-                        {       
+                        {
                             mailmsg = "Data Maill Content Not Maintain";
                         }
                         else if (recipentList.Count() == 0)
@@ -102,15 +104,10 @@ namespace Services.CAR
                             mailparam.FromAddress = globalmailMaster.FirstOrDefault().FromMailaddress;
 
                             string recipent = string.Join(";", recipentList);
-                            if (!string.IsNullOrEmpty(globalmailMaster.FirstOrDefault()?.ReplyMailid))
-                            {
-                                MailtoccList.Add(globalmailMaster.FirstOrDefault().ReplyMailid);
-                                MailtoccListStatic.Add(globalmailMaster.FirstOrDefault().ReplyMailid);
-                            }
-
-
+                            string copyRecipient = string.Join(";", finalCcList);
 
                             mailparam.Recipient = recipent;
+                            mailparam.CopyRecipient = copyRecipient;
 
                             mailparam.Subject = globalmailMaster.FirstOrDefault().EmailSubject;
 
@@ -122,7 +119,8 @@ namespace Services.CAR
                             {
                                 Datadetails = MailBodyContentDetail.mailBodyContentDet;
                             }
-                            else {
+                            else
+                            {
                                 Datadetails = DynamicMailBodyContentDetail.mailBodyContentDet;
                             }
                             Datadetails = Datadetails.Replace("@Plant", mydata.UserPlant == null ? "" : mydata.UserPlant.ToString());
@@ -142,9 +140,7 @@ namespace Services.CAR
                                 Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                                 Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
                                 Datadetails = Datadetails.Replace("@Product", mydata.Product);
-                                //Datadetails = Datadetails.Replace("@Model", mydata.Model);
-                                //Datadetails = Datadetails.Replace("@Materialtype", mydata.MaterialType);
-                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode); 
+                                Datadetails = Datadetails.Replace("@MaterialCode", mydata.MaterialCode);
                                 Datadetails = Datadetails.Replace("@MaterialDesc", mydata.MaterialDesc == null ? "N.A." : mydata.MaterialDesc.ToString());
                                 Datadetails = Datadetails.Replace("@SamplingCheck", mydata.NcRatio == null ? "0" : mydata.NcRatio.ToString());
                                 Datadetails = Datadetails.Replace("@Dept", mydata.Dept == null
@@ -166,28 +162,28 @@ namespace Services.CAR
                             else
                             {
                                 string productHtml = mydata.Product == null ? "" :
-                           "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Product</td>" +
-                           "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.Product + "</td>";
+                               "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Product</td>" +
+                               "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.Product + "</td>";
 
                                 string affectedCavityHtml = mydata.AffectedCavity == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">AffectedCavity</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.AffectedCavity.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">AffectedCavity</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.AffectedCavity.ToString() + "</td>";
 
                                 string materialCodeHtml = mydata.MaterialCode == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Material Code</td>" +
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.MaterialCode.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Material Code</td>" +
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.MaterialCode.ToString() + "</td>";
 
                                 string ncCategoryHtml = mydata.NCCategory == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">NCCategory</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NCCategory.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">NCCategory</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NCCategory.ToString() + "</td>";
 
                                 string materialDescHtml = mydata.MaterialDesc == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">MaterialDesc</td>" +
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.MaterialDesc.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">MaterialDesc</td>" +
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.MaterialDesc.ToString() + "</td>";
 
                                 string ncDescriptionHtml = mydata.NCDescription == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">NCDescription</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NCDescription.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">NCDescription</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NCDescription.ToString() + "</td>";
 
                                 string samplingCheckHtml = mydata.NcRatio == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">SamplingCheck</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NcRatio.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">SamplingCheck</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.NcRatio.ToString() + "</td>";
 
                                 string deptHtml = mydata.Dept == null
                                     ? "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">Dept</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">N.A.</td>"
@@ -200,7 +196,7 @@ namespace Services.CAR
                                     + mydata.VendorCode.ToString() + " - " + mydata.VendorDesc + "</b></td>";
 
                                 string totalQtyHtml = mydata.TttlQty == null ? "" :
-                                    "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">TotalQty</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.TttlQty.ToString() + "</td>";
+                                     "<td style=\"border: 1px solid black; padding: 8px; width: 25%;\">TotalQty</td><td style=\"border: 1px solid black; padding: 8px; width: 25%;\">" + mydata.TttlQty.ToString() + "</td>";
 
 
                                 Datadetails = DynamicMailBodyContentDetail.mailBodyContentDet;
@@ -211,7 +207,6 @@ namespace Services.CAR
                                 Datadetails = Datadetails.Replace("@Status", mydata.IssueStatus?.Replace("PDA-DECISION", "CAR ISSUING"));
                                 Datadetails = Datadetails.Replace("@DetectionDate", mydata.DetectionDate?.ToString("dd-MM-yyyy"));
 
-                                // Apply the constructed HTML for each pair
                                 Datadetails = Datadetails.Replace("@Product", productHtml);
                                 Datadetails = Datadetails.Replace("@AffectedCavity", affectedCavityHtml);
                                 Datadetails = Datadetails.Replace("@MaterialCode", materialCodeHtml);
@@ -219,24 +214,19 @@ namespace Services.CAR
                                 Datadetails = Datadetails.Replace("@MaterialDesc", materialDescHtml);
                                 Datadetails = Datadetails.Replace("@NCDescription", ncDescriptionHtml);
 
-                                // Also replace these, ensuring they handle their own "empty" cases
                                 Datadetails = Datadetails.Replace("@SamplingCheck", samplingCheckHtml);
                                 Datadetails = Datadetails.Replace("@Dept", deptHtml);
                                 Datadetails = Datadetails.Replace("@Vendor", vendorHtml);
                                 Datadetails = Datadetails.Replace("@TotalQty", totalQtyHtml);
 
-                                // --- Logic to remove <tr> if its content is empty ---
-                                // For "@Product" and "@AffectedCavity"
                                 if (string.IsNullOrWhiteSpace(productHtml) && string.IsNullOrWhiteSpace(affectedCavityHtml))
                                 {
                                     Datadetails = Regex.Replace(Datadetails, @"<tr>\s*<\/tr>", "", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                                 }
-                                // For "@MaterialCode" and "@NCCategory"
                                 if (string.IsNullOrWhiteSpace(materialCodeHtml) && string.IsNullOrWhiteSpace(ncCategoryHtml))
                                 {
                                     Datadetails = Regex.Replace(Datadetails, @"<tr>\s*<\/tr>", "", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                                 }
-                                // For "@MaterialDesc" and "@NCDescription"
                                 if (string.IsNullOrWhiteSpace(materialDescHtml) && string.IsNullOrWhiteSpace(ncDescriptionHtml))
                                 {
                                     Datadetails = Regex.Replace(Datadetails, @"<tr>\s*<\/tr>", "", RegexOptions.IgnoreCase | RegexOptions.Multiline);
@@ -251,7 +241,7 @@ namespace Services.CAR
                             if (attachments != null && attachments.Any())
                             {
                                 string imagesHtml = "";
-                                var validImageExtensions = new[] { ".jpg", ".jpeg", ".png"};
+                                var validImageExtensions = new[] { ".jpg", ".jpeg", ".png" };
 
                                 foreach (var attachment in attachments)
                                 {
@@ -296,11 +286,9 @@ namespace Services.CAR
                                             }
                                             catch (OutOfMemoryException)
                                             {
-                                                // log warning, skip processing
                                             }
                                             catch (Exception ex)
                                             {
-                                                // log error, skip processing
                                             }
                                         }
                                     }
@@ -319,28 +307,7 @@ namespace Services.CAR
                             body = body.Replace("@Emaillink", globalmailMaster.FirstOrDefault().Emaillink);
                             mailparam.Body = body;
                             mailparam.CreateUser = mydata.UserId;
-                            if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
-                            {
-                                if (MailtoccListStatic != null && MailtoccListStatic.Any())
-                                {
-                                    mailparam.CopyRecipient = string.Join(";", MailtoccListStatic);
-                                }
-                                else
-                                {
-                                    mailparam.CopyRecipient = ";";
-                                }
-                            }
-                            else
-                            {
-                                if (MailtoccList != null && MailtoccList.Any())
-                                {
-                                    mailparam.CopyRecipient = string.Join(";", MailtoccList);
-                                }
-                                else
-                                {
-                                    mailparam.CopyRecipient = ";";
-                                }
-                            }
+
                             mailparam.LinkedFiles = linkedFiles;
                             mailparam.AttachmentsPath = linkedFiles;
                             await mdmP.SendEmail(mailparam);
