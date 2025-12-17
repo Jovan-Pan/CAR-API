@@ -176,7 +176,7 @@ namespace Repository.Query
         where a.IsDeleted = 0 and B.IsDeleted = 0
         and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept
         AND (
-        (U.UsePass = '' AND U.UseDep = 'VEND')
+        (U.UsePass = '')
         OR
         B.UserID NOT IN (SELECT UseID FROM uservsvendor)
             );
@@ -243,7 +243,7 @@ namespace Repository.Query
         select case when (select count(*) from @Validgrp where isexist = 1) > 0 then 1 else 0 end isSpAdmin
         ";
 
-        public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where DelFlag = 0";
+        public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where UseComCod = @plant AND DelFlag = 0";
 
         public static readonly string GetUsrForVndr = @"select A.UseID,A.UseNam,A.UseEmail from Usr A
                                                         left join USERVSVENDOR B  on A.useID = B.useID
