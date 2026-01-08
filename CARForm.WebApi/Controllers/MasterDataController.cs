@@ -166,5 +166,13 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(GetPlant))]
+    public async Task<IActionResult> GetPlant(int plant)
+    {
+        var result = await business.MasterData.GetPlant(plant);
+        return Ok(result);
+
+    }
 }
 

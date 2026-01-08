@@ -119,6 +119,11 @@ namespace Entities.CAR
         public string? PlatingLineNoName { get; set; }
         public bool? CheckingMethod { get; set; }
 
+        public string? SourceofSupply { get; set; }
+        public string? TeamSeaPlant { get; set; }
+        public string? PlantAbbreviation { get; set; }
+        
+
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
        
         public IEnumerable<UsrDto>? EmailRecipientsList { get; set; }

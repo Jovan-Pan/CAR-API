@@ -43,11 +43,11 @@ namespace Repository.Query
         public static readonly string InsertDataIssueFeedback = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,Detectedby,[Plating Line No/Name],CheckingMethod)
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,Detectedby,[Plating Line No/Name],CheckingMethod,SourceofSupply,TeamSeaPlant)
         values
         (
         @UserPlant,@FormType,@FormNumber,@DetectionDate,@StatusOfFinding,@Product,@Model,@MaterialType,@MaterialCode,@NcQty,@SamplingCheck,@NcRatio,@Dept,@VendorCode,@VendorDesc,@TttlQty,@TttlQtyUOM
-        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,@IssueStatus,'CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby,@PlatingLineNoName,@CheckingMethod
+        ,@AffectedCavity,@AffectedCavityNO,@IssueType,@NCCode,@NCCategory,@NCReason,@NCDescription,@IssueStatus,'CAR RAISE',@UserId,@UserName,GETDATE(),@Comment,@Detectedby,@PlatingLineNoName,@CheckingMethod,@SourceofSupply,@TeamSeaPlant
         )
         ";
 
@@ -86,6 +86,8 @@ namespace Repository.Query
                 Detectedby = @Detectedby,
                 [Plating Line No/Name] = @PlatingLineNoName,
                 CheckingMethod = @CheckingMethod
+               ,SourceofSupply = @SourceofSupply
+               ,TeamSeaPlant = @TeamSeaPlant
             WHERE
                 FormNo = @FormNumber";
 
@@ -125,6 +127,8 @@ namespace Repository.Query
         ,Detectedby = @Detectedby
         ,[Plating Line No/Name] = @PlatingLineNoName
         ,CheckingMethod = @CheckingMethod
+        ,SourceofSupply = @SourceofSupply
+        ,TeamSeaPlant = @TeamSeaPlant
         where FormNo = @FormNumber
         ";
 

@@ -113,29 +113,107 @@ namespace Repository.Query
         public static readonly string skiprow = @" OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY; ";
 
         public static readonly string GetMainData = @"
-        select  
-        Plant,FormType,FormNo,DetectionDate,StatusOfFinding,Product,Model,MaterialType,MaterialCode,MaterialDesc,NcQty,SamplingCheck,NcRatio,Dept,VendorCode
-        ,VendorDesc,TttlQty,TttlQtyUOM,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,mainStatus
-        ,IssueBy,IssueByName,IssueDate,IssueByComment
-        ,IssueUpdatedBy,IssueUpdatedByName,IssueUpdatedDate
-        ,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
-        ,PDAActionBy,PDAActionByName,PDAActionDate,PDAActionImmAct,PDAActionComment
-        ,PDAActionUpdatedBy,PDAActionUpdatedByName,PDAActionUpdatedDate
-        ,PDAAprovalBy,PDAAprovalByName,PDAAprovalDate,PDAAprovalComment as pdaAprovalComment
-        ,PDAVoidBy,PDAVoidByName,PDAVoidDate,PDAVoidComment
-        ,ImmActRecDetail,CostPC,Curency,ActionResult
-        ,ReceiveActionRootCause,RootCauseDetail,procecessGrpCode
-        ,ReceiveCorrectiveAct,EffectiveDate,ReceiveActionComment,ReceiveActionRejectReason
-        ,ReceiveActionBy,ReceiveActionByName,ReceiveActionDate
-        ,ReceiveActionUpdatedBy,ReceiveActionUpdatedByName,ReceiveActionUpdatedDate
-        ,ReceiveAprovalBy,ReceiveAprovalByName,ReceiveAprovalDate,receiveAprovalComment
-        ,Detectedby,[Plating Line No/Name] as PlatingLineNoName,checkingMethod
-        ,PDAReviewBy,PDAReviewByName,PDAReviewDate,PDAReviewComment
-        ,MngReviewBy,MngReviewByName,MngReviewDate
-        ,ReviewBy,ReviewByName,ReviewDate,ReviewSubmitDate,ReviewComment,ReviewMethod
-        ,PossibleHazards,Typeofcontravention,RiskCategory 
-        from IssueFeedback
-        where Plant = @plant
+        SELECT  
+            ifb.Plant,
+            ifb.FormType,
+            ifb.FormNo,
+            ifb.DetectionDate,
+            ifb.StatusOfFinding,
+            ifb.Product,
+            ifb.Model,
+            ifb.MaterialType,
+            ifb.MaterialCode,
+            ifb.MaterialDesc,
+            ifb.NcQty,
+            ifb.SamplingCheck,
+            ifb.NcRatio,
+            ifb.Dept,
+            ifb.VendorCode,
+            ifb.VendorDesc,
+            ifb.TttlQty,
+            ifb.TttlQtyUOM,
+            ifb.AffectedCavity,
+            ifb.AffectedCavityNO,
+            ifb.IssueType,
+            ifb.NCCode,
+            ifb.NCCategory,
+            ifb.NCReason,
+            ifb.NCDescription,
+            ifb.Status,
+            ifb.mainStatus,
+            ifb.IssueBy,
+            ifb.IssueByName,
+            ifb.IssueDate,
+            ifb.IssueByComment,
+            ifb.IssueUpdatedBy,
+            ifb.IssueUpdatedByName,
+            ifb.IssueUpdatedDate,
+            ifb.AcknowledgeBy,
+            ifb.AcknowledgeByname,
+            ifb.AcknowledgeByDate,
+            ifb.AcknowledgeByComment,
+            ifb.PDAActionBy,
+            ifb.PDAActionByName,
+            ifb.PDAActionDate,
+            ifb.PDAActionImmAct,
+            ifb.PDAActionComment,
+            ifb.PDAActionUpdatedBy,
+            ifb.PDAActionUpdatedByName,
+            ifb.PDAActionUpdatedDate,
+            ifb.PDAAprovalBy,
+            ifb.PDAAprovalByName,
+            ifb.PDAAprovalDate,
+            ifb.PDAAprovalComment AS pdaAprovalComment,
+            ifb.PDAVoidBy,
+            ifb.PDAVoidByName,
+            ifb.PDAVoidDate,
+            ifb.PDAVoidComment,
+            ifb.ImmActRecDetail,
+            ifb.CostPC,
+            ifb.Curency,
+            ifb.ActionResult,
+            ifb.ReceiveActionRootCause,
+            ifb.RootCauseDetail,
+            ifb.procecessGrpCode,
+            ifb.ReceiveCorrectiveAct,
+            ifb.EffectiveDate,
+            ifb.ReceiveActionComment,
+            ifb.ReceiveActionRejectReason,
+            ifb.ReceiveActionBy,
+            ifb.ReceiveActionByName,
+            ifb.ReceiveActionDate,
+            ifb.ReceiveActionUpdatedBy,
+            ifb.ReceiveActionUpdatedByName,
+            ifb.ReceiveActionUpdatedDate,
+            ifb.ReceiveAprovalBy,
+            ifb.ReceiveAprovalByName,
+            ifb.ReceiveAprovalDate,
+            ifb.receiveAprovalComment,
+            ifb.Detectedby,
+            ifb.[Plating Line No/Name] AS PlatingLineNoName,
+            ifb.checkingMethod,
+            ifb.PDAReviewBy,
+            ifb.PDAReviewByName,
+            ifb.PDAReviewDate,
+            ifb.PDAReviewComment,
+            ifb.MngReviewBy,
+            ifb.MngReviewByName,
+            ifb.MngReviewDate,
+            ifb.ReviewBy,
+            ifb.ReviewByName,
+            ifb.ReviewDate,
+            ifb.ReviewSubmitDate,
+            ifb.ReviewComment,
+            ifb.ReviewMethod,
+            ifb.PossibleHazards,
+            ifb.Typeofcontravention,
+            ifb.RiskCategory,
+            ifb.SourceofSupply,
+            ifb.TeamSeaPlant,
+            mp.PlantAbbreviation
+        FROM IssueFeedback ifb
+        LEFT JOIN MDMTPLANT mp ON ifb.TeamSeaPlant = mp.plant
+        where ifb.Plant = @plant
         and (Dept IS NULL OR Dept IN @deptAuthList) and ((Product IN @productAuthList or 'ALL' IN @productAuthList) OR (Product IS NULL OR Product = ''))
         ";
 
