@@ -221,4 +221,11 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         var result = await conn.QueryAsync<UsrDto>(query, data);
         return result ?? Enumerable.Empty<UsrDto>();
     }
+    public async Task<IEnumerable<PlantDto>> GetPlant(int plant)
+    {
+        string query = MDMQuery.getplant;
+        await using var conn = dbContext.MDMConnection();
+        var result = await conn.QueryAsync<PlantDto>(query, new { plant = plant });
+        return result ?? Enumerable.Empty<PlantDto>();
+    }
 }

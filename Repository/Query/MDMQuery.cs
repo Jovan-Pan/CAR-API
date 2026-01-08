@@ -258,5 +258,11 @@ namespace Repository.Query
 
         public static readonly string CheckUserVSVend = @"
         select UseID,UseNam,UseEmail from USERVSVENDOR where Vendor= @VendorCode";
+
+        public static readonly string getplant = @"
+        select distinct b.Plant,b.PlantAbbreviation from TTEAMSEAPLANTVSVENDOR A
+        join tplant B on A.TeamSMNPlantCode = B.Plant
+        join USERVSVENDOR C on A.TeamSMNPlantCode = C.Plant
+        where A.Plant = @plant";
     }
 }   

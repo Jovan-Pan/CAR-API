@@ -352,7 +352,10 @@ namespace Services.CAR
 
                                  Detectedby = main.Detectedby,
                                  PlatingLineNoName = main.PlatingLineNoName,
-                                 CheckingMethod = main.CheckingMethod
+                                 CheckingMethod = main.CheckingMethod,
+                                 SourceofSupply =main.SourceofSupply,
+                                 TeamSeaPlant = main.TeamSeaPlant,
+                                 PlantAbbreviation = main.PlantAbbreviation
                              };
             maindata = joinedData;
             
