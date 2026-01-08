@@ -29,4 +29,5 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<string>>> getReason(int plant, string reasontype);
     Task<ApiResponse<bool>> GetisSpAdmin(int plant, string UseID);
     Task<ApiResponse<IEnumerable<UsrDto>>> GetUsr(DynamicFormParameterDTO data);
+    Task<ApiResponse<IEnumerable<PlantDto>>> GetPlant(int plant);
 }

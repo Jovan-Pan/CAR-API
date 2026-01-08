@@ -43,7 +43,9 @@ namespace Entities.ParamRequest
         public string? Detectedby { get; set; }
         public string? PlatingLineNoName { get; set; }
         public bool? CheckingMethod { get; set; }
-
+        public string? SourceofSupply { get; set; }
+        public string? TeamSeaPlant { get; set; }
+        
 
         public string? ImmActRecDetail { get; set; }
         public decimal? CostPC { get; set; }
