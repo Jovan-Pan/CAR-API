@@ -22,6 +22,10 @@ namespace Entities.CAR
         public string? VendorCode { get; set; }
         public string? VendorDesc { get; set; }
 
+        public string? SourceofSupply { get; set; }
+        public string? TeamSeaPlant { get; set; }
+        //public string? PlantAbbreviation { get; set; }
+
         public string? rejectReason { get; set; }
         public string? PDAImmediteAct { get; set; }
 
