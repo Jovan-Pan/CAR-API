@@ -278,7 +278,14 @@ namespace Repository.CAR
             var dParams = new Dapper.DynamicParameters();
             foreach (var param in parameters)
             {
-                dParams.Add(param.ParameterName, param.Value);
+                var val = param.Value;
+
+                if (val == DBNull.Value || val == null || val.ToString().ToLower() == "null")
+                {
+                    val = null;
+                }
+
+                dParams.Add(param.ParameterName, val);
             }
 
             return await conn.ExecuteAsync(query, dParams, transaction);
@@ -462,7 +469,14 @@ namespace Repository.CAR
             var dParams = new Dapper.DynamicParameters();
             foreach (var param in parameters)
             {
-                dParams.Add(param.ParameterName, param.Value);
+                var val = param.Value;
+
+                if (val == DBNull.Value || val == null || val.ToString().ToLower() == "null")
+                {
+                    val = null;
+                }
+
+                dParams.Add(param.ParameterName, val);
             }
             return await conn.ExecuteAsync(query, dParams, transaction);
         }
