@@ -74,6 +74,7 @@ namespace Services.CAR
             //await data.ISM.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -250,6 +251,7 @@ namespace Services.CAR
 
             await data.DynamicNewForm.issuerUpdateDataIssueFeedback(mydata, transaction);
             await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -397,7 +399,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.issuerVoid(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
@@ -440,7 +442,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.issuerMgrVoid(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data VOID Succesfully");
@@ -453,7 +455,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.issuerMgrReject(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -466,7 +468,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.issuerMngUpdate(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
@@ -479,7 +481,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.pdaDecision(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
@@ -492,7 +494,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.pdaDecisionUpdate(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Update Succesfully");
@@ -505,7 +507,7 @@ namespace Services.CAR
 
 
             await data.DynamicNewForm.pdaApproval(mydata, transaction);
-
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
@@ -518,6 +520,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.pdaActionReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -537,6 +540,7 @@ namespace Services.CAR
             }
 
             await data.DynamicNewForm.ReceiverAction(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -904,6 +908,7 @@ namespace Services.CAR
             }
 
             await data.DynamicNewForm.ReceiverActionUpdate(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             #region get old data attachment
             List<string> formNoList = new List<string>();
@@ -1264,6 +1269,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.ReceiverActionAppeal(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Appeal Succesfully");
@@ -1276,6 +1282,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.ReceiverIssueReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -1288,6 +1295,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.ReceiverApproval(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve Succesfully");
@@ -1300,6 +1308,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.ReceiverMngReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -1312,6 +1321,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.ReceiverApprovalToReject(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Approve to Reject Succesfully");
@@ -1324,6 +1334,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.PDAReviewerVoid(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Void Succesfully");
@@ -1338,6 +1349,7 @@ namespace Services.CAR
             await data.DynamicNewForm.PDAReviewerReject(mydata, transaction);
             //string newformno = await data.ISM.GenerateNewFormNoWithVer(mydata, transaction);
             //await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully");
@@ -1350,6 +1362,7 @@ namespace Services.CAR
             await using SqlTransaction transaction = conn.BeginTransaction();
 
             await data.DynamicNewForm.PDAReviewerAprove(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Submit Succesfully");
@@ -1369,6 +1382,7 @@ namespace Services.CAR
             }
 
             await data.DynamicNewForm.ReviewerSubmit(mydata, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             string domain = basepathconfig.First().domain;
             string windowsuser = basepathconfig.First().userID;
@@ -1486,6 +1500,7 @@ namespace Services.CAR
 
             string newformno = await data.DynamicNewForm.GenerateNewFormNoWithVer(mydata, transaction);
             await data.ISM.CreateNewIssueFeedBcakWithVers(mydata.FormNumber, newformno, mydata.UserId, mydata.UserName, transaction);
+            await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();
             return ApiResponse<string>.SuccessResponse(null, "Data Reject Succesfully, New Form No Created : " + newformno);

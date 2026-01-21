@@ -54,6 +54,10 @@ namespace Entities.CAR
         //public string? UseNam { get; set; }
         //public string? UseEmail { get; set; }
         //public string? UserLevel { get; set; }
+
+        public string? FlowStatus { get; set; }
+        public string? buttonText { get; set; }
+        public string? userAction { get; set; }
     }
 
     public class DynamicParameter

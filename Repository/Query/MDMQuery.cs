@@ -264,5 +264,8 @@ namespace Repository.Query
         join tplant B on A.TeamSMNPlantCode = B.Plant
         join USERVSVENDOR C on A.TeamSMNPlantCode = C.Plant
         where A.Plant = @plant";
+
+        public static readonly string GetSourceOfSupply = @"
+        select TypeDescription From Ttypemaster WHERE typemapping = 'sourceofsupply' and plant = @plant";
     }
 }   

@@ -374,9 +374,9 @@ namespace Repository.Query
         public static readonly string CreateNewIssueFeedBcakWithVers = @"
         insert into IssueFeedback(
         Plant,FormType,FormNo,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment)
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,Status,MainStatus,IssueBy,IssueByName,IssueDate,IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment,SourceofSupply,TeamSeaPlant)
         select Plant,FormType,@NewFormNumber,DetectionDate,Product,Model,MaterialType,MaterialCode,NcQty,SamplingCheck,NcRatio,Dept,VendorCode,VendorDesc,TttlQty,TttlQtyUOM
-        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN','CAR RAISE',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment
+        ,AffectedCavity,AffectedCavityNO,IssueType,NCCode,NCCategory,NCReason,NCDescription,'OPEN','CAR RAISE',@UserId,@UserName,GETDATE(),IssueByComment,AcknowledgeBy,AcknowledgeByname,AcknowledgeByDate,AcknowledgeByComment,SourceofSupply,TeamSeaPlant
         from IssueFeedback where FormNo = @OldFormNumber
         ";
 

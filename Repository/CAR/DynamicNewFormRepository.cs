@@ -366,7 +366,7 @@ namespace Repository.CAR
     "@immediteActReceiverImgFiles", "@immediteActReceiverFiles",
     "@rootCauseReceiverImgFiles", "@rootCauseReceiverFiles",
     "@correctiveActReceiverImgFiles", "@correctiveActReceiverFiles",
-    "@reviewerImgFiles", "@reviewerFiles"
+    "@reviewerImgFiles", "@reviewerFiles","@FlowStatus","@buttonText","@userAction"
             };
             var excludedParametersForUpdate = new HashSet<string>
             {
@@ -374,7 +374,7 @@ namespace Repository.CAR
     "@immediteActReceiverImgFiles", "@immediteActReceiverFiles",
     "@rootCauseReceiverImgFiles", "@rootCauseReceiverFiles",
     "@correctiveActReceiverImgFiles", "@correctiveActReceiverFiles",
-    "@reviewerImgFiles", "@reviewerFiles"
+    "@reviewerImgFiles", "@reviewerFiles","@FlowStatus","@buttonText","@userAction"
             };
 
             //var filteredParameters = parameters.Where(p => !excludedParameters.Contains(p.ParameterName)).ToList();
@@ -437,7 +437,7 @@ namespace Repository.CAR
     "@immediteActReceiverImgFiles", "@immediteActReceiverFiles",
     "@rootCauseReceiverImgFiles", "@rootCauseReceiverFiles",
     "@correctiveActReceiverImgFiles", "@correctiveActReceiverFiles",
-    "@reviewerImgFiles", "@reviewerFiles"
+    "@reviewerImgFiles", "@reviewerFiles","@FlowStatus","@buttonText","@userAction"
             };
 
             // Buat list parameter yang akan diupdate
