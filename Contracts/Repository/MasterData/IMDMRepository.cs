@@ -36,4 +36,5 @@ public interface IMDMRepository
     Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data);
     Task<IEnumerable<UsrDto>> CheckUserVSVend(DynamicFormParameterDTO data);
     Task<IEnumerable<PlantDto>> GetPlant(int plant);
+    Task<IEnumerable<string>> GetSourceOfSupply(int plant);
 }
