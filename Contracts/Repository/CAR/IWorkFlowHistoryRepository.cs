@@ -13,5 +13,6 @@ namespace Contracts.Repository.CAR
     {
         Task<IEnumerable<GetWorkFlowHistoryDto>> GetWorkFlowHistory(GETWorkFlowHistory GETWorkFlowHistory);
         Task<IEnumerable<IssueSubmissionParameters>> InsertNewData(IssueSubmissionParameters mydata, SqlTransaction transaction);
+        Task<IEnumerable<DynamicFormParameterDTO>> InsertNewData(DynamicFormParameterDTO mydata, SqlTransaction transaction);
     }
 }

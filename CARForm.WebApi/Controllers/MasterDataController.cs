@@ -174,5 +174,13 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(GetSourceOfSupply))]
+    public async Task<IActionResult> GetSourceOfSupply(int plant)
+    {
+        var result = await business.MasterData.GetSourceOfSupply(plant);
+        return Ok(result);
+
+    }
 }
 
