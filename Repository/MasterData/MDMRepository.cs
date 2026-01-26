@@ -196,6 +196,13 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         await using var conn = dbContext.MDMConnection();
         return await conn.QueryFirstOrDefaultAsync<bool>(Processquery, new { plant, UseID });
     }
+    public async Task<bool> GetisSpAdminVoid(int plant, string UseID)
+    {
+        string Processquery = MDMQuery.GetisSpAdminVoid;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryFirstOrDefaultAsync<bool>(Processquery, new { plant, UseID });
+    }
+    
     public async Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data)
     {
         string Processquery;

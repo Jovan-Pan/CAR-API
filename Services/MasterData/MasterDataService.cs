@@ -139,6 +139,12 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         var result = await mdm.GetisSpAdmin(plant, UseID);
         return ApiResponse<bool>.SuccessResponse(result);
     }
+    public async Task<ApiResponse<bool>> GetisSpAdminVoid(int plant, string UseID)
+    {
+        var result = await mdm.GetisSpAdminVoid(plant, UseID);
+        return ApiResponse<bool>.SuccessResponse(result);
+    }
+    
     public async Task<ApiResponse<IEnumerable<UsrDto>>> GetUsr(DynamicFormParameterDTO data)
     {
         var result = await mdm.GetUsr(data);
