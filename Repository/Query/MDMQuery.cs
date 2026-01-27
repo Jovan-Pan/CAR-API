@@ -243,6 +243,19 @@ namespace Repository.Query
         select case when (select count(*) from @Validgrp where isexist = 1) > 0 then 1 else 0 end isSpAdmin
         ";
 
+        public static readonly string GetisSpAdminVoid = @"
+        SELECT 
+            CASE 
+                WHEN ',' + G.IDValue + ',' LIKE '%,' + @USEID + ',%' THEN 1
+                ELSE 0
+            END AS IsUseID
+        FROM tGlobal G 
+        JOIN TPLANTVSGLOBAL GP ON G.ID = GP.SettingID
+        WHERE G.DelFlag = 0 
+          AND GP.DelFlag = 0
+          AND GP.Plant = @plant
+          AND G.id = 'SUPER-ADMIN-VOID'";
+
         public static readonly string GetUsr = @"select distinct UseID,UseNam,useEmail from Usr where UseComCod = @plant AND DelFlag = 0";
 
         public static readonly string GetUsrForVndr = @"select A.UseID,A.UseNam,A.UseEmail from Usr A
@@ -266,6 +279,6 @@ namespace Repository.Query
         where A.Plant = @plant";
 
         public static readonly string GetSourceOfSupply = @"
-        select TypeDescription From Ttypemaster WHERE typemapping = 'sourceofsupply' and plant = @plant";
+        select distinct TypeDescription From Ttypemaster WHERE typemapping = 'sourceofsupply' and plant = @plant";
     }
 }   

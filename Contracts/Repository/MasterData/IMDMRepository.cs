@@ -33,6 +33,7 @@ public interface IMDMRepository
     Task<IEnumerable<SystemvsUservsEmailSubscribeForm>> GetSystemvsUservsEmailSubscribeFormVendor(string VendorCode, int plant, string group, string dept);
     Task<IEnumerable<string>> GetissuerEmail(int plant, IEnumerable<string> UseID);
     Task<bool> GetisSpAdmin(int plant, string UseID);
+    Task<bool> GetisSpAdminVoid(int plant, string UseID); 
     Task<IEnumerable<UsrDto>> GetUsr(DynamicFormParameterDTO data);
     Task<IEnumerable<UsrDto>> CheckUserVSVend(DynamicFormParameterDTO data);
     Task<IEnumerable<PlantDto>> GetPlant(int plant);

@@ -159,6 +159,14 @@ public class MasterDataController(IServiceManager business) : Controller
 
     }
 
+    [HttpPost(nameof(GetisSpAdminVoid))]
+    public async Task<IActionResult> GetisSpAdminVoid([FromBody] FormAuthorizeParam param)
+    {
+        var result = await business.MasterData.GetisSpAdminVoid(param.plant, param.userId);
+        return Ok(result);
+
+    }
+
     [HttpGet(nameof(GetUsr))]
     public async Task<IActionResult> GetUsr(DynamicFormParameterDTO data)
     {
