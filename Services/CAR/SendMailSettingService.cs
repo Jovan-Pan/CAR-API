@@ -71,10 +71,10 @@ namespace Services.CAR
                             ccListMaster.AddRange(MailToCC.ToList());
                         }
 
-                        if (mydata.Dept == "VEND")
+                        if (mydata.SourceofSupply == "Vendor")
                         {
                             var userSubsFormMasterVendor = await mdm.GetSystemvsUservsEmailSubscribeFormVendor(mydata.VendorCode, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
-                            recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList());
+                            recipentList.AddRange(userSubsFormMasterVendor.Select(form => form.UseEmail).ToList()); 
                         }
 
                         var IssuerIds = await data.IFR.getIssuerId(mydata.UserPlant, mydata.FormNumber);

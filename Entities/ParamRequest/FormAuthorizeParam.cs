@@ -10,6 +10,6 @@ namespace Entities.ParamRequest
     {
         public int plant { get; set; }
         public string? userId { get; set; }
-        public IEnumerable<string> FormId { get; set; }
+        public IEnumerable<string>? FormId { get; set; }
     }
 }
