@@ -224,7 +224,9 @@ namespace Repository.Query
         PDAAprovalComment = @Comment,
         PDAAprovalBy = @UserId,
         PDAAprovalByName = @UserName,
-        PDAAprovalDate = GETDATE()
+        PDAAprovalDate = GETDATE(),
+        AIFiveWhy = 0,
+        FiveWhyLang = @FiveWhyLang
         where FormNo = @FormNumber
         ";
 
