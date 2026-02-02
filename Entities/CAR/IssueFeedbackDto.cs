@@ -127,6 +127,8 @@ namespace Entities.CAR
         public IEnumerable<IssueFeedbackAtchmentDto>? dataAtch { get; set; }
        
         public IEnumerable<UsrDto>? EmailRecipientsList { get; set; }
+        
+        public string? FiveWhyOutput { get; set; }
 
     }
 }
