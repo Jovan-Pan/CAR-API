@@ -355,7 +355,8 @@ namespace Services.CAR
                                  CheckingMethod = main.CheckingMethod,
                                  SourceofSupply =main.SourceofSupply,
                                  TeamSeaPlant = main.TeamSeaPlant,
-                                 PlantAbbreviation = main.PlantAbbreviation
+                                 PlantAbbreviation = main.PlantAbbreviation,
+                                 FiveWhyOutput = main.FiveWhyOutput
                              };
             maindata = joinedData;
             

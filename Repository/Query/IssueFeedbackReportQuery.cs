@@ -210,7 +210,8 @@ namespace Repository.Query
             ifb.RiskCategory,
             ifb.SourceofSupply,
             ifb.TeamSeaPlant,
-            mp.PlantAbbreviation
+            mp.PlantAbbreviation,
+            ifb.FiveWhyOutput
         FROM IssueFeedback ifb
         LEFT JOIN MDMTPLANT mp ON ifb.TeamSeaPlant = mp.plant
         where ifb.Plant = @plant
