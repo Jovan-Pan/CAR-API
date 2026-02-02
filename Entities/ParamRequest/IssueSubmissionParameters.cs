@@ -66,5 +66,7 @@ namespace Entities.ParamRequest
         public string? FlowStatus { get; set; }
         public string? buttonText { get; set; }
         public string? userAction { get; set; }
+
+        public string? FiveWhyLang { get; set; }
     }
 }
