@@ -46,6 +46,11 @@ namespace Services.CAR
                 mydata.FormNumber = newformno;
             }
 
+            if (mydata.SourceofSupply == "Vendor")
+            {
+                mydata.Dept = "VEND";
+            }
+
             var chkExsData = await data.ISM.ChkExitsFormno(mydata.FormNumber, transaction);
             if (!chkExsData) {
                 await data.ISM.InsertDataIssueFeedback(mydata, transaction);
