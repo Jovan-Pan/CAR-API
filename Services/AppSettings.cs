@@ -47,6 +47,14 @@ public class MesMasterApi
     public string ApiUrl { get; set; } = string.Empty;
     public string ApiBasePath { get; set; } = string.Empty;
     public string ApiKey { get; set; } = string.Empty;
+    public string ApiSecretKey { get; set; } = string.Empty;
+}
+
+public class SSOConfig
+{
+    public bool Enable { get; set; }
+    public string AuthorityUrl { get; set; } = string.Empty;
+    public string Audience { get; set; } = string.Empty;
 }
 
 public class AppSettings
@@ -58,6 +66,7 @@ public class AppSettings
     public NLogSettings NLogSettings { get; init; } = new();
     public CookieSettings CookieSettings { get; init; } = new();
     public MesMasterApi MesMasterApi {  get; init; } = new();
+    public SSOConfig SSOConfig { get; init; } = new();
     
     public string MDMConnectionString
     {
