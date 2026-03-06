@@ -175,7 +175,7 @@ namespace Repository.Query
         join Dept_Usr DU on A.Plant = DU.Plant and DU.System = A.SystemCode and DU.UseID = B.UserID and DU.isDeleted = 0
         where a.IsDeleted = 0 and B.IsDeleted = 0
         and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group 
-        --and DU.Dept = @dept
+        and DU.Dept = @dept
         AND (
         (U.UsePass = '')
         OR
