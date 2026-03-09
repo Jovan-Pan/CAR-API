@@ -26,6 +26,7 @@ namespace Contracts.Repository.CAR
         Task<int> issuerMgrVoid(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> issuerMgrReject(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> issuerMngUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction);
+        Task<int> issuerMngUpdate2200(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> pdaDecision(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> pdaDecisionUpdate(IssueSubmissionParameters mydata, SqlTransaction transaction);
         Task<int> pdaApproval(IssueSubmissionParameters mydata, SqlTransaction transaction);
