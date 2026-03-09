@@ -390,8 +390,14 @@ namespace Services.CAR
             await using var conn = await data.ISM.OpenConnectionAsync();
             await using SqlTransaction transaction = conn.BeginTransaction();
 
-
-            await data.ISM.issuerMngUpdate(mydata, transaction);
+            if(mydata.UserPlant != 2200) {
+                await data.ISM.issuerMngUpdate(mydata, transaction);
+            }
+            else
+            {
+                await data.ISM.issuerMngUpdate2200(mydata, transaction);
+            }
+               
             await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             await transaction.CommitAsync();

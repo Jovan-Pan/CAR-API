@@ -190,6 +190,24 @@ namespace Repository.Query
         where FormNo = @FormNumber
         ";
 
+        public static readonly string issuerMngUpdate2200 = @"
+        update IssueFeedback
+        set 
+        Status = @IssueStatus,
+        MainStatus = 'CAR RAISE',
+        AcknowledgeByComment = @Comment,
+        AcknowledgeBy = @UserId,
+        AcknowledgeByname = @UserName,
+        AcknowledgeByDate = GETDATE()
+
+        ,Dept = @Dept
+        ,VendorCode = @VendorCode
+        ,VendorDesc = @VendorDesc
+
+        ,AIFiveWhy = 0,
+        where FormNo = @FormNumber
+        ";
+
         public static readonly string pdaDecision = @"
         update IssueFeedback
         set 
