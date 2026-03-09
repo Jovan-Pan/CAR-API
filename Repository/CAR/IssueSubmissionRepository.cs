@@ -112,6 +112,13 @@ namespace Repository.CAR
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
 
+        public async Task<int> issuerMngUpdate2200(IssueSubmissionParameters mydata, SqlTransaction transaction)
+        {
+            string query = IssueSubmissionQuery.issuerMngUpdate2200;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
+
         public async Task<int> pdaDecision(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
             string query = IssueSubmissionQuery.pdaDecision;
@@ -128,7 +135,7 @@ namespace Repository.CAR
 
         public async Task<int> pdaApproval(IssueSubmissionParameters mydata, SqlTransaction transaction)
         {
-            string query = IssueSubmissionQuery.pdaApproval;
+            string query = IssueSubmissionQuery.pdaApproval;    
             var conn = transaction.Connection;
             return await conn.ExecuteAsync(query, mydata, transaction);
         }
