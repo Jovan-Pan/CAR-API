@@ -15,7 +15,7 @@ namespace Entities.CAR
         public int UserPlant { get; set; }
         public string? FormType { get; set; }
         public string? FormNumber { get; set; }
-        public string? NCCategory { get; set; }
+        //public string? NCCategory { get; set; }
         public string? Comment { get; set; }
         public string? IssueType { get; set; }
         public string? Dept { get; set; }

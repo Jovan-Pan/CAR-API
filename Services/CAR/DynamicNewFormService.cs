@@ -136,7 +136,8 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = newformno + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string ncCategory = GetNCCategoryFromDynamicParams(mydata);
+                                            string newFileName = newformno + "_" + ncCategory + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -177,7 +178,8 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = newformno + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string ncCategory = GetNCCategoryFromDynamicParams(mydata);
+                                            string newFileName = newformno + "_" + ncCategory + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -312,7 +314,8 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string ncCategory = GetNCCategoryFromDynamicParams(mydata);
+                                            string newFileName = mydata.FormNumber + "_" + ncCategory + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -353,7 +356,8 @@ namespace Services.CAR
                                             string FilenameandExt = Path.GetFileName(file.FileName);
                                             string extensionFile = Path.GetExtension(file.FileName);
                                             string Flnameonly = Path.GetFileNameWithoutExtension(file.FileName);
-                                            string newFileName = mydata.FormNumber + "_" + mydata.NCCategory + "_" + Flnameonly;
+                                            string ncCategory = GetNCCategoryFromDynamicParams(mydata);
+                                            string newFileName = mydata.FormNumber + "_" + ncCategory + "_" + Flnameonly;
                                             string destinationPath = Path.Combine(basePath, (newFileName + extensionFile));
 
                                             IssueFeedbackAtchmentDto dtaAtch = new IssueFeedbackAtchmentDto();
@@ -1510,6 +1514,14 @@ namespace Services.CAR
         {
             var result = await data.ISM.cekAvailableCompletePastIssue(param);
             return ApiResponse<string>.SuccessResponse(result);
+        }
+
+        private string GetNCCategoryFromDynamicParams(DynamicFormParameterDTO mydata)
+        {
+            var ncCategoryParam = mydata.DynamicParameters?
+                .FirstOrDefault(p => p.FieldName.Equals("NCCategory", StringComparison.OrdinalIgnoreCase));
+
+            return ncCategoryParam?.FieldValue ?? "DefaultNC"; // fallback kalau tidak ada
         }
     }
 }
