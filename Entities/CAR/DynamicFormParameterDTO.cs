@@ -49,6 +49,9 @@ namespace Entities.CAR
         public List<DynamicParameter>? DynamicParameters { get; set; }
         public List<IssueFeedBackEmailRecipient>? IssueFeedBackEmailRecipients { get; set; }
 
+        public string? FiveWhyOutput { get; set; }
+        public string? FiveWhyLang { get; set; }
+
         //IssueFeedBackEmailRecipient
         //public string? UseID { get; set; }
         //public string? UseNam { get; set; }

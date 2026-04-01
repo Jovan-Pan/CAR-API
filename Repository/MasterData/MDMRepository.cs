@@ -242,4 +242,10 @@ internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
         var result = await conn.QueryAsync<string>(query, new { plant = plant });
         return result ?? Enumerable.Empty<string>();
     }
+    public async Task<bool> DOAIFiveWhyRootCause(string formtype,int UserPlant)
+    {
+        string Processquery = MDMQuery.DOAIFiveWhyRootCause;
+        await using var conn = dbContext.MDMConnection();
+        return await conn.QueryFirstOrDefaultAsync<bool>(Processquery, new { formtype, UserPlant });
+    }
 }
