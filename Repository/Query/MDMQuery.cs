@@ -281,5 +281,19 @@ namespace Repository.Query
 
         public static readonly string GetSourceOfSupply = @"
         select distinct TypeDescription From Ttypemaster WHERE typemapping = 'sourceofsupply' and plant = @plant";
+
+        public static readonly string DOAIFiveWhyRootCause = @"
+        SELECT 
+            CASE 
+                WHEN ',' + G.IDValue + ',' LIKE '%,' + @formtype + ',%' THEN 1
+                ELSE 0
+            END AS IsFormtype
+        FROM tGlobal G 
+        JOIN TPLANTVSGLOBAL GP ON G.ID = GP.SettingID
+        WHERE G.DelFlag = 0 
+          AND GP.DelFlag = 0
+          AND GP.Plant = @UserPlant
+          AND G.id = 'DOAIFiveWhyRootCause'";
+
     }
 }   

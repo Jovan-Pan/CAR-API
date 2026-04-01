@@ -45,7 +45,7 @@ namespace Contracts.Repository.CAR
         Task<int> ReviewerSubmit(DynamicFormParameterDTO mydata, SqlTransaction transaction);
         Task<int> ReviewerReject(DynamicFormParameterDTO mydata, SqlTransaction transaction);
         Task<string> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
-
+        Task<int> AIFiveWhyRootCause(DynamicFormParameterDTO mydata, SqlTransaction transaction);
 
     }
 }

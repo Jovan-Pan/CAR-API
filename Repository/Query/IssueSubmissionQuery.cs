@@ -346,6 +346,7 @@ namespace Repository.Query
         set 
         Status = 'ANALYZE',
         MainStatus = 'OPEN',
+        Reviewdate = @Reviewdate,
         ReceiveAprovalComment = @Comment,
         ReceiveAprovalBy = @UserId,
         ReceiveAprovalByName = @UserName,

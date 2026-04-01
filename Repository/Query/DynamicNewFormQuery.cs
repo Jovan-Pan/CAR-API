@@ -408,5 +408,6 @@ namespace Repository.Query
         insert into IssueFeedBackEmailRecipient(
         FormNo,UseID,UseNam,UseEmail,UserLevel) Values(@FormNumber,@UseID,@UseNam,@UseEmail,@UserLevel)";
 
+        public static readonly string AIFiveWhyRootCause = @"update IssueFeedback set AIFiveWhy = 0, FiveWhyLang = @FiveWhyLang where FormNo = @FormNumber";
     }
 }

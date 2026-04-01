@@ -179,5 +179,12 @@ namespace WebApi.Controllers
             var result = await business.DynamicNewForm.cekAvailableCompletePastIssue(param);
             return Ok(result);
         }
+
+        [HttpPost(nameof(AIFiveWhyRootCause))]
+        public async Task<IActionResult> AIFiveWhyRootCause([FromForm] DynamicFormParameterDTO data)
+        {
+            var result = await business.DynamicNewForm.AIFiveWhyRootCause(data);
+            return Ok(result);
+        }
     }
 }
