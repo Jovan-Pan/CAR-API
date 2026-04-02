@@ -36,5 +36,6 @@ namespace Services.Contracts.CAR
         Task<ApiResponse<string>> ReviewerSubmit(DynamicFormParameterDTO mydata);
         Task<ApiResponse<string>> ReviewerReject(DynamicFormParameterDTO mydata);
         Task<ApiResponse<string>> cekAvailableCompletePastIssue(cekAvailableCompletePastIssueParam param);
+        Task<ApiResponse<string>> AIFiveWhyRootCause(DynamicFormParameterDTO mydata);   
     }
 }

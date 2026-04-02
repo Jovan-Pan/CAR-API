@@ -76,6 +76,11 @@ namespace Services.CAR
             await data.DynamicNewForm.InsertIssueFeedBackEmailRecipient(mydata, userListvend, transaction);
             await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
+            var DOAIFiveWhyRootCause = await mdm.DOAIFiveWhyRootCause(mydata.FormType, mydata.UserPlant);
+            if (DOAIFiveWhyRootCause && mydata.IssueStatus == "ISSUED")
+            {
+                await data.DynamicNewForm.AIFiveWhyRootCause(mydata, transaction);
+            }
             #region get old data attachment
             List<string> formNoList = new List<string>();
             formNoList.Add(mydata.FormNumber);
@@ -1523,5 +1528,20 @@ namespace Services.CAR
 
             return ncCategoryParam?.FieldValue ?? "DefaultNC"; // fallback kalau tidak ada
         }
+
+        public async Task<ApiResponse<string>> AIFiveWhyRootCause(DynamicFormParameterDTO mydata)
+        {
+             var DOAIFiveWhyRootCause = await mdm.DOAIFiveWhyRootCause(mydata.FormType,mydata.UserPlant);
+
+            await using var conn = await data.DynamicNewForm.OpenConnectionAsync();
+            await using SqlTransaction transaction = conn.BeginTransaction();
+
+            if (DOAIFiveWhyRootCause && mydata.IssueStatus == "NEW")
+            {
+                await data.DynamicNewForm.AIFiveWhyRootCause(mydata, transaction);
+            }
+                return ApiResponse<string>.SuccessResponse(null);
+        }
+        
     }
 }

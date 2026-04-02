@@ -658,5 +658,12 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryFirstOrDefaultAsync<string>(query, param);
         }
+
+        public async Task<int> AIFiveWhyRootCause(DynamicFormParameterDTO mydata, SqlTransaction transaction)
+        {
+            string query = DynamicNewFormQuery.AIFiveWhyRootCause;
+            var conn = transaction.Connection;
+            return await conn.ExecuteAsync(query, mydata, transaction);
+        }
     }
 }
