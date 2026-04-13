@@ -251,6 +251,26 @@ namespace Repository.Query
         where a.IsDeleted = 0 and B.IsDeleted = 0
         and A.SystemCode = 'CAR' and A.Plant = @plant and A.[Group] = @group and DU.Dept = @dept AND EmailCCList = 1
         And B.UserID NOT IN(select UseID from uservsvendor)";
-  
+
+        public static readonly string GetAllIssuesForProcessing = @"
+        SELECT * FROM (
+        SELECT 
+            C.MaterialDesc AS MaterialDescription,
+            A.performedOn,
+            B.*,
+            ISNULL(TRY_CAST(G.IDValue AS INT), 7) as ReminderDays,
+            ROW_NUMBER() OVER (PARTITION BY A.formno ORDER BY A.performedOn DESC) AS rn
+        FROM workflowhistory A
+        JOIN IssueFeedback B ON A.formno = B.formno
+        JOIN MDMTMATERIAL C ON B.MaterialCode = C.Material
+        LEFT JOIN MDMTPLANTVSGLOBAL PVG ON B.Plant = PVG.Plant 
+            AND PVG.SettingID = 'DueAfter_Mail_Reminder' 
+            AND PVG.SysCode = 'CAR'
+        LEFT JOIN MDMTGLOBAL G ON PVG.SettingID = G.ID
+    ) AS subquery
+    WHERE rn = 1 
+      AND CAST(performedOn AS DATE) <= CAST(DATEADD(day, -subquery.ReminderDays, GETDATE()) AS DATE)
+      AND status NOT IN ('VOID' , 'COMPLETE' , 'DRAFT-SUBMIT', 'NOT EFFECTIVE')
+        ";
     }
 }

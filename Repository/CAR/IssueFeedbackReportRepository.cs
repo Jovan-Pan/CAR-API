@@ -224,5 +224,13 @@ namespace Repository.CAR
             }
 
         }
+
+        public async Task<IEnumerable<IssueFeedbackDto>> GetAllIssuesForProcessing()
+        {
+            string query = IssueFeedbackReportQuery.GetAllIssuesForProcessing;
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryAsync<IssueFeedbackDto>(query);
+        }
     }
 }
