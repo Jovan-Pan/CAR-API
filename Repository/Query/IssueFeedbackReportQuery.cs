@@ -262,7 +262,7 @@ namespace Repository.Query
             ROW_NUMBER() OVER (PARTITION BY A.formno ORDER BY A.performedOn DESC) AS rn
         FROM workflowhistory A
         JOIN IssueFeedback B ON A.formno = B.formno
-        JOIN MDMTMATERIAL C ON B.MaterialCode = C.Material
+        LEFT JOIN MDMTMATERIAL C ON B.MaterialCode = C.Material
         LEFT JOIN MDMTPLANTVSGLOBAL PVG ON B.Plant = PVG.Plant 
             AND PVG.SettingID = 'DueAfter_Mail_Reminder' 
             AND PVG.SysCode = 'CAR'

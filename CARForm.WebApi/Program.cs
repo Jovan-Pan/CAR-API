@@ -6,6 +6,8 @@ using Repository.MasterData;
 using Services;
 using Services.CAR;
 using Services.Contracts.CAR;
+using Services.Contracts.Job;
+using Services.Job;
 using WebApi;
 using WebApi.DependecyInjection;
 using WebApi.Middleware;
@@ -45,6 +47,7 @@ builder.Services.AddMemCacheConfigurations();
 builder.Services.AddLocalization();
 
 builder.Services.AddScoped<IMDMRepository, MDMRepository>();
+builder.Services.AddScoped<IDailyCheckService, DailyCheckService>();
 builder.Services.AddScoped<ISendMailSettingService, SendMailSettingService>();
 
 int executeHour = builder.Configuration.GetValue<int>("cronSchedule", 8);
