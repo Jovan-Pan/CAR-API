@@ -22,7 +22,7 @@ namespace Entities.CAR
         public string MaterialCode { get; set; }
         public string MaterialDesc { get; set; }
         public decimal? NcQty { get; set; }
-        public string SamplingCheck { get; set; }
+        public int SamplingCheck { get; set; }
         public decimal? NcRatio { get; set; }
         public string Dept { get; set; }
         public string deptName { get; set; }
@@ -129,6 +129,6 @@ namespace Entities.CAR
         public IEnumerable<UsrDto>? EmailRecipientsList { get; set; }
         
         public string? FiveWhyOutput { get; set; }
-
+        public string? MaterialDescription { get; set; }
     }
 }

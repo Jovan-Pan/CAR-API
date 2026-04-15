@@ -11,7 +11,7 @@ using System.Net.NetworkInformation;
 
 namespace Repository.MasterData;
 
-internal sealed class MDMRepository(DbContext dbContext) : IMDMRepository
+public sealed class MDMRepository(DbContext dbContext) : IMDMRepository
 {
     public async Task<bool> AllowAllDataToAcc(string userId)
     {

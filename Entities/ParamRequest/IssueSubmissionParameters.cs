@@ -68,5 +68,9 @@ namespace Entities.ParamRequest
         public string? userAction { get; set; }
 
         public string? FiveWhyLang { get; set; }
+
+        //FOR REMINDER_MODAL
+        public string? MaterialDescription { get; set; }
+        
     }
 }

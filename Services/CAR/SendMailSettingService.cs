@@ -26,7 +26,7 @@ using System.Text.RegularExpressions;
 
 namespace Services.CAR
 {
-    internal sealed class SendMailSettingService(IDataManager data, IMDMRepository mdm, IMasterDataApi mdmP, ICacheManager memCache, ILocalizationService localization): ISendMailSettingService
+    public sealed class SendMailSettingService(IDataManager data, IMDMRepository mdm, IMasterDataApi mdmP, ICacheManager memCache, ILocalizationService localization): ISendMailSettingService
     {
         public async Task<ApiResponse<IEnumerable<MailSetiingDto>>> GetaData(SendMailSettingParam param)
         {
@@ -49,7 +49,13 @@ namespace Services.CAR
                     if (issendemail == true)
                     {
                         SendEmailParam mailparam = new SendEmailParam();
-                        var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mydata.mailWStatus);
+
+                        string mailWStatusLookup = mydata.mailactionType == "DAILY_REMINDER"
+                                     ? "DAILY_REMINDER"
+                                     : mydata.mailWStatus;
+
+                        var globalmailMaster = await mdm.GetTGlobalEmailSetting(mydata.UserPlant, mailWStatusLookup);
+
 
                         if (mydata.SourceofSupply == "Vendor") 
                         {

@@ -1,6 +1,14 @@
+using Contracts.Repository.MasterData;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.OpenApi.Models;
+using Quartz;
+using Repository.MasterData;
 using Services;
+using Services.CAR;
+using Services.Contracts.CAR;
+using Services.Contracts.Job;
+using Services.Job;
+using WebApi;
 using WebApi.DependecyInjection;
 using WebApi.Middleware;
 
@@ -37,6 +45,28 @@ builder.Services.AddNLogConfigurations();
 builder.Services.AddMemCacheConfigurations();
 //configure Localization
 builder.Services.AddLocalization();
+
+builder.Services.AddScoped<IMDMRepository, MDMRepository>();
+builder.Services.AddScoped<IDailyCheckService, DailyCheckService>();
+builder.Services.AddScoped<ISendMailSettingService, SendMailSettingService>();
+
+int executeHour = builder.Configuration.GetValue<int>("cronSchedule", 8);
+
+string cronSchedule = $"0 0 {executeHour} * * ?";
+
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("DailyCheckJob");
+    q.AddJob<DailyCheckJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("DailyCheckJob-trigger")
+        //.WithCronSchedule(cronSchedule, x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"))));
+        .WithCronSchedule(cronSchedule));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 //For ExcelReaderFactory
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
