@@ -253,24 +253,28 @@ namespace Repository.Query
         And B.UserID NOT IN(select UseID from uservsvendor)";
 
         public static readonly string GetAllIssuesForProcessing = @"
+        DECLARE @StartDate DATE = '2026-04-27';
+
         SELECT * FROM (
-        SELECT 
-            C.MaterialDesc AS MaterialDescription,
-            A.performedOn,
-            B.*,
-            ISNULL(TRY_CAST(G.IDValue AS INT), 7) as ReminderDays,
-            ROW_NUMBER() OVER (PARTITION BY A.formno ORDER BY A.performedOn DESC) AS rn
-        FROM workflowhistory A
-        JOIN IssueFeedback B ON A.formno = B.formno
-        LEFT JOIN MDMTMATERIAL C ON B.MaterialCode = C.Material
-        LEFT JOIN MDMTPLANTVSGLOBAL PVG ON B.Plant = PVG.Plant 
-            AND PVG.SettingID = 'DueAfter_Mail_Reminder' 
-            AND PVG.SysCode = 'CAR'
-        LEFT JOIN MDMTGLOBAL G ON PVG.SettingID = G.ID
-    ) AS subquery
-    WHERE rn = 1 
-      AND CAST(performedOn AS DATE) <= CAST(DATEADD(day, -subquery.ReminderDays, GETDATE()) AS DATE)
-      AND status NOT IN ('VOID' , 'COMPLETE' , 'DRAFT-SUBMIT', 'NOT EFFECTIVE')
+            SELECT 
+                C.MaterialDesc AS MaterialDescription,
+                A.performedOn,
+                B.*,
+                ISNULL(TRY_CAST(G.IDValue AS INT), 7) AS ReminderDays,
+                ROW_NUMBER() OVER (PARTITION BY A.formno ORDER BY A.performedOn DESC) AS rn
+            FROM workflowhistory A
+            JOIN IssueFeedback B ON A.formno = B.formno
+            LEFT JOIN MDMTMATERIAL C ON B.MaterialCode = C.Material
+            LEFT JOIN MDMTPLANTVSGLOBAL PVG 
+                ON B.Plant = PVG.Plant 
+                AND PVG.SettingID = 'DueAfter_Mail_Reminder' 
+                AND PVG.SysCode = 'CAR'
+            LEFT JOIN MDMTGLOBAL G ON PVG.SettingID = G.ID
+            WHERE CAST(A.performedOn AS DATE) >= @StartDate  -- ⬅️ start dari hari ini
+        ) AS subquery
+        WHERE rn = 1 
+          AND CAST(performedOn AS DATE) <= CAST(DATEADD(day, -ReminderDays, @StartDate) AS DATE)
+          AND status IN ('ISSUED', 'ACTION-ISSUED');
         ";
     }
 }
