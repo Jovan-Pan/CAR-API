@@ -5,6 +5,7 @@ namespace WebApi.Middleware;
 
 public class JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
 {
+    private readonly RequestDelegate _next = next;
     private readonly bool _enableSSO = appSettings.Value.SSOConfig.Enable;
 
     public async Task InvokeAsync(HttpContext context)
