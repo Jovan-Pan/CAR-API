@@ -494,7 +494,7 @@ namespace Repository.Query
         and Dept=@dept 
         and (VendorCode=@vendor or @vendor is null)
         and procecessGrpCode = @processgroup
-        and DATEDIFF(MONTH, DetectionDate, GETDATE()) >= @SetFormTypeStatusRange
+        and DATEDIFF(MONTH, DetectionDate, GETDATE()) <= @SetFormTypeStatusRange
         ";
 
         public static readonly string pdaActionVoid = @"
