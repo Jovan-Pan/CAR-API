@@ -52,7 +52,7 @@ builder.Services.AddScoped<ISendMailSettingService, SendMailSettingService>();
 
 int executeHour = builder.Configuration.GetValue<int>("cronSchedule", 8);
 
-string cronSchedule = $"0 0 {executeHour} * * ?";
+string cronSchedule = $"0 20 {executeHour} * * ?";
 
 builder.Services.AddQuartz(q =>
 {
