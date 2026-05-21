@@ -14,6 +14,7 @@ namespace Services.Contracts.CAR
     {
         Task<ApiResponse<IssueFeedbackResultDto>> GetDataReport(GlobalParam param);
         Task<ApiResponse<TotalRecordForEachSttsDto>> GetTotalRecordForEachStts(GetTotalRecordForEachSttsParam param);
+        Task<ApiResponse<IEnumerable<string>>> GetDefDataShow(int plant);
         Task<ApiResponse<IEnumerable<string>>> GetFormNumberListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<ApiResponse<IEnumerable<string>>> GetDeptListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<ApiResponse<IEnumerable<ProcessGroupDto>>> GetprocecessGrpCodeFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);

@@ -20,6 +20,13 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost(nameof(GetDefDataShow))]
+        public async Task<IActionResult> GetDefDataShow([FromForm] int plant)
+        {
+            var result = await business.IFR.GetDefDataShow(plant);
+            return Ok(result);
+        }
+
         [HttpPost(nameof(GetFormNumberListFilter))]
         public async Task<IActionResult> GetFormNumberListFilter([FromForm] int plant, [FromForm] IEnumerable<string> deptAuthList, [FromForm] IEnumerable<string> productAuthList)
         {

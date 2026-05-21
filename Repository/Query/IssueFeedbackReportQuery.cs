@@ -80,6 +80,11 @@ namespace Repository.Query
         WHERE Plant = @plant and DetectionDate >= DATEADD(MONTH, -@defDataShow, GETDATE())   {0} 
         ";
 
+        public static readonly string GetDefDataShow = @"
+        select A.IDValue from tGlobal A 
+        left join MDMTPLANTVSGLOBAL B on A.id = B.SettingID
+        where A.id ='DefDataShow' And B.Plant = @plant and B.SysCode = 'CAR'";
+
         public static readonly string GetFormNumberListFilter = @" select distinct FormNo from IssueFeedback
         where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by FormNo asc ";

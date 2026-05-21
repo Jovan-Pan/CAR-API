@@ -409,6 +409,11 @@ namespace Services.CAR
             return ApiResponse<TotalRecordForEachSttsDto>.SuccessResponse(result);
         }
 
+        public async Task<ApiResponse<IEnumerable<string>>> GetDefDataShow(int plant)
+        {
+            var result = await data.IFR.GetDefDataShow(plant);
+            return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
+        }
         public async Task<ApiResponse<IEnumerable<string>>> GetFormNumberListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
         {
             var result = await data.IFR.GetFormNumberListFilter(plant, deptAuthList, productAuthList);

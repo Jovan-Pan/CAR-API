@@ -136,6 +136,12 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryFirstOrDefaultAsync<TotalRecordForEachSttsDto>(query, param);
         }
+        public async Task<IEnumerable<string>> GetDefDataShow(int plant)
+        {
+            string query = IssueFeedbackReportQuery.GetDefDataShow;
+            await using var conn = dbContext.MDMConnection();
+            return await conn.QueryAsync<string>(query, new { plant });
+        }
 
         public async Task<IEnumerable<string>> GetFormNumberListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList)
         {
