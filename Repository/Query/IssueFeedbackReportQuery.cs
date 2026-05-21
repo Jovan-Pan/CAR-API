@@ -82,7 +82,7 @@ namespace Repository.Query
 
         public static readonly string GetDefDataShow = @"
         select A.IDValue from tGlobal A 
-        left join MDMTPLANTVSGLOBAL B on A.id = B.SettingID
+        left join TPlantvsGlobal B on A.id = B.SettingID
         where A.id ='DefDataShow' And B.Plant = @plant and B.SysCode = 'CAR'";
 
         public static readonly string GetFormNumberListFilter = @" select distinct FormNo from IssueFeedback
