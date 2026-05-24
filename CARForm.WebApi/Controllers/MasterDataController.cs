@@ -190,5 +190,12 @@ public class MasterDataController(IServiceManager business) : Controller
         return Ok(result);
 
     }
+
+    [HttpGet(nameof(GetUserVendorInfo))]
+    public async Task<IActionResult> GetUserVendorInfo(int plant, string userId)
+    {
+        var result = await business.MasterData.GetUserVendorInfo(plant, userId);
+        return Ok(result);
+    }
 }
 
