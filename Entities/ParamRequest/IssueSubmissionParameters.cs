@@ -38,6 +38,7 @@ namespace Entities.ParamRequest
         public string? NCReason { get; set; }
         public string? NCDescription { get; set; }
         public string? Comment { get; set; }
+        public string? PDAAprovalComment { get; set; }
         public string? rejectReason { get; set; }
         public string? PDAImmediteAct { get; set; }
         public string? Detectedby { get; set; }
