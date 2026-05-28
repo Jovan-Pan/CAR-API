@@ -175,6 +175,8 @@ namespace Services.CAR
 
                                 Datadetails = Datadetails.Replace("@NcQty", mydata.NcQty == null ? "0" : mydata.NcQty.ToString());
                                 Datadetails = Datadetails.Replace("@SamplingSize", mydata.SamplingCheck == null ? "0" : mydata.SamplingCheck.ToString());
+                                Datadetails = Datadetails.Replace("@Comment", mydata.PDAAprovalComment == null ? "0" : mydata.PDAAprovalComment.ToString());
+
                             }
                             else
                             {
