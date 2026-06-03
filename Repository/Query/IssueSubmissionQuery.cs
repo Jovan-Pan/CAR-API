@@ -205,6 +205,7 @@ namespace Repository.Query
         ,VendorDesc = @VendorDesc
 
         ,AIFiveWhy = 0
+        ,FiveWhyLang = @FiveWhyLang
         where FormNo = @FormNumber
         ";
 
