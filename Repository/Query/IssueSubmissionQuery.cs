@@ -186,6 +186,7 @@ namespace Repository.Query
         ,Dept = @Dept
         ,VendorCode = @VendorCode
         ,VendorDesc = @VendorDesc
+        ,AIFiveWhy = 0, FiveWhyLang = @FiveWhyLang
 
         where FormNo = @FormNumber
         ";
@@ -415,7 +416,7 @@ namespace Repository.Query
         update IssueFeedback
         set 
         Status = @IssueStatus,
-        MainStatus = case when @IssueStatus = 'REVIEW' OR @IssueStatus = 'ANALYZE-MANAGEMENT'  then 'OPEN' else 'PENDING APPROVAL' end,
+        MainStatus = case when @IssueStatus = 'ANALYZE-MANAGEMENT'  then 'OPEN' else 'PENDING APPROVAL' end,
         PDAReviewBy = @UserId,
         PDAReviewByName = @UserName,
         PDAReviewDate = GETDATE(),

@@ -175,7 +175,38 @@ namespace WebApi.Controllers
                 return Convert.ToBase64String(fileBytes);
             }
         }
+
+        [HttpGet(nameof(GetFormPlantByFormNumber))]
+        [AllowAnonymous] // Bisa anonymous karena dipakai sebelum auth fully resolved
+        public async Task<IActionResult> GetFormPlantByFormNumber([FromQuery] string formNumber)
+        {
+            if (string.IsNullOrWhiteSpace(formNumber))
+            {
+                return BadRequest(new { success = false, message = "Form number is required." });
+            }
+
+            var result = await business.IFR.GetFormPlantByFormNumberAsync(formNumber);
+
+            if (result == null)
+            {
+                return Ok(new { success = false, message = "Form not found.", plant = (int?)null });
+            }
+
+            return Ok(new { success = true, plant = result });
+        }
+
+        [HttpGet(nameof(ValidateUserPlantAccess))]
+        public async Task<IActionResult> ValidateUserPlantAccess([FromQuery] string userId, [FromQuery] int plant)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return BadRequest(new { success = false, message = "User ID is required." });
+            }
+
+            var hasAccess = await business.MasterData.HasUserPlantAccessAsync(userId, plant);
+
+            return Ok(new { success = true, hasAccess, plant });
+        }
+
     }
-
-
 }

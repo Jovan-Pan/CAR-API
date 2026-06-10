@@ -160,5 +160,9 @@ internal sealed class MasterDataService(IMasterDataApi mesMasterApi, IMDMReposit
         var result = await mdm.GetSourceOfSupply(plant);
         return ApiResponse<IEnumerable<string>>.SuccessResponse(result);
     }
-
+    public async Task<bool> HasUserPlantAccessAsync(string userId, int plant)
+    {
+        var plants = await mdm.GetPlantListForCRCUSystemByUserId(userId);
+        return plants?.Any(p => p == plant.ToString()) ?? false;
+    }
 }
