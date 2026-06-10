@@ -238,5 +238,17 @@ namespace Repository.CAR
             await using var conn = dbContext.CARConnection();
             return await conn.QueryAsync<IssueFeedbackDto>(query);
         }
+
+        public async Task<int?> GetFormPlantByFormNumberAsync(string formNumber)
+        {
+            string query = IssueFeedbackReportQuery.GetFormPlantByFormNumber;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@FormNumber", formNumber);
+
+            await using var conn = dbContext.CARConnection();
+            return await conn.QueryFirstOrDefaultAsync<int?>(query, parameters);
+        }
     }
 }
+

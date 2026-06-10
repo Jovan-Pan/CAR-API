@@ -28,5 +28,7 @@ namespace Services.Contracts.CAR
         Task<(Stream FileStream, string MimeType, string FileName)> GetFilePreviewAsync(GetAttachmentParam request);
         Task<List<(string Base64Content, string MimeType, string FileName)>> GetFilesAttchment(IEnumerable<GetAttachmentParam> request);
 
+        Task<int?> GetFormPlantByFormNumberAsync(string formNumber);
+
     }
 }

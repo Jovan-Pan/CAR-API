@@ -613,5 +613,13 @@ namespace Services.CAR
                 _ => "application/octet-stream",
             };
         }
+
+        public async Task<int?> GetFormPlantByFormNumberAsync(string formNumber)
+        {
+            if (string.IsNullOrWhiteSpace(formNumber))
+                return null;
+
+            return await data.IFR.GetFormPlantByFormNumberAsync(formNumber);
+        }
     }
 }

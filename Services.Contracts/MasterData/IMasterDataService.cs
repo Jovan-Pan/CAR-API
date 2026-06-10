@@ -32,4 +32,5 @@ public interface IMasterDataService
     Task<ApiResponse<IEnumerable<UsrDto>>> GetUsr(DynamicFormParameterDTO data);
     Task<ApiResponse<IEnumerable<PlantDto>>> GetPlant(int plant);
     Task<ApiResponse<IEnumerable<string>>> GetSourceOfSupply(int plant);
+    Task<bool> HasUserPlantAccessAsync(string userId, int plant);
 }

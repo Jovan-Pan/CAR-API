@@ -86,7 +86,7 @@ namespace Repository.Query
         where A.id ='DefDataShow' And B.Plant = @plant and B.SysCode = 'CAR'";
 
         public static readonly string GetFormNumberListFilter = @" select distinct FormNo from IssueFeedback
-        where Plant = @plant and Dept in @deptAuthList and (Product IN @productAuthList or 'ALL' IN @productAuthList)
+        where Plant = @plant and (Dept in @deptAuthList or Dept IS NULL) and (Product IN @productAuthList or 'ALL' IN @productAuthList)
         order by FormNo asc ";
 
         public static readonly string GetDeptListFilter = @" select distinct Dept from IssueFeedback
@@ -280,6 +280,12 @@ namespace Repository.Query
         WHERE rn = 1 
           AND CAST(performedOn AS DATE) <= CAST(DATEADD(day, -ReminderDays, @StartDate) AS DATE)
           AND status IN ('ISSUED', 'ACTION-ISSUED');
+        ";
+
+        public static readonly string GetFormPlantByFormNumber = @"
+            SELECT TOP 1 Plant 
+            FROM IssueFeedback 
+            WHERE FormNo = @formNumber;
         ";
     }
 }

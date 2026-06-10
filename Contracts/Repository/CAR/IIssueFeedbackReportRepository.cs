@@ -32,5 +32,6 @@ namespace Contracts.Repository.CAR
         Task<IEnumerable<VendorDto>> GetVendorListFilter(int plant, IEnumerable<string> deptAuthList, IEnumerable<string> productAuthList);
         Task<int> ProcessUpdate(IssueFeedbacReportUpdateParam mydata, SqlTransaction transaction);
         Task<IEnumerable<IssueFeedbackDto>> GetAllIssuesForProcessing();
+        Task<int?> GetFormPlantByFormNumberAsync(string formNumber);
     }
 }
