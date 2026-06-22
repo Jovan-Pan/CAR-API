@@ -77,7 +77,7 @@ namespace Services.CAR
             await data.WorkFlowHistory.InsertNewData(mydata, transaction);
 
             var DOAIFiveWhyRootCause = await mdm.DOAIFiveWhyRootCause(mydata.FormType, mydata.UserPlant);
-            if (DOAIFiveWhyRootCause && mydata.IssueStatus == "ISSUED")
+            if (DOAIFiveWhyRootCause && mydata.IssueStatus == "SUBMITED")
             {
                 await data.DynamicNewForm.AIFiveWhyRootCause(mydata, transaction);
             }
