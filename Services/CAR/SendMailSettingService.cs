@@ -61,22 +61,19 @@ namespace Services.CAR
                         {
                             mydata.Dept = "VEND";
                         }
-                        //else if (mydata.SourceofSupply == "TEAMSEAPlant"){
-                        //    mydata.UserPlant = int.Parse(mydata.TeamSeaPlant);
-                        //}else{
-                        //    mydata.
-                        //}
+
+                        int recipientPlant = ResolveRecipientPlant(mydata);
 
 
                         List<string> recipentList = new List<string>();
                         if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                         {
-                            var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                            var userSubsFormMaster = await mdm.GetSystemvsUservsEmailSubscribeForm(recipientPlant, mydata.mailWStatus, mydata.Dept);
                             recipentList.AddRange(userSubsFormMaster.Select(form => form.UseEmail).ToList());
                         } 
 
                         var MailToCC = await data.IFR.GetMailtocc(mydata.FormNumber);
-                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, mydata.UserPlant, mydata.mailWStatus, mydata.Dept);
+                        var MailToCCStatic = await data.IFR.GetMailToCCStatic(mydata.FormNumber, recipientPlant, mydata.mailWStatus, mydata.Dept);
 
                         List<string> ccListMaster = new List<string>();
                         if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
@@ -363,6 +360,17 @@ namespace Services.CAR
             }
 
             return canvas;
+        }
+
+        private static int ResolveRecipientPlant(IssueSubmissionParameters mydata)
+        {
+            if (string.Equals(mydata.SourceofSupply, "TEAM SEA Plant", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(mydata.TeamSeaPlant, out int teamSeaPlant))
+            {
+                return teamSeaPlant;
+            }
+
+            return mydata.UserPlant;
         }
 
 
