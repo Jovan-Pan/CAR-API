@@ -49,6 +49,8 @@ namespace Services.Job
                     SamplingCheck = issue.SamplingCheck,
                     AffectedCavity = issue.AffectedCavity,
                     TttlQty = issue.TttlQty,
+                    userAction = GetUserAction(issue.Status),
+                    SourceofSupply = issue.SourceofSupply,
 
                     mailactionType = "DAILY_REMINDER",
                     mailWStatus = GetMailWStatus(issue.Status),
@@ -112,6 +114,57 @@ namespace Services.Job
 
                 // === Default fallback ===
                 _ => "DAILY_REMINDER"
+            };
+        }
+
+        private static string GetUserAction(string issueStatus)
+        {
+            return issueStatus switch
+            {
+                // SUBMITED Flow
+                "SUBMITED" => "ACKNOWLEDGE",
+                "RE-SUBMIT" => "ACKNOWLEDGE",
+                "RE-SUBMIT-APPEAL" => "ACKNOWLEDGE",
+                "SUBMITED-REJECT" => "EDIT",
+                "SUBMITED-APPEAL" => "EDIT",
+
+                // OPEN Flow
+                "OPEN" => "PDA-DECISION",
+                "OPEN-REJECT" => "PDA-DECISION",
+                "OPEN-APPEAL" => "PDA-DECISION",
+
+                // PDA Flow
+                "PDA-DECISION" => "PDA-APPROVAL",
+                "PDA-DECISION-APPEAL" => "PDA-APPROVAL",
+
+                // ISSUED Flow
+                "ISSUED" => "RECEIVER-ACT",
+                "ISSUED-REJECT" => "RECEIVER-ACT",
+                "ISSUED-APPEAL" => "RECEIVER-ACT",
+                "ISSUED-REJECTED" => "PDA-REVIEW",
+                "ISSUED-REJECTED (WA)" => "PDA-REVIEW",
+
+                // ACTION Flow
+                "ACTION-ISSUED" => "RECEIVER-APPROVAL",
+
+                // ANALYZE Flow
+                "ANALYZE" => "PDA-REVIEW",
+                "ANALYZE-MANAGEMENT" => "ANALYZE-MANAGEMENT",
+
+                // REVIEW Flow
+                "REVIEW" => "REVIEWER-ACTION",
+
+                // COMPLETE/REJECT/VOID
+                "COMPLETE" => "PREVIEW",
+                "NOT EFFECTIVE" => "PREVIEW",
+                "REJECT" => "PREVIEW",
+                "VOID" => "PREVIEW",
+
+                // DRAFT/NEW
+                "DRAFT-SUBMIT" => "DRAFT-SUBMIT",
+                "NEW" => "NEW",
+
+                _ => "PREVIEW"
             };
         }
     }
