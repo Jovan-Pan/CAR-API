@@ -258,8 +258,6 @@ namespace Repository.Query
         And B.UserID NOT IN(select UseID from uservsvendor)";
 
         public static readonly string GetAllIssuesForProcessing = @"
-        DECLARE @StartDate DATE = '2026-04-27';
-
         SELECT * FROM (
             SELECT 
                 C.MaterialDesc AS MaterialDescription,
@@ -275,10 +273,9 @@ namespace Repository.Query
                 AND PVG.SettingID = 'DueAfter_Mail_Reminder' 
                 AND PVG.SysCode = 'CAR'
             LEFT JOIN MDMTGLOBAL G ON PVG.SettingID = G.ID
-            WHERE CAST(A.performedOn AS DATE) >= @StartDate  -- ⬅️ start dari hari ini
         ) AS subquery
         WHERE rn = 1 
-          AND CAST(performedOn AS DATE) <= CAST(DATEADD(day, -ReminderDays, @StartDate) AS DATE)
+          AND CAST(performedOn AS DATE) <= CAST(DATEADD(day, -ReminderDays, GETDATE()) AS DATE)
           AND status IN ('ISSUED', 'ACTION-ISSUED');
         ";
 
