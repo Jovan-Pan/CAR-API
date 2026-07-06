@@ -146,7 +146,7 @@ namespace Services.CAR
                             }
                             else
                             {
-                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"zpages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
 
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
