@@ -142,11 +142,11 @@ namespace Services.CAR
                             Datadetails = Datadetails.Replace("@FormNumber", mydata.FormNumber);
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
                             {
-                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/issueSubmission?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"pages/issueSubmission?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
                             else
                             {
-                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"/pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
+                                Datadetails = Datadetails.Replace("@Formlink", globalmailMaster.FirstOrDefault().Emaillink + $"pages/DynamicNewForm?formnumber={mydata.FormNumber}&amp;useraction={mydata.userAction}");
                             }
 
                             if (mydata.FormType == "NCR" || mydata.FormType == "QFR" || mydata.FormType == "CAR")
